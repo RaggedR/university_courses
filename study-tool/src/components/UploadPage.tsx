@@ -29,12 +29,18 @@ export default function UploadPage({ basePath }: { basePath: string }) {
     reader.readAsText(file);
   }
 
+  function toRawGitHubUrl(u: string): string {
+    const m = u.match(/^https?:\/\/github\.com\/([^/]+\/[^/]+)\/blob\/(.+)$/);
+    return m ? `https://raw.githubusercontent.com/${m[1]}/${m[2]}` : u;
+  }
+
   async function handleFetchUrl() {
     const trimmed = url.trim();
     if (!trimmed) return;
     setFetching(true);
     try {
-      const res = await fetch(trimmed);
+      const fetchUrl = toRawGitHubUrl(trimmed);
+      const res = await fetch(fetchUrl);
       if (!res.ok) {
         showToast(`Fetch failed: HTTP ${res.status}`, 'error');
         return;

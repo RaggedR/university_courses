@@ -33,7 +33,7 @@ $$
 \min_\beta \frac{1}{2}\Vert \hat{\beta} - \beta\Vert ^2 + \lambda \Vert \beta\Vert _1
 $$
 
-for $\lambda \in \lbrace 0.01, 0.1, 0.5, 1.0, 2.0, 5.0\rbrace $.
+for $\lambda \in \lbrace 0.01, 0.1, 0.5, 1.0, 2.0, 5.0\rbrace$.
 
 *Hint: The solution to this simplified problem (identity design matrix) is given by soft-thresholding: $\beta^*\_j = S\_\lambda(\hat{\beta}\_j)$.*
 
@@ -206,7 +206,7 @@ $$
 
 For the L1 problem, use your ISTA implementation (with appropriate modifications for the regression setting). For the L2 problem, use the closed-form solution $\hat{\beta}\_{\text{L2}} = (X^\top X + 2n\lambda I)^{-1} X^\top y$.
 
-Use $\lambda \in \lbrace 0.001, 0.01, 0.05, 0.1, 0.5, 1.0\rbrace $.
+Use $\lambda \in \lbrace 0.001, 0.01, 0.05, 0.1, 0.5, 1.0\rbrace$.
 
 ### Part (c): Compare
 

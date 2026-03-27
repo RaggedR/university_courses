@@ -14,7 +14,7 @@ We will also study the optimizer zoo (SGD, momentum, Adam), regularization techn
 
 ### 1.1 The Problem
 
-Consider a neural network as a function $f(\mathbf{x}; \boldsymbol{\theta})$ parameterized by weights $\boldsymbol{\theta} = \lbrace W^{(1)}, \mathbf{b}^{(1)}, W^{(2)}, \mathbf{b}^{(2)}, \ldots\rbrace $. Given a training example $(\mathbf{x}, y)$, we compute a loss:
+Consider a neural network as a function $f(\mathbf{x}; \boldsymbol{\theta})$ parameterized by weights $\boldsymbol{\theta} = \lbrace W^{(1)}, \mathbf{b}^{(1)}, W^{(2)}, \mathbf{b}^{(2)}, \ldots\rbrace$. Given a training example $(\mathbf{x}, y)$, we compute a loss:
 
 $$
 \mathcal{L} = \ell(f(\mathbf{x}; \boldsymbol{\theta}), y)
@@ -319,7 +319,7 @@ $$
 
 ### 2.3 Mini-Batch SGD
 
-The practical compromise: use a mini-batch of $B$ examples (typically $B \in \lbrace 32, 64, 128, 256\rbrace $).
+The practical compromise: use a mini-batch of $B$ examples (typically $B \in \lbrace 32, 64, 128, 256\rbrace$).
 
 $$
 \boldsymbol{\theta}_{t+1} = \boldsymbol{\theta}_t - \eta \cdot \frac{1}{B} \sum_{i \in \mathcal{B}_t} \nabla \ell_i
@@ -676,7 +676,7 @@ $$
 
 where $D^{(\ell)}$ is the diagonal matrix of activation derivatives at layer $\ell$.
 
-If the spectral norm of each factor $\Vert D^{(\ell)} W^{(\ell)}\Vert $ is consistently $< 1$: the product vanishes exponentially. The first layer's gradients are negligibly small — **vanishing gradients**.
+If the spectral norm of each factor $\Vert D^{(\ell)} W^{(\ell)}\Vert$ is consistently $< 1$: the product vanishes exponentially. The first layer's gradients are negligibly small — **vanishing gradients**.
 
 If the spectral norm is consistently $> 1$: the product explodes exponentially — **exploding gradients**.
 
@@ -735,7 +735,7 @@ This is especially important when using large batch sizes (the gradient estimate
 A simple defense against exploding gradients: if the gradient norm exceeds a threshold $c$, rescale the entire gradient vector to have norm $c$:
 
 $$
-\mathbf{g} \leftarrow \begin{cases} \mathbf{g} & \text{if } \Vert \mathbf{g}\Vert  \leq c \\\\ \frac{c}{\Vert \mathbf{g}\Vert } \mathbf{g} & \text{if } \Vert \mathbf{g}\Vert  > c \end{cases}
+\mathbf{g} \leftarrow \begin{cases} \mathbf{g} & \text{if } \Vert \mathbf{g}\Vert \leq c \\\\ \frac{c}{\Vert \mathbf{g}\Vert } \mathbf{g} & \text{if } \Vert \mathbf{g}\Vert > c \end{cases}
 $$
 
 This preserves the gradient *direction* while capping its magnitude. Typical values: $c \in [1, 5]$.
@@ -771,7 +771,7 @@ When you have limited time, tune hyperparameters in this order (most impactful f
 1. **Learning rate.** Try values on a log scale: $10^{-1}, 10^{-2}, 10^{-3}, 10^{-4}$. The optimal value is usually clear from the training curves.
 2. **Batch size.** Use the largest batch size that fits in memory. Then adjust the learning rate (the "linear scaling rule": double the batch size, double the learning rate).
 3. **Architecture.** Number of layers, hidden dimension. Start simple and increase until validation loss stops improving.
-4. **Regularization strength.** Dropout rate ($p \in \lbrace 0.1, 0.3, 0.5\rbrace $), weight decay ($\lambda \in \lbrace 10^{-4}, 10^{-3}, 10^{-2}\rbrace $). Only add when overfitting is observed.
+4. **Regularization strength.** Dropout rate ($p \in \lbrace 0.1, 0.3, 0.5\rbrace$), weight decay ($\lambda \in \lbrace 10^{-4}, 10^{-3}, 10^{-2}\rbrace$). Only add when overfitting is observed.
 5. **Optimizer hyperparameters.** Adam's $\beta\_1, \beta\_2$ rarely need tuning. Momentum coefficient $\mu$ is almost always 0.9.
 
 ---

@@ -272,7 +272,7 @@ Given everything we have discussed, the logic for using SAEs in interpretability
 In practice, applying SAEs to a neural network works as follows:
 
 1. **Choose a location** in the network to analyze (e.g., the residual stream at layer 6, or the MLP output at layer 3).
-2. **Collect activations** by running many inputs through the network and saving the activation vectors at the chosen location. If the activation dimension is $d$, you collect a dataset of vectors $\lbrace \mathbf{h}\_i \in \mathbb{R}^d\rbrace $.
+2. **Collect activations** by running many inputs through the network and saving the activation vectors at the chosen location. If the activation dimension is $d$, you collect a dataset of vectors $\lbrace \mathbf{h}\_i \in \mathbb{R}^d\rbrace$.
 3. **Train an SAE** on these activation vectors: $\mathbf{h} \to \mathbf{z} \to \hat{\mathbf{h}}$. The hidden dimension $d'$ is typically $4d$ to $32d$.
 4. **Analyze the SAE's features:** each hidden neuron in the SAE should (ideally) correspond to an interpretable concept that the original network represents.
 

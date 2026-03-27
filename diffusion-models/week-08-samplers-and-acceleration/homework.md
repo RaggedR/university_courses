@@ -72,7 +72,7 @@ Your implementation should:
 
 ### Part (b): Step Count Experiment
 
-Using your DDIM sampler, generate 64 samples with each of the following step counts: $S \in \lbrace 5, 10, 20, 50, 100, 200, 1000\rbrace $. For each:
+Using your DDIM sampler, generate 64 samples with each of the following step counts: $S \in \lbrace 5, 10, 20, 50, 100, 200, 1000\rbrace$. For each:
 
 1. Display a grid of 16 samples
 2. Measure the average time per sample
@@ -82,7 +82,7 @@ Plot a curve of visual quality (FID or subjective rating) vs. NFE.
 
 ### Part (c): The $\eta$ Sweep
 
-Fix $S = 20$ steps. Generate 64 samples for each $\eta \in \lbrace 0, 0.2, 0.5, 0.8, 1.0\rbrace $.
+Fix $S = 20$ steps. Generate 64 samples for each $\eta \in \lbrace 0, 0.2, 0.5, 0.8, 1.0\rbrace$.
 
 1. Display samples for each $\eta$ side by side
 2. With $\eta = 0$, generate two batches from the same initial $x\_T$. Verify they are identical. With $\eta = 1$, verify they differ.
@@ -143,8 +143,8 @@ def heun_sample(model, shape, num_steps, noise_schedule):
 
 Using the same pretrained model and initial noise $x\_T$:
 
-1. Generate samples with Euler at $N \in \lbrace 10, 20, 50, 100\rbrace $ steps (10, 20, 50, 100 NFEs)
-2. Generate samples with Heun at $N/2 \in \lbrace 5, 10, 25, 50\rbrace $ steps (10, 20, 50, 100 NFEs)
+1. Generate samples with Euler at $N \in \lbrace 10, 20, 50, 100\rbrace$ steps (10, 20, 50, 100 NFEs)
+2. Generate samples with Heun at $N/2 \in \lbrace 5, 10, 25, 50\rbrace$ steps (10, 20, 50, 100 NFEs)
 3. For each NFE budget, display the Euler and Heun samples side by side
 
 At which NFE count does Heun start to clearly outperform Euler? Is the theoretical $O(1/N)$ vs. $O(1/N^2)$ advantage visible empirically?
@@ -220,9 +220,9 @@ Compare DPM-Solver-1 (10 steps), DPM-Solver-2 (10 steps = 20 NFEs), and DDIM (20
 
 ### Part (a): Why Uniform Steps Are Suboptimal
 
-Consider the probability flow ODE for a cosine noise schedule. Compute the velocity field magnitude $\Vert v\_\theta(x\_t, t)\Vert $ at $t = 0.01, 0.1, 0.5, 0.9, 0.99$ (using your trained model on a batch of samples).
+Consider the probability flow ODE for a cosine noise schedule. Compute the velocity field magnitude $\Vert v\_\theta(x\_t, t)\Vert$ at $t = 0.01, 0.1, 0.5, 0.9, 0.99$ (using your trained model on a batch of samples).
 
-Plot $\Vert v\_\theta\Vert $ vs. $t$. At which times is the velocity largest? Argue that these are the times where more steps should be concentrated.
+Plot $\Vert v\_\theta\Vert$ vs. $t$. At which times is the velocity largest? Argue that these are the times where more steps should be concentrated.
 
 ### Part (b): Log-SNR Spacing
 
@@ -266,7 +266,7 @@ Generate a $6 \times 16$ grid where each row is a different sampler, all startin
 
 ### Part (b): Scaling with NFEs
 
-For each sampler, generate 256 samples at NFE budgets $\lbrace 5, 10, 20, 50, 100\rbrace $. Compute FID (or, if FID computation is infeasible, use a perceptual quality metric or manual ranking).
+For each sampler, generate 256 samples at NFE budgets $\lbrace 5, 10, 20, 50, 100\rbrace$. Compute FID (or, if FID computation is infeasible, use a perceptual quality metric or manual ranking).
 
 Plot FID vs. NFEs for all samplers on the same graph. Identify:
 1. Which sampler is best at 10 NFEs?

@@ -112,20 +112,20 @@ Write a paragraph summarizing the differences you observe.
 Starting from the definition of KL divergence for discrete distributions:
 
 $$
-\text{KL}(P \Vert  Q) = \sum_x P(x) \log \frac{P(x)}{Q(x)}
+\text{KL}(P \Vert Q) = \sum_x P(x) \log \frac{P(x)}{Q(x)}
 $$
 
 derive the formula for the KL divergence between $\text{Bernoulli}(\rho)$ and $\text{Bernoulli}(\hat{\rho})$:
 
 $$
-\text{KL}(\rho \Vert  \hat{\rho}) = \rho \log \frac{\rho}{\hat{\rho}} + (1 - \rho) \log \frac{1 - \rho}{1 - \hat{\rho}}
+\text{KL}(\rho \Vert \hat{\rho}) = \rho \log \frac{\rho}{\hat{\rho}} + (1 - \rho) \log \frac{1 - \rho}{1 - \hat{\rho}}
 $$
 
 Show each step explicitly.
 
 ### 3b. Gradient
 
-Compute $\frac{\partial}{\partial \hat{\rho}} \text{KL}(\rho \Vert  \hat{\rho})$.
+Compute $\frac{\partial}{\partial \hat{\rho}} \text{KL}(\rho \Vert \hat{\rho})$.
 
 Verify that this gradient:
 - Equals zero when $\hat{\rho} = \rho$
@@ -134,13 +134,13 @@ Verify that this gradient:
 
 ### 3c. Second Derivative
 
-Compute $\frac{\partial^2}{\partial \hat{\rho}^2} \text{KL}(\rho \Vert  \hat{\rho})$ and show that it is always positive for $\hat{\rho} \in (0, 1)$. What does this tell you about the shape of the KL penalty as a function of $\hat{\rho}$?
+Compute $\frac{\partial^2}{\partial \hat{\rho}^2} \text{KL}(\rho \Vert \hat{\rho})$ and show that it is always positive for $\hat{\rho} \in (0, 1)$. What does this tell you about the shape of the KL penalty as a function of $\hat{\rho}$?
 
 ### 3d. Numerical Verification
 
 Write a short Python script that:
 1. Computes the KL divergence numerically for $\rho = 0.05$ and $\hat{\rho} \in [0.001, 0.999]$.
-2. Plots $\text{KL}(\rho \Vert  \hat{\rho})$ as a function of $\hat{\rho}$.
+2. Plots $\text{KL}(\rho \Vert \hat{\rho})$ as a function of $\hat{\rho}$.
 3. Overlays the analytical gradient on the same plot (as a second y-axis or a separate subplot).
 
 Verify that the minimum is at $\hat{\rho} = \rho = 0.05$ and that the gradient changes sign there.
@@ -168,7 +168,7 @@ Create a scatter plot of **reconstruction MSE (y-axis) vs. average L0 (x-axis)**
 
 ### 4c. Feature Quality
 
-For $\lambda \in \lbrace 0.0005, 0.005, 0.05\rbrace $ (representing low, medium, and high sparsity), visualize the top 25 decoder column features (by decoder column norm or by average activation frequency).
+For $\lambda \in \lbrace 0.0005, 0.005, 0.05\rbrace$ (representing low, medium, and high sparsity), visualize the top 25 decoder column features (by decoder column norm or by average activation frequency).
 
 Comment on how feature quality changes with $\lambda$:
 - At low $\lambda$, are features interpretable?
@@ -199,7 +199,7 @@ Implement a neuron resampling function. The algorithm:
 1. **Identify dead neurons:** neurons with zero activations on a large batch (e.g., 10,000 examples).
 2. **Compute reconstruction errors** $e\_i = \Vert \mathbf{x}\_i - \hat{\mathbf{x}}\_i\Vert ^2$ for each example.
 3. **Sample a data point** $\mathbf{x}\_i$ with probability proportional to $e\_i$.
-4. **Reinitialize the dead neuron's encoder weights:** set them to a normalized version of the residual: $\mathbf{w}\_j \leftarrow c \cdot (\mathbf{x}\_i - \hat{\mathbf{x}}\_i) / \Vert \mathbf{x}\_i - \hat{\mathbf{x}}\_i\Vert $, where $c$ is the average encoder weight norm of alive neurons.
+4. **Reinitialize the dead neuron's encoder weights:** set them to a normalized version of the residual: $\mathbf{w}\_j \leftarrow c \cdot (\mathbf{x}\_i - \hat{\mathbf{x}}\_i) / \Vert \mathbf{x}\_i - \hat{\mathbf{x}}\_i\Vert$, where $c$ is the average encoder weight norm of alive neurons.
 5. **Reinitialize the decoder column** to match (also normalized).
 6. **Set the encoder bias** $b\_j$ to $0$ or a small negative value.
 

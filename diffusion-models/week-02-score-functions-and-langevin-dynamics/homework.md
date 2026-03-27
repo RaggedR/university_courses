@@ -114,7 +114,7 @@ def langevin_dynamics(score_fn, x_init, step_size, num_steps):
 
 ### Part (b): Step Size Sensitivity
 
-Run Langevin dynamics with step sizes $\eta \in \lbrace 0.001, 0.01, 0.1, 0.5, 1.0\rbrace $ for 2000 steps each. For each:
+Run Langevin dynamics with step sizes $\eta \in \lbrace 0.001, 0.01, 0.1, 0.5, 1.0\rbrace$ for 2000 steps each. For each:
 
 1. Plot the final sample distribution.
 2. Compute the sample mean and sample covariance. Compare to the true $\mu$ and $\Sigma$.
@@ -143,9 +143,9 @@ with means $\mu\_1 = (5, 5)$, $\mu\_2 = (5, -5)$, $\mu\_3 = (-5, -5)$, $\mu\_4 =
 
 Run Langevin dynamics with 2000 samples initialized from $\mathcal{N}(0, 10I)$, step size $\eta = 0.01$, for 5000 steps.
 
-1. Display scatter plots of the samples at steps $\lbrace 0, 100, 500, 1000, 5000\rbrace $.
+1. Display scatter plots of the samples at steps $\lbrace 0, 100, 500, 1000, 5000\rbrace$.
 2. Are all four modes discovered? If not, run for longer (20000 steps) and check again.
-3. Compute the fraction of samples that end up in each mode (define "in mode $i$" as $\Vert x - \mu\_i\Vert  < 2$). Is the distribution across modes approximately uniform ($\frac{1}{4}$ each)?
+3. Compute the fraction of samples that end up in each mode (define "in mode $i$" as $\Vert x - \mu\_i\Vert < 2$). Is the distribution across modes approximately uniform ($\frac{1}{4}$ each)?
 
 ### Part (c): The Mixing Problem
 
@@ -244,7 +244,7 @@ Using your forward process implementation from Week 1, Problem 4:
 
     For 2D: compute the score on a grid by kernel density estimation.
 
-2. Visualize the score field at $t \in \lbrace 0, 100, 500, 999\rbrace $. How does the score field change as noise is added?
+2. Visualize the score field at $t \in \lbrace 0, 100, 500, 999\rbrace$. How does the score field change as noise is added?
 
 3. At $t = 999$, compare the estimated score field to $-x\_t$ (the score of $\mathcal{N}(0, I)$). They should approximately match, confirming that the forward process has mixed to its stationary distribution.
 

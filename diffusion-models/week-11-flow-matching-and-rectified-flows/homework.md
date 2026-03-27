@@ -93,10 +93,10 @@ Consider two interpolation schemes from noise $x\_0$ to data $x\_1$:
 
 2. Which path is straighter? Compute the **path length** for each:
 $$
-L = \int_0^1 \left\Vert \frac{dx_t}{dt}\right\Vert  dt
+L = \int_0^1 \left\Vert \frac{dx_t}{dt}\right\Vert dt
 $$
 
-3. Compute the straight-line distance $\Vert x\_1 - x\_0\Vert $ and the **straightness ratio** $\Vert x\_1 - x\_0\Vert  / L$ for each path. A ratio of 1 means perfectly straight.
+3. Compute the straight-line distance $\Vert x\_1 - x\_0\Vert$ and the **straightness ratio** $\Vert x\_1 - x\_0\Vert / L$ for each path. A ratio of 1 means perfectly straight.
 
 ### Part (b): Velocity Field Comparison (Implementation)
 
@@ -109,7 +109,7 @@ For each model, generate 2000 samples using 10 Euler steps. Compare the sample q
 
 ### Part (c): Step Count Sweep
 
-For each model, generate 2000 samples using $N \in \lbrace 1, 2, 4, 8, 16, 32, 64\rbrace $ steps. For each, compute the Wasserstein-2 distance to the true distribution (using `scipy.stats.wasserstein_distance` on each coordinate, or using the `pot` library for 2D OT distance).
+For each model, generate 2000 samples using $N \in \lbrace 1, 2, 4, 8, 16, 32, 64\rbrace$ steps. For each, compute the Wasserstein-2 distance to the true distribution (using `scipy.stats.wasserstein_distance` on each coordinate, or using the `pot` library for 2D OT distance).
 
 Plot W2 distance vs. number of steps for both models. At what step count does each model converge to the true distribution?
 
@@ -182,7 +182,7 @@ Train for the same number of steps as the base model.
 For each model (base and reflowed), generate 500 trajectories and compute the **straightness** of each trajectory:
 
 $$
-S = \frac{\Vert x_1 - x_0\Vert }{\int_0^1 \Vert v_\theta(x_t, t)\Vert  dt}
+S = \frac{\Vert x_1 - x_0\Vert }{\int_0^1 \Vert v_\theta(x_t, t)\Vert dt}
 $$
 
 where $S = 1$ means perfectly straight. Approximate the integral using the Euler steps.
@@ -245,7 +245,7 @@ If you have a DDPM model from Week 5 (or train one quickly), compare the sample 
 
 ### Part (d): Class-Conditional Generation (Optional)
 
-Extend your model to accept a class label $c \in \lbrace 0, 1, \ldots, 9\rbrace $ as conditioning. Train with 10% unconditional dropout (replacing $c$ with a null token). Sample using classifier-free guidance with guidance scale $w = 2.0$.
+Extend your model to accept a class label $c \in \lbrace 0, 1, \ldots, 9\rbrace$ as conditioning. Train with 10% unconditional dropout (replacing $c$ with a null token). Sample using classifier-free guidance with guidance scale $w = 2.0$.
 
 Generate 10 samples per class and display them.
 

@@ -60,7 +60,7 @@ $$
 Show that the expression from Part (a) equals:
 
 $$
--L_{\text{VLB}} = -D_{\text{KL}}(q(x_T \mid x_0) \Vert  p(x_T)) - \sum_{t=2}^{T} D_{\text{KL}}(q(x_{t-1} \mid x_t, x_0) \Vert  p_\theta(x_{t-1} \mid x_t)) + \mathbb{E}_q[\log p_\theta(x_0 \mid x_1)]
+-L_{\text{VLB}} = -D_{\text{KL}}(q(x_T \mid x_0) \Vert p(x_T)) - \sum_{t=2}^{T} D_{\text{KL}}(q(x_{t-1} \mid x_t, x_0) \Vert p_\theta(x_{t-1} \mid x_t)) + \mathbb{E}_q[\log p_\theta(x_0 \mid x_1)]
 $$
 
 ### Part (c): The Reverse Posterior
@@ -128,7 +128,7 @@ def q_sample(x_0, t, alpha_bar, noise=None):
     pass
 ```
 
-Implement this. Visualize the forward process: take one MNIST digit, compute $x\_t$ for $t \in \lbrace 0, 50, 100, 200, 500, 999\rbrace $, and display them side by side.
+Implement this. Visualize the forward process: take one MNIST digit, compute $x\_t$ for $t \in \lbrace 0, 50, 100, 200, 500, 999\rbrace$, and display them side by side.
 
 ### Part (c): A Simple U-Net
 
@@ -207,9 +207,9 @@ Train for 5000-10000 gradient steps.
 
 ### Part (c): Visualization
 
-1. **Forward process**: Plot $q(x\_t)$ for $t \in \lbrace 0, 10, 25, 50, 75, 100\rbrace $ by sampling from $q(x\_t \mid x\_0)$ for all training points. You should see the 8 clusters gradually blur into an isotropic Gaussian.
+1. **Forward process**: Plot $q(x\_t)$ for $t \in \lbrace 0, 10, 25, 50, 75, 100\rbrace$ by sampling from $q(x\_t \mid x\_0)$ for all training points. You should see the 8 clusters gradually blur into an isotropic Gaussian.
 
-2. **Reverse process**: Starting from $x\_T \sim \mathcal{N}(0, I)$, run the reverse process and plot $x\_t$ at $t \in \lbrace 100, 75, 50, 25, 10, 0\rbrace $. You should see noise gradually organize into 8 clusters.
+2. **Reverse process**: Starting from $x\_T \sim \mathcal{N}(0, I)$, run the reverse process and plot $x\_t$ at $t \in \lbrace 100, 75, 50, 25, 10, 0\rbrace$. You should see noise gradually organize into 8 clusters.
 
 3. **Learned score field**: At timestep $t = 50$, plot the vector field $-\varepsilon\_\theta(x, t)/\sqrt{1-\bar{\alpha}\_t}$ (the estimated score) over a grid. The arrows should point toward the data modes.
 
@@ -221,7 +221,7 @@ Using your 2D DDPM from Problem 4, investigate the effect of design choices.
 
 ### Part (a): Number of Diffusion Steps
 
-Train and sample with $T \in \lbrace 10, 50, 100, 500, 1000\rbrace $. For each:
+Train and sample with $T \in \lbrace 10, 50, 100, 500, 1000\rbrace$. For each:
 1. Generate 5000 samples
 2. Plot the samples
 3. Compute the Wasserstein-2 distance to the true distribution (or approximate it by computing the distance between empirical histograms on a grid)

@@ -109,7 +109,7 @@ where $X \in \mathbb{R}^{N \times d}$ is the data matrix (each row is a data poi
 
 ### 3.2 Derivation: Maximum Variance Perspective
 
-**Goal:** Find the unit vector $\mathbf{u}\_1 \in \mathbb{R}^d$ (with $\Vert \mathbf{u}\_1\Vert  = 1$) such that the variance of the projected data is maximized.
+**Goal:** Find the unit vector $\mathbf{u}\_1 \in \mathbb{R}^d$ (with $\Vert \mathbf{u}\_1\Vert = 1$) such that the variance of the projected data is maximized.
 
 The projection of $\mathbf{x}\_i$ onto $\mathbf{u}$ is the scalar $\mathbf{u}^\top \mathbf{x}\_i$. The variance of these projections is:
 

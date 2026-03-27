@@ -20,7 +20,7 @@ Implement one round of progressive distillation:
 1. Initialize the student as a copy of the teacher.
 2. For each training iteration:
    - Sample $x\_0 \sim \mathcal{N}(0, I)$
-   - Sample a time step $t$ uniformly from $\lbrace 0, \Delta t, 2\Delta t, \ldots, 1 - 2\Delta t\rbrace $ where $\Delta t = 1/128$
+   - Sample a time step $t$ uniformly from $\lbrace 0, \Delta t, 2\Delta t, \ldots, 1 - 2\Delta t\rbrace$ where $\Delta t = 1/128$
    - Compute $x\_t$ by running the teacher ODE from $x\_0$ to time $t$ (use 128-step Euler; or, for efficiency, precompute trajectories)
    - **Teacher two-step output:** Run the teacher for two steps from $x\_t$:
      $$
@@ -230,7 +230,7 @@ SDS is known to be "mode-seeking" -- it tends to find high-density regions rathe
 
 2. Compare to direct sampling from the flow matching model (100 samples). Which gives better coverage of the distribution?
 
-3. In 2-3 sentences, explain why SDS is mode-seeking. *Hint: SDS minimizes $D\_{\text{KL}}(q \Vert  p)$ where $q$ is a delta distribution. Which direction of KL divergence is mode-seeking?*
+3. In 2-3 sentences, explain why SDS is mode-seeking. *Hint: SDS minimizes $D\_{\text{KL}}(q \Vert p)$ where $q$ is a delta distribution. Which direction of KL divergence is mode-seeking?*
 
 ---
 
@@ -238,7 +238,7 @@ SDS is known to be "mode-seeking" -- it tends to find high-density regions rathe
 
 ### Part (a): Progressive Distillation Error Accumulation
 
-Suppose the student at round $k$ introduces a per-step velocity error $\delta\_k$ (so $\Vert v\_S^{(k)} - v\_T^{(k)}\Vert  \leq \delta\_k$ at each step). After $k$ rounds of distillation starting from $N$ teacher steps:
+Suppose the student at round $k$ introduces a per-step velocity error $\delta\_k$ (so $\Vert v\_S^{(k)} - v\_T^{(k)}\Vert \leq \delta\_k$ at each step). After $k$ rounds of distillation starting from $N$ teacher steps:
 
 1. The student at round $k$ uses $N/2^k$ steps. Write the total trajectory error (distance between student-generated and teacher-generated endpoints) in terms of $\delta\_1, \ldots, \delta\_k$ and the number of steps at each round.
 

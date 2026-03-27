@@ -44,7 +44,7 @@ Plot the training loss curve (loss per epoch).
 
 ## Problem 2: Bottleneck Size Experiment
 
-**(a)** Train autoencoders with bottleneck sizes $k \in \lbrace 2, 5, 10, 20, 50, 100, 200\rbrace $. Use the same architecture and training setup as Problem 1 (but vary $k$).
+**(a)** Train autoencoders with bottleneck sizes $k \in \lbrace 2, 5, 10, 20, 50, 100, 200\rbrace$. Use the same architecture and training setup as Problem 1 (but vary $k$).
 
 **(b)** For each value of $k$, record:
 - Final test reconstruction loss (MSE)
@@ -86,7 +86,7 @@ For example: if the encoded test data spans roughly $[-3, 3]$ in both dimensions
 
 **(b)** For each pair $(\mathbf{x}\_A, \mathbf{x}\_B)$:
 1. Encode: $\mathbf{z}\_A = f(\mathbf{x}\_A)$, $\mathbf{z}\_B = f(\mathbf{x}\_B)$
-2. Interpolate: $\mathbf{z}\_\alpha = (1 - \alpha)\mathbf{z}\_A + \alpha\mathbf{z}\_B$ for $\alpha \in \lbrace 0, 0.1, 0.2, \ldots, 0.9, 1.0\rbrace $
+2. Interpolate: $\mathbf{z}\_\alpha = (1 - \alpha)\mathbf{z}\_A + \alpha\mathbf{z}\_B$ for $\alpha \in \lbrace 0, 0.1, 0.2, \ldots, 0.9, 1.0\rbrace$
 3. Decode: $\hat{\mathbf{x}}\_\alpha = g(\mathbf{z}\_\alpha)$
 
 Display each interpolation as a row of 11 images ($\alpha$ from 0 to 1).

@@ -67,14 +67,14 @@ Adam divides each parameter's gradient by $\sqrt{v\_t}$, effectively normalizing
 The KL divergence between continuous distributions $p$ and $q$ is:
 
 $$
-D_{\text{KL}}(p \Vert  q) = \int p(x) \log \frac{p(x)}{q(x)} \, dx
+D_{\text{KL}}(p \Vert q) = \int p(x) \log \frac{p(x)}{q(x)} \, dx
 $$
 
 Two properties:
 
-1. **Non-negativity:** $D\_{\text{KL}}(p \Vert  q) \geq 0$ for all $p, q$, with equality iff $p = q$ almost everywhere. This follows from Jensen's inequality applied to the concave function $\log$: $\mathbb{E}\_p[\log \frac{q}{p}] \leq \log \mathbb{E}\_p[\frac{q}{p}] = \log 1 = 0$, so $D\_{\text{KL}} = -\mathbb{E}\_p[\log \frac{q}{p}] \geq 0$.
+1. **Non-negativity:** $D\_{\text{KL}}(p \Vert q) \geq 0$ for all $p, q$, with equality iff $p = q$ almost everywhere. This follows from Jensen's inequality applied to the concave function $\log$: $\mathbb{E}\_p[\log \frac{q}{p}] \leq \log \mathbb{E}\_p[\frac{q}{p}] = \log 1 = 0$, so $D\_{\text{KL}} = -\mathbb{E}\_p[\log \frac{q}{p}] \geq 0$.
 
-2. **Asymmetry:** $D\_{\text{KL}}(p \Vert  q) \neq D\_{\text{KL}}(q \Vert  p)$ in general. This means KL divergence is not a true metric. For example, $D\_{\text{KL}}(p \Vert  q)$ is large when $p(x) > 0$ but $q(x) \approx 0$ (it penalizes $q$ for assigning low probability where $p$ is high), but $D\_{\text{KL}}(q \Vert  p)$ does not penalize this scenario.
+2. **Asymmetry:** $D\_{\text{KL}}(p \Vert q) \neq D\_{\text{KL}}(q \Vert p)$ in general. This means KL divergence is not a true metric. For example, $D\_{\text{KL}}(p \Vert q)$ is large when $p(x) > 0$ but $q(x) \approx 0$ (it penalizes $q$ for assigning low probability where $p$ is high), but $D\_{\text{KL}}(q \Vert p)$ does not penalize this scenario.
 
 **(b)** [5 marks]
 
@@ -83,7 +83,7 @@ The empirical distribution is $\hat{p}\_{\text{data}}(x) = \frac{1}{n}\sum\_{i=1
 The KL divergence from $\hat{p}\_{\text{data}}$ to $p\_\theta$ is:
 
 $$
-D_{\text{KL}}(\hat{p}_{\text{data}} \Vert  p_\theta) = \int \hat{p}_{\text{data}}(x) \log \frac{\hat{p}_{\text{data}}(x)}{p_\theta(x)} \, dx
+D_{\text{KL}}(\hat{p}_{\text{data}} \Vert p_\theta) = \int \hat{p}_{\text{data}}(x) \log \frac{\hat{p}_{\text{data}}(x)}{p_\theta(x)} \, dx
 $$
 
 $$
@@ -99,7 +99,7 @@ The first term $-H(\hat{p}\_{\text{data}})$ is the negative entropy of the empir
 Therefore:
 
 $$
-\arg\min_\theta D_{\text{KL}}(\hat{p}_{\text{data}} \Vert  p_\theta) = \arg\max_\theta \mathbb{E}_{\hat{p}_{\text{data}}}[\log p_\theta(x)]
+\arg\min_\theta D_{\text{KL}}(\hat{p}_{\text{data}} \Vert p_\theta) = \arg\max_\theta \mathbb{E}_{\hat{p}_{\text{data}}}[\log p_\theta(x)]
 $$
 
 $$
@@ -132,19 +132,19 @@ $$
 \mathcal{L} = \text{tr}(\mathbf{C}) - \text{tr}(\mathbf{P}\mathbf{C})
 $$
 
-Minimizing $\mathcal{L}$ is equivalent to maximizing $\text{tr}(\mathbf{P}\mathbf{C})$. Writing $\mathbf{P} = \sum\_{j=1}^k \mathbf{w}\_j \mathbf{w}\_j^\top$ for orthonormal $\lbrace \mathbf{w}\_j\rbrace $:
+Minimizing $\mathcal{L}$ is equivalent to maximizing $\text{tr}(\mathbf{P}\mathbf{C})$. Writing $\mathbf{P} = \sum\_{j=1}^k \mathbf{w}\_j \mathbf{w}\_j^\top$ for orthonormal $\lbrace \mathbf{w}\_j\rbrace$:
 
 $$
 \text{tr}(\mathbf{P}\mathbf{C}) = \sum_{j=1}^k \mathbf{w}_j^\top \mathbf{C} \mathbf{w}_j
 $$
 
-By the result from Q1.1(b), this is maximized when $\lbrace \mathbf{w}\_j\rbrace $ are the top $k$ eigenvectors of $\mathbf{C}$. Therefore, the columns of $\mathbf{W}\_d$ span the top-$k$ PCA subspace at the optimum. $\square$
+By the result from Q1.1(b), this is maximized when $\lbrace \mathbf{w}\_j\rbrace$ are the top $k$ eigenvectors of $\mathbf{C}$. Therefore, the columns of $\mathbf{W}\_d$ span the top-$k$ PCA subspace at the optimum. $\square$
 
 **(b)** [3 marks]
 
 The equivalence breaks for nonlinear autoencoders because they can capture **curved** (nonlinear) manifolds, not just flat (linear) subspaces. PCA projects onto a linear subspace, which fails when the data lies on a curved manifold.
 
-**Concrete example:** Consider data points uniformly distributed along a half-circle (semicircle) in 2D: $\lbrace (\cos\theta, \sin\theta) : \theta \in [0, \pi]\rbrace $. The best 1D linear projection (PCA) would project onto the $x$-axis, losing information about whether a point is on the upper or lower part of the circle near the ends. A nonlinear autoencoder with a 1D bottleneck can learn to encode $\theta$ (the angle parameter), which perfectly parameterizes the semicircle — zero reconstruction error, whereas PCA necessarily has nonzero error.
+**Concrete example:** Consider data points uniformly distributed along a half-circle (semicircle) in 2D: $\lbrace (\cos\theta, \sin\theta) : \theta \in [0, \pi]\rbrace$. The best 1D linear projection (PCA) would project onto the $x$-axis, losing information about whether a point is on the upper or lower part of the circle near the ends. A nonlinear autoencoder with a 1D bottleneck can learn to encode $\theta$ (the angle parameter), which perfectly parameterizes the semicircle — zero reconstruction error, whereas PCA necessarily has nonzero error.
 
 ---
 
@@ -185,7 +185,7 @@ $$
 $$
 
 $$
-= \mathbb{E}_{q_\phi(\mathbf{z}|\mathbf{x})}[\log p_\theta(\mathbf{x}|\mathbf{z})] - D_{\text{KL}}(q_\phi(\mathbf{z}|\mathbf{x}) \Vert  p(\mathbf{z}))
+= \mathbb{E}_{q_\phi(\mathbf{z}|\mathbf{x})}[\log p_\theta(\mathbf{x}|\mathbf{z})] - D_{\text{KL}}(q_\phi(\mathbf{z}|\mathbf{x}) \Vert p(\mathbf{z}))
 $$
 
 This is the ELBO. $\square$

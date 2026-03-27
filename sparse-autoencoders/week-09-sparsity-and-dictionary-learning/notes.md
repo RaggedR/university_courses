@@ -73,7 +73,7 @@ Sparsity is a powerful inductive bias for learning.
 
 In Week 1, we studied the geometry of L1 and L2 norms. Let us now connect this geometry to sparsity.
 
-The **L2 ball** $\lbrace x : \Vert x\Vert \_2 \leq r\rbrace $ is a sphere (circle in 2D). The **L1 ball** $\lbrace x : \Vert x\Vert \_1 \leq r\rbrace $ is a diamond (a rotated square in 2D, a cross-polytope in higher dimensions).
+The **L2 ball** $\lbrace x : \Vert x\Vert \_2 \leq r\rbrace$ is a sphere (circle in 2D). The **L1 ball** $\lbrace x : \Vert x\Vert \_1 \leq r\rbrace$ is a diamond (a rotated square in 2D, a cross-polytope in higher dimensions).
 
 The crucial difference: the L1 ball has **corners on the coordinate axes**. The L2 ball is smooth everywhere.
 
@@ -167,13 +167,13 @@ Compare to **hard thresholding**: $H\_\lambda(v)\_j = v\_j \cdot \mathbf{1}[|v\_
 The proximal operator of $h(x) = \lambda \Vert x\Vert \_1$ is defined as:
 
 $$
-\text{prox}_h(v) = \arg\min_x \left\lbrace  \frac{1}{2}\Vert x - v\Vert ^2 + \lambda \Vert x\Vert _1 \right\rbrace 
+\text{prox}_h(v) = \arg\min_x \left\lbrace \frac{1}{2}\Vert x - v\Vert ^2 + \lambda \Vert x\Vert _1 \right\rbrace 
 $$
 
 Since $\Vert x\Vert \_1 = \sum\_j |x\_j|$, this separates across dimensions:
 
 $$
-[\text{prox}_h(v)]_j = \arg\min_{x_j} \left\lbrace  \frac{1}{2}(x_j - v_j)^2 + \lambda |x_j| \right\rbrace 
+[\text{prox}_h(v)]_j = \arg\min_{x_j} \left\lbrace \frac{1}{2}(x_j - v_j)^2 + \lambda |x_j| \right\rbrace 
 $$
 
 For a single dimension, define $g(x) = \frac{1}{2}(x - v)^2 + \lambda |x|$.
@@ -364,7 +364,7 @@ The only difference from ISTA is the extrapolation step that computes $y^{(t+1)}
 
 ### 6.1 Learning the Dictionary
 
-So far we assumed the dictionary $D$ is given. In practice, we learn it from data. This is **dictionary learning**: given a collection of signals $\lbrace x\_1, \ldots, x\_N\rbrace $, find the dictionary $D$ and sparse codes $\lbrace z\_1, \ldots, z\_N\rbrace $ that best represent them:
+So far we assumed the dictionary $D$ is given. In practice, we learn it from data. This is **dictionary learning**: given a collection of signals $\lbrace x\_1, \ldots, x\_N\rbrace$, find the dictionary $D$ and sparse codes $\lbrace z\_1, \ldots, z\_N\rbrace$ that best represent them:
 
 $$
 \min_{D, \lbrace z_n\rbrace } \sum_{n=1}^{N} \left[\frac{1}{2}\Vert x_n - Dz_n\Vert _2^2 + \lambda \Vert z_n\Vert _1 \right] \quad \text{s.t.} \quad \Vert d_j\Vert _2 \leq 1 \; \forall j
@@ -519,7 +519,7 @@ Andrew Ng's influential course notes popularized a different sparsity penalty fo
 Let $\hat{\rho}\_j = \frac{1}{N}\sum\_{n=1}^{N} f\_j(x\_n)$ be the average activation of unit $j$ over the dataset, and let $\rho$ be the target (e.g., $\rho = 0.05$, meaning we want each unit active about 5% of the time). The penalty is:
 
 $$
-\Omega = \sum_j D_{\text{KL}}(\rho \Vert  \hat{\rho}_j) = \sum_j \left[\rho \log \frac{\rho}{\hat{\rho}_j} + (1-\rho) \log \frac{1-\rho}{1-\hat{\rho}_j}\right]
+\Omega = \sum_j D_{\text{KL}}(\rho \Vert \hat{\rho}_j) = \sum_j \left[\rho \log \frac{\rho}{\hat{\rho}_j} + (1-\rho) \log \frac{1-\rho}{1-\hat{\rho}_j}\right]
 $$
 
 This is minimized when $\hat{\rho}\_j = \rho$ for all $j$, which means each unit is active for exactly a $\rho$ fraction of inputs.
@@ -571,7 +571,7 @@ The intellectual thread from Olshausen and Field (1996) to Anthropic's mechanist
 | Concept | Equation |
 |---------|----------|
 | LASSO | $\min\_\beta \frac{1}{2}\Vert y - X\beta\Vert ^2 + \lambda\Vert \beta\Vert \_1$ |
-| Soft-thresholding | $S\_\lambda(v) = \text{sign}(v)\max(\Vert v\Vert  - \lambda, 0)$ |
+| Soft-thresholding | $S\_\lambda(v) = \text{sign}(v)\max(\Vert v\Vert - \lambda, 0)$ |
 | Sparse coding | $\min\_{D,z} \frac{1}{2}\Vert x - Dz\Vert ^2 + \lambda\Vert z\Vert \_1$ |
 | ISTA update | $z^{(t+1)} = S\_{\alpha\lambda}(z^{(t)} + \alpha D^\top(x - Dz^{(t)}))$ |
 | SAE objective | $\min\_{\phi,\theta} \mathbb{E}\_x[\Vert x - g\_\theta(f\_\phi(x))\Vert ^2 + \lambda\Vert f\_\phi(x)\Vert \_1]$ |

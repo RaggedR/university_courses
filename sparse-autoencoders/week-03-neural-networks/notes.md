@@ -29,7 +29,7 @@ The perceptron classifies by testing which side of a hyperplane the input falls 
 
 - $\mathbf{w}$ is the **normal vector** to the hyperplane (it points toward the positive side)
 - $b$ controls the **offset** from the origin
-- The distance from the origin to the hyperplane is $|b|/\Vert \mathbf{w}\Vert $
+- The distance from the origin to the hyperplane is $|b|/\Vert \mathbf{w}\Vert$
 
 **Concrete example in $\mathbb{R}^2$.** Let $\mathbf{w} = (2, 1)^T$ and $b = -3$. The decision boundary is $2x\_1 + x\_2 = 3$, a line in the plane. Points above the line (where $2x\_1 + x\_2 > 3$) are classified as positive; points below as negative.
 
@@ -37,7 +37,7 @@ The weight vector $(2, 1)$ tells us that $x\_1$ matters twice as much as $x\_2$ 
 
 ### 1.3 The Perceptron Learning Algorithm
 
-Given labeled training data $\lbrace (\mathbf{x}\_i, y\_i)\rbrace $ with $y\_i \in \lbrace -1, +1\rbrace $, the perceptron learning algorithm updates the weights whenever it makes a mistake:
+Given labeled training data $\lbrace (\mathbf{x}\_i, y\_i)\rbrace$ with $y\_i \in \lbrace -1, +1\rbrace$, the perceptron learning algorithm updates the weights whenever it makes a mistake:
 
 ```
 Initialize w = 0, b = 0
@@ -108,7 +108,7 @@ $$
 \mathbf{h}_l = \sigma_l(W_l \mathbf{h}_{l-1} + \mathbf{b}_l)
 $$
 
-where $\mathbf{h}\_0 = \mathbf{x}$ is the input. The **parameters** of the network are all the weights $\lbrace W\_l\rbrace $ and biases $\lbrace \mathbf{b}\_l\rbrace $.
+where $\mathbf{h}\_0 = \mathbf{x}$ is the input. The **parameters** of the network are all the weights $\lbrace W\_l\rbrace$ and biases $\lbrace \mathbf{b}\_l\rbrace$.
 
 **Terminology:**
 - **Input layer:** the raw input $\mathbf{x}$
@@ -416,7 +416,7 @@ $$
 \mathcal{L}_{\text{BCE}} = -\frac{1}{N}\sum_{i=1}^N \left[y_i \log \hat{p}_i + (1 - y_i)\log(1 - \hat{p}_i)\right]
 $$
 
-where $y\_i \in \lbrace 0, 1\rbrace $ and $\hat{p}\_i = \sigma(f\_\theta(\mathbf{x}\_i))$ is the predicted probability.
+where $y\_i \in \lbrace 0, 1\rbrace$ and $\hat{p}\_i = \sigma(f\_\theta(\mathbf{x}\_i))$ is the predicted probability.
 
 **Categorical cross-entropy ($K$ classes):**
 $$

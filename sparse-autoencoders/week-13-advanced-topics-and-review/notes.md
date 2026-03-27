@@ -25,14 +25,14 @@ $$
 The training objective is:
 
 $$
-\mathcal{L} = \Vert  \mathbf{x} - \hat{\mathbf{x}} \Vert _2^2 + \lambda \Vert  \mathbf{z} \Vert _1
+\mathcal{L} = \Vert \mathbf{x} - \hat{\mathbf{x}} \Vert _2^2 + \lambda \Vert \mathbf{z} \Vert _1
 $$
 
 This formulation has served us well, but it harbors three interrelated problems.
 
 ### 1.1 Shrinkage Bias
 
-The L1 penalty $\lambda \Vert  \mathbf{z} \Vert \_1$ penalizes the *magnitude* of every active feature. This means gradient descent pushes active feature activations toward zero, not just inactive ones. If a feature genuinely has a large activation (it should be "strongly on"), the L1 penalty fights against this, biasing the magnitude downward.
+The L1 penalty $\lambda \Vert \mathbf{z} \Vert \_1$ penalizes the *magnitude* of every active feature. This means gradient descent pushes active feature activations toward zero, not just inactive ones. If a feature genuinely has a large activation (it should be "strongly on"), the L1 penalty fights against this, biasing the magnitude downward.
 
 Formally, consider the gradient contribution from the sparsity term for a single feature $z\_i > 0$:
 
@@ -93,7 +93,7 @@ The decoder is unchanged: $\hat{\mathbf{x}} = \mathbf{W}\_d \mathbf{z} + \mathbf
 The loss function is simply reconstruction:
 
 $$
-\mathcal{L} = \Vert  \mathbf{x} - \hat{\mathbf{x}} \Vert _2^2
+\mathcal{L} = \Vert \mathbf{x} - \hat{\mathbf{x}} \Vert _2^2
 $$
 
 No sparsity penalty is needed — sparsity is baked into the architecture.
@@ -133,7 +133,7 @@ Gao et al. find that $K$ should scale with the dictionary size $m$. A useful rul
 TopK SAEs can still suffer from dead features. Gao et al. propose an auxiliary loss that encourages all features to be used. Let $\mathbf{h}^{(\text{dead})}$ denote the pre-activations of features that have not been in the top-K for many batches. The auxiliary loss reconstructs a residual using only dead features:
 
 $$
-\mathcal{L}_{\text{aux}} = \Vert  (\mathbf{x} - \hat{\mathbf{x}}) - \mathbf{W}_d^{(\text{dead})} \text{TopK}_{\text{aux}}(\mathbf{h}^{(\text{dead})}) \Vert _2^2
+\mathcal{L}_{\text{aux}} = \Vert (\mathbf{x} - \hat{\mathbf{x}}) - \mathbf{W}_d^{(\text{dead})} \text{TopK}_{\text{aux}}(\mathbf{h}^{(\text{dead})}) \Vert _2^2
 $$
 
 This gives dead features a gradient signal without interfering with the main reconstruction.
@@ -186,7 +186,7 @@ The decoder is standard: $\hat{\mathbf{x}} = \mathbf{W}\_d \mathbf{z} + \mathbf{
 The loss has two components:
 
 $$
-\mathcal{L} = \Vert  \mathbf{x} - \hat{\mathbf{x}} \Vert _2^2 + \lambda \Vert  \boldsymbol{\pi}_{\text{gate}} \Vert _1
+\mathcal{L} = \Vert \mathbf{x} - \hat{\mathbf{x}} \Vert _2^2 + \lambda \Vert \boldsymbol{\pi}_{\text{gate}} \Vert _1
 $$
 
 Note that the L1 penalty is applied to the *gate pre-activations*, not the feature magnitudes. This is the key insight: sparsity pressure affects the gate (which features fire), while the magnitude path is free from shrinkage.
@@ -276,7 +276,7 @@ where $\sigma'$ is the derivative of the sigmoid function and $\epsilon$ control
 In practice, the threshold gradient is derived from an **L0-targeting loss**:
 
 $$
-\mathcal{L}_{\text{sparsity}} = \left( \frac{1}{B} \sum_{b=1}^{B} \Vert  \mathbf{z}^{(b)} \Vert _0 - K_{\text{target}} \right)^2
+\mathcal{L}_{\text{sparsity}} = \left( \frac{1}{B} \sum_{b=1}^{B} \Vert \mathbf{z}^{(b)} \Vert _0 - K_{\text{target}} \right)^2
 $$
 
 where $B$ is the batch size and $K\_{\text{target}}$ is the desired average number of active features. The gradient of this loss w.r.t. $\theta\_i$ is computed using the smoothed step function.
@@ -342,13 +342,13 @@ Evaluation is one of the hardest problems in SAE research. How do we know an SAE
 The most basic metric: how well does the SAE reconstruct activations?
 
 $$
-\text{MSE} = \mathbb{E}\left[ \Vert  \mathbf{x} - \hat{\mathbf{x}} \Vert _2^2 \right]
+\text{MSE} = \mathbb{E}\left[ \Vert \mathbf{x} - \hat{\mathbf{x}} \Vert _2^2 \right]
 $$
 
 Often normalized as the **fraction of variance explained**:
 
 $$
-R^2 = 1 - \frac{\mathbb{E}[\Vert  \mathbf{x} - \hat{\mathbf{x}} \Vert _2^2]}{\text{Var}(\mathbf{x})}
+R^2 = 1 - \frac{\mathbb{E}[\Vert \mathbf{x} - \hat{\mathbf{x}} \Vert _2^2]}{\text{Var}(\mathbf{x})}
 $$
 
 But reconstruction alone is insufficient — a dense, non-sparse autoencoder would score perfectly.

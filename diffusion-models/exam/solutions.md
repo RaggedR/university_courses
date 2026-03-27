@@ -60,7 +60,7 @@ $$
 
 The mean $\sqrt{\bar{\alpha}\_T}\,\mathbf{x}\_0 \to \mathbf{0}$ and the variance $(1 - \bar{\alpha}\_T) \to 1$. The endpoint distribution becomes a standard isotropic Gaussian, independent of $\mathbf{x}\_0$.
 
-**Why this is essential:** The generative model starts from $p(\mathbf{x}\_T) = \mathcal{N}(\mathbf{0}, \mathbf{I})$ and runs the reverse process. For this to produce valid samples, the forward process must actually reach this prior -- otherwise we are sampling from the wrong starting distribution. If $\bar{\alpha}\_T$ remained bounded away from zero, the endpoint $q(\mathbf{x}\_T | \mathbf{x}\_0)$ would retain information about $\mathbf{x}\_0$ (a nonzero mean depending on $\mathbf{x}\_0$). The prior $p(\mathbf{x}\_T) = \mathcal{N}(\mathbf{0}, \mathbf{I})$ would then be a poor approximation to the true marginal $q(\mathbf{x}\_T)$, and the $L\_T$ term in the variational bound ($D\_{\text{KL}}(q(\mathbf{x}\_T|\mathbf{x}\_0) \Vert  p(\mathbf{x}\_T))$) would be large, causing a mismatch between the forward and reverse processes and degraded sample quality.
+**Why this is essential:** The generative model starts from $p(\mathbf{x}\_T) = \mathcal{N}(\mathbf{0}, \mathbf{I})$ and runs the reverse process. For this to produce valid samples, the forward process must actually reach this prior -- otherwise we are sampling from the wrong starting distribution. If $\bar{\alpha}\_T$ remained bounded away from zero, the endpoint $q(\mathbf{x}\_T | \mathbf{x}\_0)$ would retain information about $\mathbf{x}\_0$ (a nonzero mean depending on $\mathbf{x}\_0$). The prior $p(\mathbf{x}\_T) = \mathcal{N}(\mathbf{0}, \mathbf{I})$ would then be a poor approximation to the true marginal $q(\mathbf{x}\_T)$, and the $L\_T$ term in the variational bound ($D\_{\text{KL}}(q(\mathbf{x}\_T|\mathbf{x}\_0) \Vert p(\mathbf{x}\_T))$) would be large, causing a mismatch between the forward and reverse processes and degraded sample quality.
 
 ---
 
@@ -264,7 +264,7 @@ This is a weighted combination of $\mathbf{x}\_0$ and $\mathbf{x}\_t$, with weig
 Both $q(\mathbf{x}\_{t-1} | \mathbf{x}\_t, \mathbf{x}\_0)$ and $p\_\theta(\mathbf{x}\_{t-1} | \mathbf{x}\_t)$ are Gaussians with the same variance $\sigma\_t^2 = \tilde{\beta}\_t$. The KL divergence between two Gaussians with equal covariance simplifies to:
 
 $$
-D_{\text{KL}}(q \Vert  p_\theta) = \frac{1}{2\sigma_t^2} \left\Vert \tilde{\boldsymbol{\mu}}_t(\mathbf{x}_t, \mathbf{x}_0) - \boldsymbol{\mu}_\theta(\mathbf{x}_t, t)\right\Vert ^2
+D_{\text{KL}}(q \Vert p_\theta) = \frac{1}{2\sigma_t^2} \left\Vert \tilde{\boldsymbol{\mu}}_t(\mathbf{x}_t, \mathbf{x}_0) - \boldsymbol{\mu}_\theta(\mathbf{x}_t, t)\right\Vert ^2
 $$
 
 Now substitute $\mathbf{x}\_0 = \frac{1}{\sqrt{\bar{\alpha}\_t}}(\mathbf{x}\_t - \sqrt{1 - \bar{\alpha}\_t}\,\boldsymbol{\epsilon})$ into $\tilde{\boldsymbol{\mu}}\_t$:

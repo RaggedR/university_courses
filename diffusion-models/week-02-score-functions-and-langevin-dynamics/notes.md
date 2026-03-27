@@ -53,7 +53,7 @@ $$
 \nabla_x \log p(x) = -\frac{x - \mu}{\sigma^2}
 $$
 
-The score points from $x$ directly toward the mean $\mu$, with magnitude $\Vert x - \mu\Vert  / \sigma^2$. The farther you are from the mean, the stronger the pull. The smaller the variance, the stronger the pull. This makes intuitive sense: a tight distribution exerts stronger "gravity" than a diffuse one.
+The score points from $x$ directly toward the mean $\mu$, with magnitude $\Vert x - \mu\Vert / \sigma^2$. The farther you are from the mean, the stronger the pull. The smaller the variance, the stronger the pull. This makes intuitive sense: a tight distribution exerts stronger "gravity" than a diffuse one.
 
 ### 1.3 Why Scores Instead of Densities?
 
@@ -126,7 +126,7 @@ The conditional score is the unconditional score plus a "guidance" term. This is
 
 ### 2.1 The Problem
 
-Suppose we want to learn the score function of an unknown data distribution $p\_{\text{data}}(x)$. We have samples $\lbrace x\_1, \ldots, x\_N\rbrace  \sim p\_{\text{data}}$ but no access to $p\_{\text{data}}$ itself.
+Suppose we want to learn the score function of an unknown data distribution $p\_{\text{data}}(x)$. We have samples $\lbrace x\_1, \ldots, x\_N\rbrace \sim p\_{\text{data}}$ but no access to $p\_{\text{data}}$ itself.
 
 We parameterize a score model $s\_\theta(x) \approx \nabla\_x \log p\_{\text{data}}(x)$ and want to minimize:
 
@@ -172,7 +172,7 @@ $$
 = \int \sum_i s_{\theta,i}(x) \frac{\partial p_{\text{data}}(x)}{\partial x_i} dx
 $$
 
-Now apply integration by parts to each term (assuming boundary terms vanish, i.e., $p\_{\text{data}}(x) s\_\theta(x) \to 0$ as $\Vert x\Vert  \to \infty$):
+Now apply integration by parts to each term (assuming boundary terms vanish, i.e., $p\_{\text{data}}(x) s\_\theta(x) \to 0$ as $\Vert x\Vert \to \infty$):
 
 $$
 \int s_{\theta,i}(x) \frac{\partial p_{\text{data}}(x)}{\partial x_i} dx = -\int p_{\text{data}}(x) \frac{\partial s_{\theta,i}(x)}{\partial x_i} dx

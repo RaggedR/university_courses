@@ -462,7 +462,7 @@ The bottleneck size $k$ is the most important hyperparameter. Here is a systemat
 
 1. **Start with PCA:** Compute PCA on your data and look at the explained variance curve. If 95% of variance is captured by 50 components, $k = 50$ is a reasonable starting point for the autoencoder.
 
-2. **Reconstruction quality sweep:** Train autoencoders with $k \in \lbrace 2, 5, 10, 20, 50, 100\rbrace $ and plot reconstruction loss vs. $k$. There is usually a "knee" — below it, reconstruction degrades rapidly; above it, adding dimensions yields diminishing returns.
+2. **Reconstruction quality sweep:** Train autoencoders with $k \in \lbrace 2, 5, 10, 20, 50, 100\rbrace$ and plot reconstruction loss vs. $k$. There is usually a "knee" — below it, reconstruction degrades rapidly; above it, adding dimensions yields diminishing returns.
 
 3. **Task-dependent:** If the autoencoder feeds into a downstream task (classification, generation), choose $k$ by cross-validation on the downstream metric.
 

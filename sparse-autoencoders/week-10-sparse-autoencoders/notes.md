@@ -189,7 +189,7 @@ where the sum is over $m$ training examples (or a minibatch). This measures how 
 **Penalize deviations** using KL divergence between Bernoulli distributions:
 
 $$
-\Omega_{\text{KL}} = \sum_{j=1}^{d} \text{KL}(\text{Bernoulli}(\rho) \Vert  \text{Bernoulli}(\hat{\rho}_j))
+\Omega_{\text{KL}} = \sum_{j=1}^{d} \text{KL}(\text{Bernoulli}(\rho) \Vert \text{Bernoulli}(\hat{\rho}_j))
 $$
 
 ### 4.2 Deriving the KL Term
@@ -197,7 +197,7 @@ $$
 The KL divergence between two Bernoulli distributions with parameters $\rho$ and $\hat{\rho}$ is:
 
 $$
-\text{KL}(\rho \Vert  \hat{\rho}) = \rho \log \frac{\rho}{\hat{\rho}} + (1 - \rho) \log \frac{1 - \rho}{1 - \hat{\rho}}
+\text{KL}(\rho \Vert \hat{\rho}) = \rho \log \frac{\rho}{\hat{\rho}} + (1 - \rho) \log \frac{1 - \rho}{1 - \hat{\rho}}
 $$
 
 Let us verify the key properties:
@@ -207,13 +207,13 @@ Let us verify the key properties:
    \frac{\partial \text{KL}}{\partial \hat{\rho}} = -\frac{\rho}{\hat{\rho}} + \frac{1-\rho}{1-\hat{\rho}} = 0 \implies \hat{\rho} = \rho
    $$
 
-2. **Always non-negative:** By Gibbs' inequality, $\text{KL}(\rho \Vert  \hat{\rho}) \geq 0$ with equality iff $\hat{\rho} = \rho$.
+2. **Always non-negative:** By Gibbs' inequality, $\text{KL}(\rho \Vert \hat{\rho}) \geq 0$ with equality iff $\hat{\rho} = \rho$.
 
 3. **Blows up at boundaries:** As $\hat{\rho} \to 0$ or $\hat{\rho} \to 1$ (when $\rho$ is neither 0 nor 1), the KL divergence goes to infinity. This prevents neurons from being permanently dead or permanently active.
 
 **Numerical example** with $\rho = 0.05$:
 
-| $\hat{\rho}\_j$ | $\text{KL}(\rho \Vert  \hat{\rho}\_j)$ | Interpretation |
+| $\hat{\rho}\_j$ | $\text{KL}(\rho \Vert \hat{\rho}\_j)$ | Interpretation |
 |---|---|---|
 | 0.01 | 0.0770 | Too inactive |
 | 0.05 | 0.0000 | Just right |
@@ -225,7 +225,7 @@ Let us verify the key properties:
 The full loss becomes:
 
 $$
-\mathcal{L}_{\text{KL}} = \Vert \mathbf{x} - \hat{\mathbf{x}}\Vert _2^2 + \beta \sum_{j=1}^{d} \text{KL}(\rho \Vert  \hat{\rho}_j)
+\mathcal{L}_{\text{KL}} = \Vert \mathbf{x} - \hat{\mathbf{x}}\Vert _2^2 + \beta \sum_{j=1}^{d} \text{KL}(\rho \Vert \hat{\rho}_j)
 $$
 
 where $\beta > 0$ is the sparsity weight (analogous to $\lambda$ in the L1 case).
@@ -235,13 +235,13 @@ where $\beta > 0$ is the sparsity weight (analogous to $\lambda$ in the L1 case)
 The gradient with respect to $\hat{\rho}\_j$ is:
 
 $$
-\frac{\partial \text{KL}(\rho \Vert  \hat{\rho}_j)}{\partial \hat{\rho}_j} = -\frac{\rho}{\hat{\rho}_j} + \frac{1 - \rho}{1 - \hat{\rho}_j}
+\frac{\partial \text{KL}(\rho \Vert \hat{\rho}_j)}{\partial \hat{\rho}_j} = -\frac{\rho}{\hat{\rho}_j} + \frac{1 - \rho}{1 - \hat{\rho}_j}
 $$
 
 And since $\hat{\rho}\_j = \frac{1}{m} \sum\_i z\_j(\mathbf{x}\_i)$, the gradient with respect to $z\_j(\mathbf{x}\_i)$ is:
 
 $$
-\frac{\partial \text{KL}(\rho \Vert  \hat{\rho}_j)}{\partial z_j(\mathbf{x}_i)} = \frac{1}{m}\left(-\frac{\rho}{\hat{\rho}_j} + \frac{1 - \rho}{1 - \hat{\rho}_j}\right)
+\frac{\partial \text{KL}(\rho \Vert \hat{\rho}_j)}{\partial z_j(\mathbf{x}_i)} = \frac{1}{m}\left(-\frac{\rho}{\hat{\rho}_j} + \frac{1 - \rho}{1 - \hat{\rho}_j}\right)
 $$
 
 This gradient is negative when $\hat{\rho}\_j < \rho$ (pushing the neuron to be more active) and positive when $\hat{\rho}\_j > \rho$ (pushing it to be less active). The penalty acts like a thermostat, maintaining each neuron's average activation near the target.
@@ -313,7 +313,7 @@ The key hyperparameters for an SAE are:
 **Hidden dimension $d$:** Usually expressed as an "expansion factor" $r = d/n$. Common choices: $r = 4, 8, 16, 32$. Larger $r$ allows more features to be discovered but increases training cost and the risk of feature splitting. A useful principle: start with $r = 4$ and increase if your features look coarse-grained.
 
 **Sparsity coefficient $\lambda$:** Controls the sparsity-reconstruction trade-off. This is the most important hyperparameter to tune. A practical approach:
-1. Train several SAEs with different $\lambda$ values (e.g., $\lambda \in \lbrace 0.0001, 0.001, 0.01, 0.1\rbrace $).
+1. Train several SAEs with different $\lambda$ values (e.g., $\lambda \in \lbrace 0.0001, 0.001, 0.01, 0.1\rbrace$).
 2. For each, measure the average L0 (number of non-zero activations per input).
 3. Plot reconstruction error vs. L0.
 4. Choose the $\lambda$ that gives the desired L0 (often 10-50 active features per input for interpretability).
@@ -588,8 +588,8 @@ This week, make sure you deeply understand the mechanics -- architecture, loss f
 | Concept | Key Idea |
 |---------|----------|
 | SAE architecture | Overcomplete hidden layer ($d > n$) + sparsity constraint on activations |
-| L1 penalty | $\lambda \sum\_j \Vert z\_j\Vert $ -- direct, per-example, drives values to zero |
-| KL penalty | $\beta \sum\_j \text{KL}(\rho \Vert  \hat{\rho}\_j)$ -- targets average activation per neuron |
+| L1 penalty | $\lambda \sum\_j \Vert z\_j\Vert$ -- direct, per-example, drives values to zero |
+| KL penalty | $\beta \sum\_j \text{KL}(\rho \Vert \hat{\rho}\_j)$ -- targets average activation per neuron |
 | Dead neurons | Neurons stuck at zero activation; fix with resampling, LeakyReLU, or auxiliary loss |
 | Feature splitting | One concept split across multiple neurons; fix with stronger sparsity or clustering |
 | Decoder norm constraint | Prevents trivial "cheat" of shrinking decoder and inflating encoder |

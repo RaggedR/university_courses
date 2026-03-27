@@ -30,7 +30,7 @@ Now let $x \sim \frac{1}{2}\mathcal{N}(-3, 1) + \frac{1}{2}\mathcal{N}(3, 1)$ (a
 
 2. Compute $\mathbb{E}[x|\tilde{x}]$ using the posterior. *Hint: the posterior is also a mixture of Gaussians, with weights that depend on $\tilde{x}$.*
 
-3. Verify Tweedie's formula numerically: for $\sigma \in \lbrace 0.1, 0.5, 1.0, 2.0, 5.0\rbrace $ and $\tilde{x} \in \lbrace -5, -3, -1, 0, 1, 3, 5\rbrace $, compute both sides and check they agree.
+3. Verify Tweedie's formula numerically: for $\sigma \in \lbrace 0.1, 0.5, 1.0, 2.0, 5.0\rbrace$ and $\tilde{x} \in \lbrace -5, -3, -1, 0, 1, 3, 5\rbrace$, compute both sides and check they agree.
 
 4. Plot the score function $\nabla\_{\tilde{x}} \log p\_\sigma(\tilde{x})$ as a function of $\tilde{x}$ for each $\sigma$. How does the score change as noise increases? At what noise level does the bimodal structure disappear from the score?
 
@@ -103,7 +103,7 @@ Create a 2D dataset (the same mixture of 8 Gaussians from Week 3, Problem 6, or 
 
 Write a function that:
 1. Samples a batch of data points $x\_0$
-2. Samples a noise level $\sigma$ from a predefined set $\lbrace \sigma\_1, \ldots, \sigma\_L\rbrace $ (use $L = 10$ levels geometrically spaced from $\sigma\_1 = 0.01$ to $\sigma\_L = 5.0$)
+2. Samples a noise level $\sigma$ from a predefined set $\lbrace \sigma\_1, \ldots, \sigma\_L\rbrace$ (use $L = 10$ levels geometrically spaced from $\sigma\_1 = 0.01$ to $\sigma\_L = 5.0$)
 3. Adds noise: $\tilde{x} = x\_0 + \sigma\epsilon$
 4. Returns $\tilde{x}$, $\sigma$, and the target $-\epsilon/\sigma$
 
@@ -205,7 +205,7 @@ Quantify the sample quality:
 
 Take $p(x) = \frac{1}{2}\mathcal{N}(-2, 0.5^2) + \frac{1}{2}\mathcal{N}(2, 0.5^2)$.
 
-For $\sigma \in \lbrace 0.1, 0.5, 1.0, 2.0\rbrace $:
+For $\sigma \in \lbrace 0.1, 0.5, 1.0, 2.0\rbrace$:
 1. Sample 10000 points from $p(x)$, add noise to get $\tilde{x}$
 2. Compute the analytical optimal denoiser $D^*(\tilde{x}) = \mathbb{E}[x|\tilde{x}]$ (using the mixture of Gaussians posterior)
 3. Compute the analytical score $\nabla\_{\tilde{x}} \log p\_\sigma(\tilde{x})$
@@ -276,13 +276,13 @@ Record the loss at each step. Plot the loss curve and confirm convergence.
 
 Generate 10000 samples using the reverse SDE with 1000 discretization steps. Plot:
 1. The generated samples overlaid on the true Swiss roll data
-2. Intermediate samples at $t \in \lbrace 1.0, 0.8, 0.5, 0.2, 0.05, 0.0\rbrace $ (six subplots showing the progressive refinement from noise to data)
+2. Intermediate samples at $t \in \lbrace 1.0, 0.8, 0.5, 0.2, 0.05, 0.0\rbrace$ (six subplots showing the progressive refinement from noise to data)
 
 ### Part (e): Analysis
 
-1. **Score field evolution:** Plot the learned score field at $t \in \lbrace 0.01, 0.1, 0.5, 0.9\rbrace $. At high noise, the score should point toward the center of the spiral. At low noise, the score should point along the spiral toward the nearest data points.
+1. **Score field evolution:** Plot the learned score field at $t \in \lbrace 0.01, 0.1, 0.5, 0.9\rbrace$. At high noise, the score should point toward the center of the spiral. At low noise, the score should point along the spiral toward the nearest data points.
 
-2. **Effect of steps:** Generate samples using $\lbrace 10, 50, 100, 500, 1000, 5000\rbrace $ reverse SDE steps. How many steps are needed for reasonable quality? Plot the sample quality vs. number of steps.
+2. **Effect of steps:** Generate samples using $\lbrace 10, 50, 100, 500, 1000, 5000\rbrace$ reverse SDE steps. How many steps are needed for reasonable quality? Plot the sample quality vs. number of steps.
 
 3. **Probability flow ODE:** Implement the probability flow ODE from Week 3 notes:
    $$

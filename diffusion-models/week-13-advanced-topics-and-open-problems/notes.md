@@ -99,7 +99,7 @@ The answer is yes, but it requires rethinking the noise process. You cannot add 
 
 Austin et al. (2021) introduced **D3PM** (Discrete Denoising Diffusion Probabilistic Models), which defines a forward process over discrete state spaces using transition matrices.
 
-For a token $x\_t \in \lbrace 1, 2, \ldots, K\rbrace $, the forward process is defined by a sequence of transition matrices $Q\_t \in \mathbb{R}^{K \times K}$:
+For a token $x\_t \in \lbrace 1, 2, \ldots, K\rbrace$, the forward process is defined by a sequence of transition matrices $Q\_t \in \mathbb{R}^{K \times K}$:
 
 $$
 q(x_t | x_{t-1}) = \text{Cat}(x_t; Q_t^\top e_{x_{t-1}})
@@ -175,7 +175,7 @@ Audio is a natural fit for diffusion models -- it is continuous, high-dimensiona
 The **Schrödinger bridge problem** (1932) asks: given two distributions $p\_0$ and $p\_1$ and a reference stochastic process $Q$ (typically Brownian motion), find the stochastic process $P^*$ that is closest to $Q$ (in KL divergence) while having marginals $p\_0$ at time 0 and $p\_1$ at time 1:
 
 $$
-P^* = \arg\min_{P : P_0 = p_0, P_1 = p_1} D_{\text{KL}}(P \Vert  Q)
+P^* = \arg\min_{P : P_0 = p_0, P_1 = p_1} D_{\text{KL}}(P \Vert Q)
 $$
 
 This is a generalization of optimal transport to stochastic processes. When the reference process $Q$ has zero diffusion (pure ODE), the Schrödinger bridge reduces to the Monge optimal transport problem.

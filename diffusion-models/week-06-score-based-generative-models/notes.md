@@ -156,7 +156,7 @@ $$
 \mathcal{L}_{\text{NCSN}} = \sum_{i=1}^{L} \lambda(\sigma_i)\, \mathcal{L}_{\text{DSM}}(\sigma_i)
 $$
 
-Song and Ermon (2019) use $\lambda(\sigma) = \sigma^2$, which ensures that the loss magnitude is comparable across noise levels (since $\Vert \nabla\_x \log p\_\sigma(x)\Vert  \sim 1/\sigma$, multiplying by $\sigma^2$ normalizes the expected loss).
+Song and Ermon (2019) use $\lambda(\sigma) = \sigma^2$, which ensures that the loss magnitude is comparable across noise levels (since $\Vert \nabla\_x \log p\_\sigma(x)\Vert \sim 1/\sigma$, multiplying by $\sigma^2$ normalizes the expected loss).
 
 With $\lambda(\sigma) = \sigma^2$, the loss for a single noise level becomes:
 
@@ -367,7 +367,7 @@ Despite their mathematical equivalence, DDPM and NCSN have some practical differ
 
 ### 7.1 Discrete vs. Continuous Noise Levels
 
-DDPM uses a fixed number of discrete timesteps $t \in \lbrace 1, \ldots, T\rbrace $. NCSN uses discrete noise levels $\sigma\_1, \ldots, \sigma\_L$ but the framework naturally invites the continuous limit $\sigma \in [\sigma\_{\min}, \sigma\_{\max}]$.
+DDPM uses a fixed number of discrete timesteps $t \in \lbrace 1, \ldots, T\rbrace$. NCSN uses discrete noise levels $\sigma\_1, \ldots, \sigma\_L$ but the framework naturally invites the continuous limit $\sigma \in [\sigma\_{\min}, \sigma\_{\max}]$.
 
 The continuous perspective, which we will develop in Week 7, leads to the SDE framework.
 

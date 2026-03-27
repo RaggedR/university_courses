@@ -39,7 +39,7 @@ A **subspace** of $V$ is a subset that is itself a vector space (closed under ad
 Given vectors $\mathbf{v}\_1, \ldots, \mathbf{v}\_k$, their **span** is the set of all linear combinations:
 
 $$
-\text{span}(\mathbf{v}_1, \ldots, \mathbf{v}_k) = \left\lbrace  \sum_{i=1}^k \alpha_i \mathbf{v}_i \;\middle|\; \alpha_i \in \mathbb{R} \right\rbrace 
+\text{span}(\mathbf{v}_1, \ldots, \mathbf{v}_k) = \left\lbrace \sum_{i=1}^k \alpha_i \mathbf{v}_i \;\middle|\; \alpha_i \in \mathbb{R} \right\rbrace 
 $$
 
 Vectors $\mathbf{v}\_1, \ldots, \mathbf{v}\_k$ are **linearly independent** if the only solution to $\sum\_{i=1}^k \alpha\_i \mathbf{v}\_i = \mathbf{0}$ is $\alpha\_1 = \cdots = \alpha\_k = 0$. Intuitively: no vector in the set is redundant.
@@ -48,7 +48,7 @@ Vectors $\mathbf{v}\_1, \ldots, \mathbf{v}\_k$ are **linearly independent** if t
 
 A **basis** for $V$ is a linearly independent set that spans $V$. Every finite-dimensional vector space has a basis, and all bases have the same number of vectors — this number is the **dimension** of $V$.
 
-The **standard basis** for $\mathbb{R}^n$ is $\lbrace \mathbf{e}\_1, \ldots, \mathbf{e}\_n\rbrace $, where $\mathbf{e}\_i$ has a 1 in position $i$ and 0s elsewhere. But there are infinitely many other bases, and choosing a good one can make your problem much easier. This idea — choosing the right basis — is the heart of dimensionality reduction and feature extraction.
+The **standard basis** for $\mathbb{R}^n$ is $\lbrace \mathbf{e}\_1, \ldots, \mathbf{e}\_n\rbrace$, where $\mathbf{e}\_i$ has a 1 in position $i$ and 0s elsewhere. But there are infinitely many other bases, and choosing a good one can make your problem much easier. This idea — choosing the right basis — is the heart of dimensionality reduction and feature extraction.
 
 **Concrete example.** In $\mathbb{R}^2$, the vectors $\mathbf{v}\_1 = (1, 1)^T$ and $\mathbf{v}\_2 = (1, -1)^T$ form a basis. Any vector $\mathbf{x} = (a, b)^T$ can be written as:
 
@@ -56,7 +56,7 @@ $$
 \mathbf{x} = \frac{a+b}{2}\mathbf{v}_1 + \frac{a-b}{2}\mathbf{v}_2
 $$
 
-These coefficients $\left(\frac{a+b}{2}, \frac{a-b}{2}\right)$ are the **coordinates of $\mathbf{x}$ in the $\lbrace \mathbf{v}\_1, \mathbf{v}\_2\rbrace $ basis**. Different basis, different coordinates, same vector.
+These coefficients $\left(\frac{a+b}{2}, \frac{a-b}{2}\right)$ are the **coordinates of $\mathbf{x}$ in the $\lbrace \mathbf{v}\_1, \mathbf{v}\_2\rbrace$ basis**. Different basis, different coordinates, same vector.
 
 ### 1.5 Inner Products, Norms, and Orthogonality
 
@@ -68,13 +68,13 @@ $$
 
 This gives us three critical tools:
 
-- **Norm (length):** $\Vert \mathbf{x}\Vert  = \sqrt{\langle \mathbf{x}, \mathbf{x} \rangle} = \sqrt{\sum\_i x\_i^2}$ — the Euclidean or $L\_2$ norm.
+- **Norm (length):** $\Vert \mathbf{x}\Vert = \sqrt{\langle \mathbf{x}, \mathbf{x} \rangle} = \sqrt{\sum\_i x\_i^2}$ — the Euclidean or $L\_2$ norm.
 - **Angle:** $\cos\theta = \frac{\langle \mathbf{x}, \mathbf{y} \rangle}{\Vert \mathbf{x}\Vert \Vert \mathbf{y}\Vert }$ — this measures similarity between vectors.
 - **Orthogonality:** $\mathbf{x} \perp \mathbf{y}$ iff $\langle \mathbf{x}, \mathbf{y} \rangle = 0$.
 
-An **orthonormal basis** is a basis where every vector has unit norm and every pair is orthogonal. Orthonormal bases are computationally convenient because finding coordinates reduces to taking dot products: if $\lbrace \mathbf{u}\_1, \ldots, \mathbf{u}\_n\rbrace $ is orthonormal, then the coordinate of $\mathbf{x}$ along $\mathbf{u}\_i$ is simply $\langle \mathbf{x}, \mathbf{u}\_i \rangle$.
+An **orthonormal basis** is a basis where every vector has unit norm and every pair is orthogonal. Orthonormal bases are computationally convenient because finding coordinates reduces to taking dot products: if $\lbrace \mathbf{u}\_1, \ldots, \mathbf{u}\_n\rbrace$ is orthonormal, then the coordinate of $\mathbf{x}$ along $\mathbf{u}\_i$ is simply $\langle \mathbf{x}, \mathbf{u}\_i \rangle$.
 
-**The Cauchy-Schwarz inequality** deserves a mention: $|\langle \mathbf{x}, \mathbf{y} \rangle| \leq \Vert \mathbf{x}\Vert  \cdot \Vert \mathbf{y}\Vert $, with equality iff $\mathbf{x}$ and $\mathbf{y}$ are parallel. This is what makes the "angle" formula above well-defined (the ratio is always in $[-1, 1]$).
+**The Cauchy-Schwarz inequality** deserves a mention: $|\langle \mathbf{x}, \mathbf{y} \rangle| \leq \Vert \mathbf{x}\Vert \cdot \Vert \mathbf{y}\Vert$, with equality iff $\mathbf{x}$ and $\mathbf{y}$ are parallel. This is what makes the "angle" formula above well-defined (the ratio is always in $[-1, 1]$).
 
 **Why this matters for us:** When we talk about "features as directions" in neural activation space (Week 11), we're saying that each interpretable feature corresponds to a direction $\mathbf{u}$ in activation space, and the "amount" of that feature in an activation $\mathbf{x}$ is the inner product $\langle \mathbf{x}, \mathbf{u} \rangle$. Cosine similarity $\frac{\langle \mathbf{x}, \mathbf{y} \rangle}{\Vert \mathbf{x}\Vert \Vert \mathbf{y}\Vert }$ is the standard way to measure whether two activation vectors represent "similar" inputs.
 
@@ -98,7 +98,7 @@ $$
 \hat{\mathbf{x}} = \arg\min_{\mathbf{w} \in W} \Vert \mathbf{x} - \mathbf{w}\Vert 
 $$
 
-If $\lbrace \mathbf{u}\_1, \ldots, \mathbf{u}\_k\rbrace $ is an orthonormal basis for $W$, the projection is:
+If $\lbrace \mathbf{u}\_1, \ldots, \mathbf{u}\_k\rbrace$ is an orthonormal basis for $W$, the projection is:
 
 $$
 \hat{\mathbf{x}} = \sum_{i=1}^k \langle \mathbf{x}, \mathbf{u}_i \rangle \mathbf{u}_i
@@ -143,8 +143,8 @@ Every matrix $A \in \mathbb{R}^{m \times n}$ has four fundamental subspaces:
 
 | Subspace | Definition | Lives in |
 |----------|-----------|----------|
-| **Column space** $\mathcal{C}(A)$ | $\lbrace A\mathbf{x} : \mathbf{x} \in \mathbb{R}^n\rbrace $ — the range/image | $\mathbb{R}^m$ |
-| **Null space** $\mathcal{N}(A)$ | $\lbrace \mathbf{x} : A\mathbf{x} = \mathbf{0}\rbrace $ — the kernel | $\mathbb{R}^n$ |
+| **Column space** $\mathcal{C}(A)$ | $\lbrace A\mathbf{x} : \mathbf{x} \in \mathbb{R}^n\rbrace$ — the range/image | $\mathbb{R}^m$ |
+| **Null space** $\mathcal{N}(A)$ | $\lbrace \mathbf{x} : A\mathbf{x} = \mathbf{0}\rbrace$ — the kernel | $\mathbb{R}^n$ |
 | **Row space** $\mathcal{C}(A^T)$ | The column space of $A^T$ | $\mathbb{R}^n$ |
 | **Left null space** $\mathcal{N}(A^T)$ | The null space of $A^T$ | $\mathbb{R}^m$ |
 
@@ -162,7 +162,7 @@ Both of these operations appear in autoencoders. The encoder reduces dimensional
 
 ### 2.4 Change of Basis
 
-If $P$ is the matrix whose columns are a new basis $\lbrace \mathbf{v}\_1, \ldots, \mathbf{v}\_n\rbrace $, then the coordinates of $\mathbf{x}$ in the new basis are $P^{-1}\mathbf{x}$. A linear map $A$ in the original basis becomes $P^{-1}AP$ in the new basis.
+If $P$ is the matrix whose columns are a new basis $\lbrace \mathbf{v}\_1, \ldots, \mathbf{v}\_n\rbrace$, then the coordinates of $\mathbf{x}$ in the new basis are $P^{-1}\mathbf{x}$. A linear map $A$ in the original basis becomes $P^{-1}AP$ in the new basis.
 
 This is what eigendecomposition and SVD are really about: finding a basis in which the matrix takes a particularly simple form.
 
@@ -384,7 +384,7 @@ The simplest optimization algorithm: start somewhere, repeatedly step in the dir
 
 Here $\eta > 0$ is the **learning rate**. Too small: convergence is painfully slow. Too large: you overshoot and diverge. The art of optimization is largely about managing this trade-off.
 
-**Convergence for convex functions.** For a convex function with Lipschitz-continuous gradients (i.e., $\Vert \nabla f(\mathbf{x}) - \nabla f(\mathbf{y})\Vert  \leq L\Vert \mathbf{x} - \mathbf{y}\Vert $), gradient descent with learning rate $\eta = 1/L$ converges at rate $O(1/t)$: after $t$ steps, $f(\mathbf{x}\_t) - f^* \leq O(1/t)$. For **strongly convex** functions (Hessian eigenvalues bounded below by $\mu > 0$), the convergence is linear: $f(\mathbf{x}\_t) - f^* \leq O((1 - \mu/L)^t)$. The ratio $\kappa = L/\mu$ is the **condition number**, and it controls how fast gradient descent converges.
+**Convergence for convex functions.** For a convex function with Lipschitz-continuous gradients (i.e., $\Vert \nabla f(\mathbf{x}) - \nabla f(\mathbf{y})\Vert \leq L\Vert \mathbf{x} - \mathbf{y}\Vert$), gradient descent with learning rate $\eta = 1/L$ converges at rate $O(1/t)$: after $t$ steps, $f(\mathbf{x}\_t) - f^* \leq O(1/t)$. For **strongly convex** functions (Hessian eigenvalues bounded below by $\mu > 0$), the convergence is linear: $f(\mathbf{x}\_t) - f^* \leq O((1 - \mu/L)^t)$. The ratio $\kappa = L/\mu$ is the **condition number**, and it controls how fast gradient descent converges.
 
 **Concrete example.** Minimize $f(x, y) = x^2 + 4y^2$.
 
@@ -453,9 +453,9 @@ The three most important cases:
 
 | Norm | Formula | Unit ball shape (2D) |
 |------|---------|---------------------|
-| $L\_1$ | $\sum\_i \Vert x\_i\Vert $ | Diamond (rotated square) |
+| $L\_1$ | $\sum\_i \Vert x\_i\Vert$ | Diamond (rotated square) |
 | $L\_2$ | $\sqrt{\sum\_i x\_i^2}$ | Circle |
-| $L\_\infty$ | $\max\_i \Vert x\_i\Vert $ | Square |
+| $L\_\infty$ | $\max\_i \Vert x\_i\Vert$ | Square |
 
 The $L\_0$ "norm" (in scare quotes because it's not actually a norm — it doesn't satisfy the triangle inequality) counts the number of non-zero entries: $\Vert \mathbf{x}\Vert \_0 = |\lbrace i : x\_i \neq 0\rbrace |$. It directly measures sparsity, but it's combinatorial and non-convex, making it impossible to optimize with gradient-based methods. The $L\_1$ norm is the closest *convex* approximation to $L\_0$ — this is why $L\_1$ is so important for sparsity.
 

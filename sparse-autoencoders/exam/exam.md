@@ -36,15 +36,15 @@ $$
 
 Consider gradient descent on a function $f(\mathbf{w})$ with update rule $\mathbf{w}\_{t+1} = \mathbf{w}\_t - \eta \nabla f(\mathbf{w}\_t)$.
 
-**(a)** [3 marks] Suppose $f$ is $L$-smooth (i.e., $\Vert \nabla f(\mathbf{x}) - \nabla f(\mathbf{y})\Vert  \leq L \Vert \mathbf{x} - \mathbf{y}\Vert $ for all $\mathbf{x}, \mathbf{y}$). What is the maximum learning rate $\eta$ that guarantees $f(\mathbf{w}\_{t+1}) \leq f(\mathbf{w}\_t)$ at every step? Justify your answer in 2-3 sentences.
+**(a)** [3 marks] Suppose $f$ is $L$-smooth (i.e., $\Vert \nabla f(\mathbf{x}) - \nabla f(\mathbf{y})\Vert \leq L \Vert \mathbf{x} - \mathbf{y}\Vert$ for all $\mathbf{x}, \mathbf{y}$). What is the maximum learning rate $\eta$ that guarantees $f(\mathbf{w}\_{t+1}) \leq f(\mathbf{w}\_t)$ at every step? Justify your answer in 2-3 sentences.
 
 **(b)** [3 marks] Adam uses adaptive per-parameter learning rates. Explain the role of the first moment estimate $\mathbf{m}\_t$ and the second moment estimate $\mathbf{v}\_t$. Why does Adam often converge faster than vanilla SGD on loss surfaces with different curvatures along different dimensions?
 
 ### Question 1.3 [8 marks]
 
-**(a)** [3 marks] Define the KL divergence $D\_{\text{KL}}(p \Vert  q)$ for two continuous distributions $p$ and $q$. State two properties of KL divergence (with brief justification for each).
+**(a)** [3 marks] Define the KL divergence $D\_{\text{KL}}(p \Vert q)$ for two continuous distributions $p$ and $q$. State two properties of KL divergence (with brief justification for each).
 
-**(b)** [5 marks] Given a dataset $\lbrace x\_1, \ldots, x\_n\rbrace $ drawn i.i.d. from an unknown distribution $p^*$, and a parametric family $p\_\theta$, show that maximizing the log-likelihood $\sum\_{i=1}^n \log p\_\theta(x\_i)$ is equivalent to minimizing $D\_{\text{KL}}(\hat{p}\_{\text{data}} \Vert  p\_\theta)$, where $\hat{p}\_{\text{data}}$ is the empirical distribution.
+**(b)** [5 marks] Given a dataset $\lbrace x\_1, \ldots, x\_n\rbrace$ drawn i.i.d. from an unknown distribution $p^*$, and a parametric family $p\_\theta$, show that maximizing the log-likelihood $\sum\_{i=1}^n \log p\_\theta(x\_i)$ is equivalent to minimizing $D\_{\text{KL}}(\hat{p}\_{\text{data}} \Vert p\_\theta)$, where $\hat{p}\_{\text{data}}$ is the empirical distribution.
 
 ---
 
@@ -69,7 +69,7 @@ This question concerns variational autoencoders (VAEs).
 **(a)** [6 marks] Starting from the marginal log-likelihood $\log p\_\theta(\mathbf{x})$, derive the Evidence Lower Bound (ELBO):
 
 $$
-\log p_\theta(\mathbf{x}) \geq \mathbb{E}_{q_\phi(\mathbf{z}|\mathbf{x})}[\log p_\theta(\mathbf{x}|\mathbf{z})] - D_{\text{KL}}(q_\phi(\mathbf{z}|\mathbf{x}) \Vert  p(\mathbf{z}))
+\log p_\theta(\mathbf{x}) \geq \mathbb{E}_{q_\phi(\mathbf{z}|\mathbf{x})}[\log p_\theta(\mathbf{x}|\mathbf{z})] - D_{\text{KL}}(q_\phi(\mathbf{z}|\mathbf{x}) \Vert p(\mathbf{z}))
 $$
 
 Show each step clearly.
@@ -79,7 +79,7 @@ Show each step clearly.
 **(c)** [3 marks] In a $\beta$-VAE, the objective is:
 
 $$
-\mathcal{L}_{\beta} = \mathbb{E}_{q_\phi(\mathbf{z}|\mathbf{x})}[\log p_\theta(\mathbf{x}|\mathbf{z})] - \beta \cdot D_{\text{KL}}(q_\phi(\mathbf{z}|\mathbf{x}) \Vert  p(\mathbf{z}))
+\mathcal{L}_{\beta} = \mathbb{E}_{q_\phi(\mathbf{z}|\mathbf{x})}[\log p_\theta(\mathbf{x}|\mathbf{z})] - \beta \cdot D_{\text{KL}}(q_\phi(\mathbf{z}|\mathbf{x}) \Vert p(\mathbf{z}))
 $$
 
 What happens when $\beta \gg 1$? What happens when $\beta \to 0$? Explain the tradeoff in terms of reconstruction quality and latent space structure.

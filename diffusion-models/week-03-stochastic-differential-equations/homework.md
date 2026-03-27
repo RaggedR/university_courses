@@ -9,7 +9,7 @@
 
 ### Part (a): Quadratic Variation
 
-Let $\lbrace t\_0, t\_1, \ldots, t\_n\rbrace $ be an equally spaced partition of $[0, T]$ with $t\_i = iT/n$.
+Let $\lbrace t\_0, t\_1, \ldots, t\_n\rbrace$ be an equally spaced partition of $[0, T]$ with $t\_i = iT/n$.
 
 Define the quadratic variation:
 
@@ -179,7 +179,7 @@ Simulate the geometric Brownian motion SDE $dS\_t = \mu S\_t \, dt + \sigma\_{\t
 
 For the OU process with $\theta = 1$, $\sigma = 1$, $x\_0 = 3$, $T = 2$:
 
-Run Euler-Maruyama with $\Delta t \in \lbrace 0.1, 0.05, 0.01, 0.005, 0.001\rbrace $, using the same Brownian path for each (fix the random seed and interpolate the Brownian motion). Compare the final value $X\_T$ to the "reference" solution computed with $\Delta t = 0.0001$.
+Run Euler-Maruyama with $\Delta t \in \lbrace 0.1, 0.05, 0.01, 0.005, 0.001\rbrace$, using the same Brownian path for each (fix the random seed and interpolate the Brownian motion). Compare the final value $X\_T$ to the "reference" solution computed with $\Delta t = 0.0001$.
 
 Plot the error $|X\_T^{\Delta t} - X\_T^{\text{ref}}|$ vs. $\Delta t$ on a log-log plot. What is the empirical convergence order? (Euler-Maruyama has strong order 0.5 for general SDEs -- does your plot agree?)
 
@@ -218,7 +218,7 @@ with a linear schedule $\beta(t) = \beta\_{\min} + (\beta\_{\max} - \beta\_{\min
 
 Use Euler-Maruyama to simulate the forward process. Start from 5000 data points and evolve them to $t = T$.
 
-1. Plot the point cloud at times $t \in \lbrace 0, 0.1, 0.2, 0.5, 0.8, 1.0\rbrace $ (six subplots). You should see the structured data distribution gradually dissolving into Gaussian noise.
+1. Plot the point cloud at times $t \in \lbrace 0, 0.1, 0.2, 0.5, 0.8, 1.0\rbrace$ (six subplots). You should see the structured data distribution gradually dissolving into Gaussian noise.
 2. At each time, plot a histogram of the marginal distributions along the $x$-axis. How does the distribution change?
 
 ### Part (c): The Score at Each Time

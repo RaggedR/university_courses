@@ -206,7 +206,7 @@ $$
 
 using the *same* noise $\epsilon$. This ensures they lie on (approximately) the same trajectory, even without a teacher model.
 
-The schedule $\lbrace t\_n\rbrace $ starts coarse (few time steps) and becomes finer during training. Song et al. showed that as $\Delta t \to 0$, the CT objective converges to enforcing exact self-consistency.
+The schedule $\lbrace t\_n\rbrace$ starts coarse (few time steps) and becomes finer during training. Song et al. showed that as $\Delta t \to 0$, the CT objective converges to enforcing exact self-consistency.
 
 ### 3.5 Multi-Step Sampling with Consistency Models
 
@@ -345,7 +345,7 @@ The SDS gradient can be derived from the KL divergence between the distribution 
 Consider the rendered image $x = g(\theta, c)$ as a delta distribution $q\_\theta(x) = \delta(x - g(\theta, c))$. We want to minimize:
 
 $$
-\mathcal{L}(\theta) = D_{\text{KL}}(q_t(x_t) \Vert  p_t(x_t | y))
+\mathcal{L}(\theta) = D_{\text{KL}}(q_t(x_t) \Vert p_t(x_t | y))
 $$
 
 where $q\_t$ is the distribution of noisy rendered images and $p\_t$ is the diffusion model's marginal at noise level $t$.

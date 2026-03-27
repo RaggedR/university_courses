@@ -93,7 +93,7 @@ Run SDS optimization for 500 steps with $w(t) = 1$. Plot the trajectory of $\the
 
 Now parameterize a full Gaussian distribution $q\_\psi = \mathcal{N}(\mu, \sigma^2 I)$ with learnable $\mu \in \mathbb{R}^2$ and $\sigma > 0$.
 
-Implement the **variational score distillation (VSD)** gradient, which minimizes $D\_{\text{KL}}(q\_\psi \Vert  p\_{\text{data}})$:
+Implement the **variational score distillation (VSD)** gradient, which minimizes $D\_{\text{KL}}(q\_\psi \Vert p\_{\text{data}})$:
 
 1. Sample $x\_1 \sim q\_\psi$ (reparameterization trick: $x\_1 = \mu + \sigma \cdot \xi$, $\xi \sim \mathcal{N}(0, I)$)
 2. Compute the flow matching SDS gradient as in Part (b)
@@ -107,7 +107,7 @@ Run 50 independent SDS optimizations (single points, as in Part b) from random i
 
 1. How many of the 8 Gaussian modes are covered?
 2. Is coverage uniform across modes?
-3. Explain why SDS tends to find high-density modes. *Hint: SDS minimizes $D\_{\text{KL}}(\delta\_\theta \Vert  p)$, which is the "reverse KL." Which modes does reverse KL prefer?*
+3. Explain why SDS tends to find high-density modes. *Hint: SDS minimizes $D\_{\text{KL}}(\delta\_\theta \Vert p)$, which is the "reverse KL." Which modes does reverse KL prefer?*
 
 ---
 
@@ -130,7 +130,7 @@ where $\bar{\alpha}\_t = \prod\_{s=1}^t (1 - \beta\_s)$.
 The discrete diffusion ELBO is:
 
 $$
-\log p(x_0) \geq \mathbb{E}\left[-D_{\text{KL}}(q(x_T | x_0) \Vert  p(x_T)) - \sum_{t=1}^T D_{\text{KL}}(q(x_{t-1} | x_t, x_0) \Vert  p_\theta(x_{t-1} | x_t))\right]
+\log p(x_0) \geq \mathbb{E}\left[-D_{\text{KL}}(q(x_T | x_0) \Vert p(x_T)) - \sum_{t=1}^T D_{\text{KL}}(q(x_{t-1} | x_t, x_0) \Vert p_\theta(x_{t-1} | x_t))\right]
 $$
 
 For the absorbing-state process, show that the posterior $q(x\_{t-1} | x\_t, x\_0)$ has a simple form:

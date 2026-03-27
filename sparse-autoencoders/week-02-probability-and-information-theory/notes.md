@@ -333,7 +333,7 @@ $$
 
 Minimizing over $\theta$ (with $\sigma$ fixed) is equivalent to minimizing $\sum\_i (y\_i - f\_\theta(\mathbf{x}\_i))^2$ — the **mean squared error**. So when you train a neural network with MSE loss, you're implicitly assuming Gaussian noise.
 
-**Example: Cross-entropy loss is Bernoulli MLE.** For binary classification, $y\_i \in \lbrace 0, 1\rbrace $ and the model outputs $\hat{p}\_i = \sigma(f\_\theta(\mathbf{x}\_i))$ (sigmoid of the logit). Then $p(y\_i | \mathbf{x}\_i; \theta) = \hat{p}\_i^{y\_i}(1-\hat{p}\_i)^{1-y\_i}$, and the negative log-likelihood is:
+**Example: Cross-entropy loss is Bernoulli MLE.** For binary classification, $y\_i \in \lbrace 0, 1\rbrace$ and the model outputs $\hat{p}\_i = \sigma(f\_\theta(\mathbf{x}\_i))$ (sigmoid of the logit). Then $p(y\_i | \mathbf{x}\_i; \theta) = \hat{p}\_i^{y\_i}(1-\hat{p}\_i)^{1-y\_i}$, and the negative log-likelihood is:
 
 $$
 -\ell(\theta) = -\sum_{i=1}^N \left[y_i \log \hat{p}_i + (1 - y_i)\log(1 - \hat{p}_i)\right]
@@ -412,33 +412,33 @@ Cross-entropy measures the average number of nats needed to encode samples from 
 The **Kullback-Leibler divergence** from $q$ to $p$ (or "KL divergence of $q$ from $p$") is:
 
 $$
-D_{\text{KL}}(p \Vert  q) = \sum_x p(x) \log \frac{p(x)}{q(x)} = \mathbb{E}_{x \sim p}\left[\log \frac{p(x)}{q(x)}\right]
+D_{\text{KL}}(p \Vert q) = \sum_x p(x) \log \frac{p(x)}{q(x)} = \mathbb{E}_{x \sim p}\left[\log \frac{p(x)}{q(x)}\right]
 $$
 
-Equivalently: $D\_{\text{KL}}(p \Vert  q) = H(p, q) - H(p)$. It's the "extra cost" of using $q$ instead of $p$.
+Equivalently: $D\_{\text{KL}}(p \Vert q) = H(p, q) - H(p)$. It's the "extra cost" of using $q$ instead of $p$.
 
 **Key properties:**
 
-1. **Non-negativity (Gibbs' inequality):** $D\_{\text{KL}}(p \Vert  q) \geq 0$, with equality iff $p = q$ a.e.
-2. **Asymmetry:** $D\_{\text{KL}}(p \Vert  q) \neq D\_{\text{KL}}(q \Vert  p)$ in general. KL divergence is NOT a distance metric.
+1. **Non-negativity (Gibbs' inequality):** $D\_{\text{KL}}(p \Vert q) \geq 0$, with equality iff $p = q$ a.e.
+2. **Asymmetry:** $D\_{\text{KL}}(p \Vert q) \neq D\_{\text{KL}}(q \Vert p)$ in general. KL divergence is NOT a distance metric.
 3. **Not a metric:** It violates both symmetry and the triangle inequality.
 
 **The non-negativity proof** is elegant and worth knowing:
 
 $$
-D_{\text{KL}}(p \Vert  q) = -\mathbb{E}_p\left[\log\frac{q(x)}{p(x)}\right] \geq -\log\mathbb{E}_p\left[\frac{q(x)}{p(x)}\right] = -\log\sum_x p(x)\frac{q(x)}{p(x)} = -\log\sum_x q(x) = -\log 1 = 0
+D_{\text{KL}}(p \Vert q) = -\mathbb{E}_p\left[\log\frac{q(x)}{p(x)}\right] \geq -\log\mathbb{E}_p\left[\frac{q(x)}{p(x)}\right] = -\log\sum_x p(x)\frac{q(x)}{p(x)} = -\log\sum_x q(x) = -\log 1 = 0
 $$
 
 The inequality is Jensen's inequality applied to the concave function $\log$. Equality holds iff $q(x)/p(x)$ is constant, i.e., $p = q$.
 
-**The asymmetry matters.** $D\_{\text{KL}}(p \Vert  q)$ penalizes $q$ heavily where $p$ has mass but $q$ doesn't (because $\log(p/q)$ is large when $q$ is small but $p$ is not). The reverse $D\_{\text{KL}}(q \Vert  p)$ penalizes $q$ for having mass where $p$ doesn't. In variational inference:
-- Minimizing $D\_{\text{KL}}(q \Vert  p)$ (the "reverse KL") tends to make $q$ zero-seeking — it avoids placing mass where $p$ is small, even if this means missing some modes of $p$.
-- Minimizing $D\_{\text{KL}}(p \Vert  q)$ (the "forward KL") tends to make $q$ mass-covering — it tries to have mass everywhere $p$ does, even if this means placing mass where $p$ doesn't.
+**The asymmetry matters.** $D\_{\text{KL}}(p \Vert q)$ penalizes $q$ heavily where $p$ has mass but $q$ doesn't (because $\log(p/q)$ is large when $q$ is small but $p$ is not). The reverse $D\_{\text{KL}}(q \Vert p)$ penalizes $q$ for having mass where $p$ doesn't. In variational inference:
+- Minimizing $D\_{\text{KL}}(q \Vert p)$ (the "reverse KL") tends to make $q$ zero-seeking — it avoids placing mass where $p$ is small, even if this means missing some modes of $p$.
+- Minimizing $D\_{\text{KL}}(p \Vert q)$ (the "forward KL") tends to make $q$ mass-covering — it tries to have mass everywhere $p$ does, even if this means placing mass where $p$ doesn't.
 
 This distinction is important for understanding why VAEs sometimes produce "blurry" outputs (they use reverse KL, which mode-covers).
 
 Despite not being a distance, KL divergence is the workhorse of probabilistic machine learning. It appears in:
-- **Variational inference** (Week 8): We minimize $D\_{\text{KL}}(q(\mathbf{z}|\mathbf{x}) \Vert  p(\mathbf{z}|\mathbf{x}))$ to approximate the posterior
+- **Variational inference** (Week 8): We minimize $D\_{\text{KL}}(q(\mathbf{z}|\mathbf{x}) \Vert p(\mathbf{z}|\mathbf{x}))$ to approximate the posterior
 - **Sparse autoencoders** (Week 10): The KL divergence between the actual activation distribution and a target sparse distribution serves as a sparsity penalty
 
 ### 5.4 KL Divergence Between Gaussians
@@ -446,19 +446,19 @@ Despite not being a distance, KL divergence is the workhorse of probabilistic ma
 A result we'll use repeatedly. For two univariate Gaussians $p = \mathcal{N}(\mu\_1, \sigma\_1^2)$ and $q = \mathcal{N}(\mu\_2, \sigma\_2^2)$:
 
 $$
-D_{\text{KL}}(p \Vert  q) = \log\frac{\sigma_2}{\sigma_1} + \frac{\sigma_1^2 + (\mu_1 - \mu_2)^2}{2\sigma_2^2} - \frac{1}{2}
+D_{\text{KL}}(p \Vert q) = \log\frac{\sigma_2}{\sigma_1} + \frac{\sigma_1^2 + (\mu_1 - \mu_2)^2}{2\sigma_2^2} - \frac{1}{2}
 $$
 
 For multivariate Gaussians $p = \mathcal{N}(\boldsymbol{\mu}\_1, \Sigma\_1)$ and $q = \mathcal{N}(\boldsymbol{\mu}\_2, \Sigma\_2)$:
 
 $$
-D_{\text{KL}}(p \Vert  q) = \frac{1}{2}\left[\log\frac{|\Sigma_2|}{|\Sigma_1|} - d + \text{tr}(\Sigma_2^{-1}\Sigma_1) + (\boldsymbol{\mu}_2 - \boldsymbol{\mu}_1)^T\Sigma_2^{-1}(\boldsymbol{\mu}_2 - \boldsymbol{\mu}_1)\right]
+D_{\text{KL}}(p \Vert q) = \frac{1}{2}\left[\log\frac{|\Sigma_2|}{|\Sigma_1|} - d + \text{tr}(\Sigma_2^{-1}\Sigma_1) + (\boldsymbol{\mu}_2 - \boldsymbol{\mu}_1)^T\Sigma_2^{-1}(\boldsymbol{\mu}_2 - \boldsymbol{\mu}_1)\right]
 $$
 
 When $q = \mathcal{N}(\mathbf{0}, I)$ (the standard normal), this simplifies beautifully:
 
 $$
-D_{\text{KL}}(\mathcal{N}(\boldsymbol{\mu}, \Sigma) \Vert  \mathcal{N}(\mathbf{0}, I)) = \frac{1}{2}\left[-\log|\Sigma| - d + \text{tr}(\Sigma) + \boldsymbol{\mu}^T\boldsymbol{\mu}\right]
+D_{\text{KL}}(\mathcal{N}(\boldsymbol{\mu}, \Sigma) \Vert \mathcal{N}(\mathbf{0}, I)) = \frac{1}{2}\left[-\log|\Sigma| - d + \text{tr}(\Sigma) + \boldsymbol{\mu}^T\boldsymbol{\mu}\right]
 $$
 
 For diagonal $\Sigma = \text{diag}(\sigma\_1^2, \ldots, \sigma\_d^2)$, this becomes:
@@ -474,7 +474,7 @@ This exact formula appears in the VAE loss function (Week 8). Memorize it — or
 The **mutual information** between $X$ and $Y$ is:
 
 $$
-I(X; Y) = D_{\text{KL}}(p(x, y) \Vert  p(x)p(y)) = \sum_{x,y} p(x,y) \log \frac{p(x,y)}{p(x)p(y)}
+I(X; Y) = D_{\text{KL}}(p(x, y) \Vert p(x)p(y)) = \sum_{x,y} p(x,y) \log \frac{p(x,y)}{p(x)p(y)}
 $$
 
 Equivalently: $I(X; Y) = H(X) - H(X|Y) = H(Y) - H(Y|X) = H(X) + H(Y) - H(X, Y)$. Mutual information measures how much knowing one variable tells you about the other. It's zero iff $X$ and $Y$ are independent.
@@ -488,10 +488,10 @@ Unlike correlation, mutual information captures *any* kind of dependency — not
 These three quantities are tightly linked:
 
 $$
-H(p, q) = H(p) + D_{\text{KL}}(p \Vert  q)
+H(p, q) = H(p) + D_{\text{KL}}(p \Vert q)
 $$
 
-Since $H(p)$ is fixed (it depends only on the true distribution, not on our model), minimizing cross-entropy $H(p, q)$ over $q$ is equivalent to minimizing $D\_{\text{KL}}(p \Vert  q)$ over $q$. This is why cross-entropy and KL divergence are nearly interchangeable as loss functions.
+Since $H(p)$ is fixed (it depends only on the true distribution, not on our model), minimizing cross-entropy $H(p, q)$ over $q$ is equivalent to minimizing $D\_{\text{KL}}(p \Vert q)$ over $q$. This is why cross-entropy and KL divergence are nearly interchangeable as loss functions.
 
 **Diagram of relationships:**
 
@@ -525,7 +525,7 @@ $I(X;Y)$ is the overlap between $H(X)$ and $H(Y)$. The joint entropy $H(X,Y) = H
 When we train a model with maximum likelihood, we're solving:
 
 $$
-\hat{\theta} = \arg\min_\theta D_{\text{KL}}(p_{\text{data}} \Vert  p_\theta)
+\hat{\theta} = \arg\min_\theta D_{\text{KL}}(p_{\text{data}} \Vert p_\theta)
 $$
 
 where $p\_{\text{data}}$ is the empirical distribution of the training data and $p\_\theta$ is the model distribution. This is equivalent to minimizing cross-entropy, which is equivalent to minimizing negative log-likelihood.
@@ -556,13 +556,13 @@ This is a beautiful connection: the geometry of the $L\_1$ ball from Week 1 has 
 In many models (including VAEs), the posterior $p(\theta | \mathbf{x})$ is intractable — we can't compute it exactly because the marginal likelihood $p(\mathbf{x}) = \int p(\mathbf{x}|\theta)p(\theta)d\theta$ involves an intractable integral. **Variational inference** approximates the posterior with a simpler distribution $q(\theta)$ by minimizing:
 
 $$
-D_{\text{KL}}(q(\theta) \Vert  p(\theta | \mathbf{x}))
+D_{\text{KL}}(q(\theta) \Vert p(\theta | \mathbf{x}))
 $$
 
 This KL divergence is also intractable (it involves the posterior we can't compute). But through algebraic manipulation, we can derive a tractable lower bound on the log-likelihood — the **ELBO (Evidence Lower Bound)**:
 
 $$
-\log p(\mathbf{x}) \geq \mathbb{E}_{q(\theta)}[\log p(\mathbf{x} | \theta)] - D_{\text{KL}}(q(\theta) \Vert  p(\theta))
+\log p(\mathbf{x}) \geq \mathbb{E}_{q(\theta)}[\log p(\mathbf{x} | \theta)] - D_{\text{KL}}(q(\theta) \Vert p(\theta))
 $$
 
 We'll derive this properly in Week 8 when we study VAEs. For now, just note the structure: it's a **reconstruction term** (how well the model explains the data) minus a **KL term** (how much the approximate posterior deviates from the prior). This trade-off between reconstruction and regularization is the fundamental tension in autoencoder design.
@@ -574,7 +574,7 @@ Here's a preview of Week 10. In a sparse autoencoder, we want each hidden neuron
 We can penalize non-sparse activations using the KL divergence between two Bernoulli distributions:
 
 $$
-\sum_j D_{\text{KL}}(\text{Bernoulli}(\rho) \Vert  \text{Bernoulli}(\hat{\rho}_j))
+\sum_j D_{\text{KL}}(\text{Bernoulli}(\rho) \Vert \text{Bernoulli}(\hat{\rho}_j))
 $$
 
 $$
@@ -615,7 +615,7 @@ This is zero when $\hat{\rho}\_j = \rho$ and increases as $\hat{\rho}\_j$ deviat
 | $\mathcal{N}(\mu, \sigma^2)$ | Gaussian distribution |
 | $H(X)$ | Entropy of $X$ |
 | $H(p, q)$ | Cross-entropy between $p$ and $q$ |
-| $D\_{\text{KL}}(p \Vert  q)$ | KL divergence from $q$ to $p$ |
+| $D\_{\text{KL}}(p \Vert q)$ | KL divergence from $q$ to $p$ |
 | $I(X; Y)$ | Mutual information between $X$ and $Y$ |
 | $\hat{\theta}\_{\text{MLE}}$ | Maximum likelihood estimator |
 

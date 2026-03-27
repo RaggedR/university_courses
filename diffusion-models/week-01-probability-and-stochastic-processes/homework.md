@@ -79,7 +79,7 @@ Run for 200 steps with learning rate 0.05 and batch size 64 (average the loss ov
 
 ### Part (a): A Simple Chain
 
-Consider a Markov chain on three states $\lbrace 1, 2, 3\rbrace $ with transition matrix:
+Consider a Markov chain on three states $\lbrace 1, 2, 3\rbrace$ with transition matrix:
 
 $$
 P = \begin{pmatrix} 0.5 & 0.3 & 0.2 \\\\ 0.15 & 0.7 & 0.15 \\\\ 0.2 & 0.3 & 0.5 \end{pmatrix}
@@ -93,7 +93,7 @@ $$
 
 ### Part (b): Designing a Reversible Chain
 
-Suppose we want a Markov chain on states $\lbrace 1, 2, 3\rbrace $ with stationary distribution $\pi = (0.5, 0.3, 0.2)$ that satisfies detailed balance.
+Suppose we want a Markov chain on states $\lbrace 1, 2, 3\rbrace$ with stationary distribution $\pi = (0.5, 0.3, 0.2)$ that satisfies detailed balance.
 
 1. Construct a transition matrix $P$ that satisfies detailed balance with respect to $\pi$. (*Hint: start by choosing $P\_{12}$, then use $\pi\_1 P\_{12} = \pi\_2 P\_{21}$ to find $P\_{21}$. Repeat for all off-diagonal pairs. Then set diagonal entries to make rows sum to 1.*)
 
@@ -166,7 +166,7 @@ def forward_process(x_0, t, alpha_bar):
 
 Load or generate a simple test image (e.g., a digit from MNIST, or a 64x64 image from CIFAR-10 using `torchvision.datasets`, or even a simple synthetic image like a white circle on a black background).
 
-Apply the forward process and display the noised image at timesteps $t \in \lbrace 0, 50, 100, 200, 500, 750, 999\rbrace $ for both the linear and cosine schedules.
+Apply the forward process and display the noised image at timesteps $t \in \lbrace 0, 50, 100, 200, 500, 750, 999\rbrace$ for both the linear and cosine schedules.
 
 Arrange the results as a 2x7 grid (one row per schedule). At what timestep does each schedule make the image unrecognizable?
 

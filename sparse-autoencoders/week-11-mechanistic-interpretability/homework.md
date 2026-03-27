@@ -105,13 +105,13 @@ This is the central problem of the set: demonstrate that an SAE can recover indi
 
 ### 3a. Generate Superimposed Representations
 
-Use the toy model trained with $S = 0.01$ from Problem 1. For a dataset of 10,000 inputs $\lbrace \mathbf{x}\_i\rbrace $:
+Use the toy model trained with $S = 0.01$ from Problem 1. For a dataset of 10,000 inputs $\lbrace \mathbf{x}\_i\rbrace$:
 1. Compute the bottleneck representations: $\mathbf{h}\_i = \mathbf{W} \mathbf{x}\_i \in \mathbb{R}^m$.
 2. These are the "activations" that live in superposition -- $m = 5$ dimensions encoding information about $n = 20$ features.
 
 ### 3b. Train an SAE
 
-Train a sparse autoencoder on the bottleneck representations $\lbrace \mathbf{h}\_i\rbrace $:
+Train a sparse autoencoder on the bottleneck representations $\lbrace \mathbf{h}\_i\rbrace$:
 - **Input dimension:** $m = 5$
 - **Hidden dimension:** $d = 40$ (expansion factor of 8; we expect around 20 true features)
 - **Loss:** MSE + L1 penalty with $\lambda = 0.01$ (tune this if needed)

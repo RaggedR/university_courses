@@ -130,11 +130,11 @@ Generate 5000 samples and plot them alongside the true data distribution.
 
 ### Part (b): Effect of Langevin Steps $K$
 
-Run annealed Langevin dynamics with $K \in \lbrace 1, 10, 50, 100, 500\rbrace $ steps per noise level. For each, plot the generated samples and compute the Wasserstein distance to the true distribution. How many steps per level are needed for good samples?
+Run annealed Langevin dynamics with $K \in \lbrace 1, 10, 50, 100, 500\rbrace$ steps per noise level. For each, plot the generated samples and compute the Wasserstein distance to the true distribution. How many steps per level are needed for good samples?
 
 ### Part (c): Visualize the Annealing
 
-Generate one batch of 500 samples and record the intermediate states at each noise level transition. Create a 2x5 grid showing the sample distribution after levels $\lbrace 1, 3, 5, 7, 10\rbrace $ (from highest to lowest noise). You should see the samples progressively organize from a diffuse cloud into 8 tight clusters.
+Generate one batch of 500 samples and record the intermediate states at each noise level transition. Create a 2x5 grid showing the sample distribution after levels $\lbrace 1, 3, 5, 7, 10\rbrace$ (from highest to lowest noise). You should see the samples progressively organize from a diffuse cloud into 8 tight clusters.
 
 ---
 
@@ -221,13 +221,13 @@ Consider a 2D mixture: $p(x) = 0.5\,\mathcal{N}(x; \mu\_1, 0.3^2 I) + 0.5\,\math
 
 1. Compute the exact score $\nabla\_x \log p\_\sigma(x)$ for the noised distribution $p\_\sigma = p * \mathcal{N}(0, \sigma^2 I)$. *Hint: each component becomes $\mathcal{N}(\mu\_k, (0.3^2 + \sigma^2)I)$.*
 
-2. Evaluate the score at $x = (0, 0)$ for $\sigma \in \lbrace 0.1, 0.5, 1, 2, 5\rbrace $. At what $\sigma$ does the score at the origin become negligible? What does this tell you about Langevin mixing between modes?
+2. Evaluate the score at $x = (0, 0)$ for $\sigma \in \lbrace 0.1, 0.5, 1, 2, 5\rbrace$. At what $\sigma$ does the score at the origin become negligible? What does this tell you about Langevin mixing between modes?
 
 ### Part (b): Visualization (Implementation)
 
 For the same distribution:
 
-1. Plot the score field $\nabla\_x \log p\_\sigma(x)$ as a quiver plot over $[-5, 5]^2$ for $\sigma \in \lbrace 0.1, 0.5, 1.0, 3.0\rbrace $. Use a 2x2 grid.
+1. Plot the score field $\nabla\_x \log p\_\sigma(x)$ as a quiver plot over $[-5, 5]^2$ for $\sigma \in \lbrace 0.1, 0.5, 1.0, 3.0\rbrace$. Use a 2x2 grid.
 
 2. At $\sigma = 0.1$: the score should point toward the nearest mode, with a "watershed" boundary between them.
    At $\sigma = 3.0$: the score should point toward the overall center of mass, with nearly unimodal behavior.

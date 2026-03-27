@@ -99,14 +99,14 @@ def classifier_guided_sample(diffusion_model, classifier, class_label,
     pass
 ```
 
-2. Generate 10 samples of each digit (0-9) with guidance scales $s \in \lbrace 0, 1, 3, 5, 10\rbrace $.
+2. Generate 10 samples of each digit (0-9) with guidance scales $s \in \lbrace 0, 1, 3, 5, 10\rbrace$.
 
 3. Display the results as a 10x5 grid (rows = digits, columns = guidance scales). Describe the visual trend as $s$ increases.
 
 ### Part (c): Guidance Strength Analysis
 
 For class "7":
-1. Generate 100 samples at each $s \in \lbrace 0, 0.5, 1, 2, 3, 5, 10, 20\rbrace $
+1. Generate 100 samples at each $s \in \lbrace 0, 0.5, 1, 2, 3, 5, 10, 20\rbrace$
 2. Classify each sample with a clean (not noise-conditioned) MNIST classifier
 3. Report: (i) fraction correctly classified as "7", (ii) visual diversity (qualitative), (iii) presence of artifacts at high $s$
 
@@ -164,7 +164,7 @@ def cfg_sample(model, class_label, guidance_weight, num_steps=50):
     pass
 ```
 
-Generate samples for each digit with $w \in \lbrace 1, 3, 5, 7.5, 10, 15\rbrace $.
+Generate samples for each digit with $w \in \lbrace 1, 3, 5, 7.5, 10, 15\rbrace$.
 
 ### Part (c): Compare with Classifier Guidance
 
@@ -179,7 +179,7 @@ For 10 samples of each digit:
 
 ### Part (d): The Unconditional Dropout Rate
 
-Train three models with $p\_{\text{uncond}} \in \lbrace 0.05, 0.1, 0.2\rbrace $. For each, generate samples with $w = 7.5$.
+Train three models with $p\_{\text{uncond}} \in \lbrace 0.05, 0.1, 0.2\rbrace$. For each, generate samples with $w = 7.5$.
 
 1. Does the dropout rate significantly affect sample quality?
 2. What happens if $p\_{\text{uncond}} = 0$ (no unconditional training)? Try to use CFG -- what goes wrong?
@@ -193,7 +193,7 @@ Train three models with $p\_{\text{uncond}} \in \lbrace 0.05, 0.1, 0.2\rbrace $.
 
 Using your CFG model from Problem 3:
 
-1. For the digit "3", generate 500 samples at each $w \in \lbrace 1, 2, 3, 5, 7, 10, 15, 20\rbrace $
+1. For the digit "3", generate 500 samples at each $w \in \lbrace 1, 2, 3, 5, 7, 10, 15, 20\rbrace$
 
 2. For each set of 500 samples, compute:
    - **Fidelity**: Average confidence of a pretrained classifier on the correct class

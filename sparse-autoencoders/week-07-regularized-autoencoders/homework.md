@@ -46,7 +46,7 @@ Build a denoising autoencoder for MNIST with the following architecture:
 
 Train the autoencoder with Gaussian noise corruption: $\tilde{x} = x + \epsilon$ where $\epsilon \sim \mathcal{N}(0, \sigma^2 I)$, clipping $\tilde{x}$ to $[0, 1]$.
 
-Train three models with $\sigma \in \lbrace 0.1, 0.3, 0.5\rbrace $. For each:
+Train three models with $\sigma \in \lbrace 0.1, 0.3, 0.5\rbrace$. For each:
 1. Report the final test reconstruction MSE (computed on *clean* inputs, not corrupted).
 2. Display a figure showing: (row 1) original images, (row 2) corrupted images, (row 3) reconstructed images. Show 10 examples.
 
@@ -54,7 +54,7 @@ Train three models with $\sigma \in \lbrace 0.1, 0.3, 0.5\rbrace $. For each:
 
 Train the same architecture with masking noise: each pixel is independently set to 0 with probability $p$.
 
-Train three models with $p \in \lbrace 0.1, 0.3, 0.5\rbrace $. Display the same kind of figure as Part (a).
+Train three models with $p \in \lbrace 0.1, 0.3, 0.5\rbrace$. Display the same kind of figure as Part (a).
 
 ### Part (c): Comparison
 
@@ -79,7 +79,7 @@ Implement a contractive autoencoder with:
 - Decoder: single layer, $256 \to 784$, sigmoid activation
 - Contractive penalty: $\lambda \Vert J\_f(x)\Vert \_F^2$ using the analytical expression from Part (a)
 
-Train with $\lambda \in \lbrace 0, 0.01, 0.1, 1.0\rbrace $.
+Train with $\lambda \in \lbrace 0, 0.01, 0.1, 1.0\rbrace$.
 
 For each value of $\lambda$:
 1. Report the reconstruction MSE on the test set.
@@ -92,7 +92,7 @@ Plot reconstruction MSE vs. average Jacobian norm across the four $\lambda$ valu
 
 For the model trained with $\lambda = 0.1$, select 5 test images. For each image:
 1. Add small random perturbation $\delta \sim \mathcal{N}(0, 0.01 \cdot I)$
-2. Compute $\Vert f(x + \delta) - f(x)\Vert  / \Vert \delta\Vert $ (the ratio of output change to input change)
+2. Compute $\Vert f(x + \delta) - f(x)\Vert / \Vert \delta\Vert$ (the ratio of output change to input change)
 
 Compare this ratio for the $\lambda = 0$ model vs. $\lambda = 0.1$ model. Verify that the contractive model has a smaller ratio.
 

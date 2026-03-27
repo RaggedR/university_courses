@@ -316,7 +316,7 @@ $$
 \boxed{L_{\text{simple}} = \mathbb{E}_{t, x_0, \varepsilon}\!\left[\left\Vert \varepsilon - \varepsilon_\theta\!\left(\sqrt{\bar{\alpha}_t}\, x_0 + \sqrt{1 - \bar{\alpha}_t}\, \varepsilon,\; t\right)\right\Vert ^2\right]}
 $$
 
-where $t \sim \text{Uniform}\lbrace 1, \ldots, T\rbrace $, $x\_0 \sim q(x\_0)$, and $\varepsilon \sim \mathcal{N}(0, I)$.
+where $t \sim \text{Uniform}\lbrace 1, \ldots, T\rbrace$, $x\_0 \sim q(x\_0)$, and $\varepsilon \sim \mathcal{N}(0, I)$.
 
 ### 6.2 Why Does Dropping the Weights Help?
 

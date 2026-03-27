@@ -299,7 +299,7 @@ def log_likelihood(model, x_0, T=1.0, N=500, beta_min=0.1, beta_max=20.0):
 
 2. Compute the average log-likelihood on 1000 held-out test points from the 8-Gaussians distribution. Compare to the true log-likelihood (which you can compute analytically for a Gaussian mixture).
 
-3. How sensitive is the result to the number of discretization steps $N$? Plot log-likelihood vs. $N$ for $N \in \lbrace 50, 100, 200, 500, 1000\rbrace $.
+3. How sensitive is the result to the number of discretization steps $N$? Plot log-likelihood vs. $N$ for $N \in \lbrace 50, 100, 200, 500, 1000\rbrace$.
 
 ---
 
@@ -343,7 +343,7 @@ def ddim_sample(model, alpha_bar, timesteps, shape):
     return x
 ```
 
-Generate samples using $S \in \lbrace 10, 20, 50, 100, 200, 1000\rbrace $ evenly-spaced timesteps. Compare sample quality (visually and, for the 2D case, via Wasserstein distance). At what $S$ does quality become acceptable?
+Generate samples using $S \in \lbrace 10, 20, 50, 100, 200, 1000\rbrace$ evenly-spaced timesteps. Compare sample quality (visually and, for the 2D case, via Wasserstein distance). At what $S$ does quality become acceptable?
 
 ### Part (c): Deterministic Encoding
 
@@ -351,7 +351,7 @@ Using DDIM with $S = 100$ steps, encode 10 data points into latent space by runn
 
 1. Compare the reconstructed $\hat{x}\_0$ to the original $x\_0$. How large is the reconstruction error? (For the 2D case, plot original and reconstructed points; for MNIST, display original and reconstructed images.)
 
-2. Take two data points, encode them to $z\_1, z\_2$, interpolate in latent space ($z\_\alpha = (1-\alpha)z\_1 + \alpha z\_2$), and decode. Plot the interpolation for $\alpha \in \lbrace 0, 0.25, 0.5, 0.75, 1\rbrace $.
+2. Take two data points, encode them to $z\_1, z\_2$, interpolate in latent space ($z\_\alpha = (1-\alpha)z\_1 + \alpha z\_2$), and decode. Plot the interpolation for $\alpha \in \lbrace 0, 0.25, 0.5, 0.75, 1\rbrace$.
 
 ---
 

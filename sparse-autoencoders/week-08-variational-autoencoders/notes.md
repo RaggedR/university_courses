@@ -26,7 +26,7 @@ The VAE is arguably the most elegant architecture we will study in this course. 
 
 ### 1.1 The Problem with Unstructured Latent Spaces
 
-A trained autoencoder gives us an encoder $f: \mathbb{R}^{d\_x} \to \mathbb{R}^{d\_z}$ and a decoder $g: \mathbb{R}^{d\_z} \to \mathbb{R}^{d\_x}$. The decoder can, in principle, map *any* latent vector $z$ to an output. But the decoder was only trained on latent vectors that are *outputs of the encoder* -- i.e., on the set $\lbrace f(x) : x \in \text{training data}\rbrace $.
+A trained autoencoder gives us an encoder $f: \mathbb{R}^{d\_x} \to \mathbb{R}^{d\_z}$ and a decoder $g: \mathbb{R}^{d\_z} \to \mathbb{R}^{d\_x}$. The decoder can, in principle, map *any* latent vector $z$ to an output. But the decoder was only trained on latent vectors that are *outputs of the encoder* -- i.e., on the set $\lbrace f(x) : x \in \text{training data}\rbrace$.
 
 If you feed the decoder a random $z$ that does not lie in this set, the decoder is being asked to extrapolate, and neural networks are notoriously bad at extrapolation.
 
@@ -105,7 +105,7 @@ Since we cannot compute $p\_\theta(z|x)$, we will approximate it with a parametr
 We want $q\_\phi(z|x)$ to be close to $p\_\theta(z|x)$. The natural measure of closeness between distributions is the KL divergence (from Week 2):
 
 $$
-D_{\text{KL}}(q_\phi(z|x) \Vert  p_\theta(z|x)) = \mathbb{E}_{z \sim q_\phi} \left[ \log \frac{q_\phi(z|x)}{p_\theta(z|x)} \right]
+D_{\text{KL}}(q_\phi(z|x) \Vert p_\theta(z|x)) = \mathbb{E}_{z \sim q_\phi} \left[ \log \frac{q_\phi(z|x)}{p_\theta(z|x)} \right]
 $$
 
 We would like to minimize this KL divergence. But it involves $p\_\theta(z|x)$, which we cannot compute! We seem stuck. The way out is one of the most important derivations in modern machine learning.
@@ -141,7 +141,7 @@ $$
 **Step 4.** Identify the two terms:
 
 $$
-\log p_\theta(x) = \underbrace{\mathbb{E}_{z \sim q_\phi} \left[ \log \frac{p_\theta(x, z)}{q_\phi(z|x)} \right]}_{\text{ELBO: } \mathcal{L}(\theta, \phi; x)} + \underbrace{D_{\text{KL}}(q_\phi(z|x) \Vert  p_\theta(z|x))}_{\geq 0}
+\log p_\theta(x) = \underbrace{\mathbb{E}_{z \sim q_\phi} \left[ \log \frac{p_\theta(x, z)}{q_\phi(z|x)} \right]}_{\text{ELBO: } \mathcal{L}(\theta, \phi; x)} + \underbrace{D_{\text{KL}}(q_\phi(z|x) \Vert p_\theta(z|x))}_{\geq 0}
 $$
 
 Since KL divergence is always non-negative, we have:
@@ -165,7 +165,7 @@ $$
 $$
 
 $$
-\boxed{\mathcal{L}(\theta, \phi; x) = \underbrace{\mathbb{E}_{z \sim q_\phi(z|x)} [\log p_\theta(x|z)]}_{\text{Reconstruction term}} - \underbrace{D_{\text{KL}}(q_\phi(z|x) \Vert  p(z))}_{\text{Regularization term}}}
+\boxed{\mathcal{L}(\theta, \phi; x) = \underbrace{\mathbb{E}_{z \sim q_\phi(z|x)} [\log p_\theta(x|z)]}_{\text{Reconstruction term}} - \underbrace{D_{\text{KL}}(q_\phi(z|x) \Vert p(z))}_{\text{Regularization term}}}
 $$
 
 This decomposition is the heart of the VAE. Let us understand each term:
@@ -175,7 +175,7 @@ This says: sample a latent code $z$ from the approximate posterior, then evaluat
 
 If $p\_\theta(x|z) = \mathcal{N}(x; g\_\theta(z), \sigma^2 I)$, then $\log p\_\theta(x|z) = -\frac{1}{2\sigma^2}\Vert x - g\_\theta(z)\Vert ^2 + \text{const}$, and maximizing this is equivalent to minimizing reconstruction MSE. Sound familiar? It is the same reconstruction loss as in a vanilla autoencoder.
 
-**Regularization term: $D\_{\text{KL}}(q\_\phi(z|x) \Vert  p(z))$.**
+**Regularization term: $D\_{\text{KL}}(q\_\phi(z|x) \Vert p(z))$.**
 This penalizes the approximate posterior for being different from the prior. It encourages the encoder to produce latent codes that are distributed like $p(z)$. If $p(z) = \mathcal{N}(0, I)$, this term pushes all the encoded points toward a standard Gaussian -- exactly the structure we wanted for generation.
 
 ### 3.4 The Tightness of the Bound
@@ -183,10 +183,10 @@ This penalizes the approximate posterior for being different from the prior. It 
 Recall that:
 
 $$
-\log p_\theta(x) = \mathcal{L}(\theta, \phi; x) + D_{\text{KL}}(q_\phi(z|x) \Vert  p_\theta(z|x))
+\log p_\theta(x) = \mathcal{L}(\theta, \phi; x) + D_{\text{KL}}(q_\phi(z|x) \Vert p_\theta(z|x))
 $$
 
-The gap between the true log-likelihood and the ELBO is exactly $D\_{\text{KL}}(q\_\phi(z|x) \Vert  p\_\theta(z|x))$. This gap is zero if and only if $q\_\phi(z|x) = p\_\theta(z|x)$ -- i.e., the approximate posterior matches the true posterior exactly.
+The gap between the true log-likelihood and the ELBO is exactly $D\_{\text{KL}}(q\_\phi(z|x) \Vert p\_\theta(z|x))$. This gap is zero if and only if $q\_\phi(z|x) = p\_\theta(z|x)$ -- i.e., the approximate posterior matches the true posterior exactly.
 
 In practice, this gap is non-zero because we use a restricted family for $q\_\phi$ (typically Gaussian). The better our approximation, the tighter the bound, and the more faithfully we maximize the true likelihood.
 
@@ -286,14 +286,14 @@ $$
 The KL divergence is:
 
 $$
-D_{\text{KL}}(p \Vert  q) = \frac{1}{2} \left[ \log \frac{|\Sigma_2|}{|\Sigma_1|} - d + \text{tr}(\Sigma_2^{-1} \Sigma_1) + (\mu_2 - \mu_1)^\top \Sigma_2^{-1} (\mu_2 - \mu_1) \right]
+D_{\text{KL}}(p \Vert q) = \frac{1}{2} \left[ \log \frac{|\Sigma_2|}{|\Sigma_1|} - d + \text{tr}(\Sigma_2^{-1} \Sigma_1) + (\mu_2 - \mu_1)^\top \Sigma_2^{-1} (\mu_2 - \mu_1) \right]
 $$
 
 where $d$ is the dimensionality. This is a standard result you will derive in the homework.
 
 ### 5.2 VAE-Specific Case
 
-For the VAE, we need $D\_{\text{KL}}(q\_\phi(z|x) \Vert  p(z))$ where:
+For the VAE, we need $D\_{\text{KL}}(q\_\phi(z|x) \Vert p(z))$ where:
 - $q\_\phi(z|x) = \mathcal{N}(\mu, \text{diag}(\sigma^2))$ (diagonal covariance, depending on $x$)
 - $p(z) = \mathcal{N}(0, I)$
 
@@ -306,7 +306,7 @@ $$
 Since $|I| = 1$, $|\text{diag}(\sigma^2)| = \prod\_j \sigma\_j^2$, and $\text{tr}(\text{diag}(\sigma^2)) = \sum\_j \sigma\_j^2$:
 
 $$
-\boxed{D_{\text{KL}}(q_\phi(z|x) \Vert  p(z)) = \frac{1}{2} \sum_{j=1}^{d_z} \left( \mu_j^2 + \sigma_j^2 - \log \sigma_j^2 - 1 \right)}
+\boxed{D_{\text{KL}}(q_\phi(z|x) \Vert p(z)) = \frac{1}{2} \sum_{j=1}^{d_z} \left( \mu_j^2 + \sigma_j^2 - \log \sigma_j^2 - 1 \right)}
 $$
 
 Or equivalently, using log-variance $\gamma\_j = \log \sigma\_j^2$:
@@ -401,7 +401,7 @@ During training, we sample $\epsilon$ fresh for each forward pass. During evalua
 The VAE training objective is to maximize the ELBO. Equivalently, we minimize the negative ELBO:
 
 $$
-\mathcal{L}_{\text{VAE}} = -\mathcal{L}(\theta, \phi; x) = \underbrace{-\mathbb{E}_{z \sim q_\phi}[\log p_\theta(x|z)]}_{\text{Reconstruction loss}} + \underbrace{D_{\text{KL}}(q_\phi(z|x) \Vert  p(z))}_{\text{KL regularization}}
+\mathcal{L}_{\text{VAE}} = -\mathcal{L}(\theta, \phi; x) = \underbrace{-\mathbb{E}_{z \sim q_\phi}[\log p_\theta(x|z)]}_{\text{Reconstruction loss}} + \underbrace{D_{\text{KL}}(q_\phi(z|x) \Vert p(z))}_{\text{KL regularization}}
 $$
 
 With a Bernoulli decoder (for binary data):
@@ -576,7 +576,7 @@ GANs (Generative Adversarial Networks) avoid this problem by using a different t
 The $\beta$-VAE (Higgins et al., 2017) modifies the VAE objective:
 
 $$
-\mathcal{L}_{\beta\text{-VAE}} = \mathbb{E}_{z \sim q_\phi}[\log p_\theta(x|z)] - \beta \cdot D_{\text{KL}}(q_\phi(z|x) \Vert  p(z))
+\mathcal{L}_{\beta\text{-VAE}} = \mathbb{E}_{z \sim q_\phi}[\log p_\theta(x|z)] - \beta \cdot D_{\text{KL}}(q_\phi(z|x) \Vert p(z))
 $$
 
 where $\beta > 1$ increases the pressure to match the prior, encouraging more disentangled representations at the cost of reconstruction quality. When $\beta = 1$, this is the standard VAE.
@@ -637,11 +637,11 @@ The VAE is the last autoencoder *variant* we study. Starting next week, we turn 
 
 | Concept | Equation |
 |---------|----------|
-| ELBO | $\log p(x) \geq \mathbb{E}\_q[\log p(x|z)] - D\_{\text{KL}}(q(z|x) \Vert  p(z))$ |
-| ELBO gap | $\log p(x) = \text{ELBO} + D\_{\text{KL}}(q(z|x) \Vert  p(z|x))$ |
+| ELBO | $\log p(x) \geq \mathbb{E}\_q[\log p(x|z)] - D\_{\text{KL}}(q(z|x) \Vert p(z))$ |
+| ELBO gap | $\log p(x) = \text{ELBO} + D\_{\text{KL}}(q(z|x) \Vert p(z|x))$ |
 | Reparameterization | $z = \mu + \sigma \odot \epsilon, \quad \epsilon \sim \mathcal{N}(0, I)$ |
 | KL (VAE) | $D\_{\text{KL}} = \frac{1}{2}\sum\_j (\mu\_j^2 + \sigma\_j^2 - \log \sigma\_j^2 - 1)$ |
-| KL (general Gaussian) | $D\_{\text{KL}}(\mathcal{N}\_1 \Vert  \mathcal{N}\_2) = \frac{1}{2}[\log\frac{|\Sigma\_2|}{|\Sigma\_1|} - d + \text{tr}(\Sigma\_2^{-1}\Sigma\_1) + \Delta\mu^\top \Sigma\_2^{-1} \Delta\mu]$ |
+| KL (general Gaussian) | $D\_{\text{KL}}(\mathcal{N}\_1 \Vert \mathcal{N}\_2) = \frac{1}{2}[\log\frac{|\Sigma\_2|}{|\Sigma\_1|} - d + \text{tr}(\Sigma\_2^{-1}\Sigma\_1) + \Delta\mu^\top \Sigma\_2^{-1} \Delta\mu]$ |
 
 ---
 

@@ -224,7 +224,7 @@ This problem builds intuition for what the universal approximation theorem means
 
 This problem previews the autoencoder idea.
 
-**(a)** In a classifier, the network maps input $\mathbf{x} \in \mathbb{R}^d$ to a label $y \in \lbrace 1, \ldots, K\rbrace $, compressing the input down to one of $K$ categories. The hidden layers extract features useful for classification. Explain why features useful for classification might NOT be useful for reconstruction (recovering the original input). Give a concrete example.
+**(a)** In a classifier, the network maps input $\mathbf{x} \in \mathbb{R}^d$ to a label $y \in \lbrace 1, \ldots, K\rbrace$, compressing the input down to one of $K$ categories. The hidden layers extract features useful for classification. Explain why features useful for classification might NOT be useful for reconstruction (recovering the original input). Give a concrete example.
 
 **(b)** Imagine a network architecture that looks like this:
 

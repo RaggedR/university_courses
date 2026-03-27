@@ -24,7 +24,7 @@ Suppose you observe data $x\_1, x\_2, \ldots, x\_N$ drawn i.i.d. from $\mathcal{
 
 ## Problem 2: KL Divergence by Hand (Theory)
 
-Consider two discrete distributions over $\lbrace 1, 2, 3, 4\rbrace $:
+Consider two discrete distributions over $\lbrace 1, 2, 3, 4\rbrace$:
 
 | $x$ | $p(x)$ | $q(x)$ |
 |-----|---------|---------|
@@ -37,17 +37,17 @@ Consider two discrete distributions over $\lbrace 1, 2, 3, 4\rbrace $:
 
 **(b)** Compute $H(p, q)$, the cross-entropy from $p$ to $q$.
 
-**(c)** Compute $D\_{\text{KL}}(p \Vert  q)$ directly from the definition, and verify that it equals $H(p, q) - H(p)$.
+**(c)** Compute $D\_{\text{KL}}(p \Vert q)$ directly from the definition, and verify that it equals $H(p, q) - H(p)$.
 
-**(d)** Compute $D\_{\text{KL}}(q \Vert  p)$. Is it equal to $D\_{\text{KL}}(p \Vert  q)$? What does this tell you about KL divergence as a "distance"?
+**(d)** Compute $D\_{\text{KL}}(q \Vert p)$. Is it equal to $D\_{\text{KL}}(p \Vert q)$? What does this tell you about KL divergence as a "distance"?
 
-**(e)** Now let $q$ be the uniform distribution. Without computing, argue why $D\_{\text{KL}}(p \Vert  q\_{\text{uniform}})$ gives a measure of how "non-uniform" $p$ is. What value of $p$ would minimize this KL divergence?
+**(e)** Now let $q$ be the uniform distribution. Without computing, argue why $D\_{\text{KL}}(p \Vert q\_{\text{uniform}})$ gives a measure of how "non-uniform" $p$ is. What value of $p$ would minimize this KL divergence?
 
 ---
 
 ## Problem 3: KL Divergence is Non-Negative (Theory — Proof)
 
-Prove that $D\_{\text{KL}}(p \Vert  q) \geq 0$ for any distributions $p, q$, with equality iff $p = q$ almost everywhere.
+Prove that $D\_{\text{KL}}(p \Vert q) \geq 0$ for any distributions $p, q$, with equality iff $p = q$ almost everywhere.
 
 **Approach:** Use **Jensen's inequality**, which states that for a convex function $\phi$:
 
@@ -61,7 +61,7 @@ $$
 \psi(\mathbb{E}[X]) \geq \mathbb{E}[\psi(X)]
 $$
 
-**(a)** Write $D\_{\text{KL}}(p \Vert  q) = -\mathbb{E}\_{x \sim p}\left[\log\frac{q(x)}{p(x)}\right]$.
+**(a)** Write $D\_{\text{KL}}(p \Vert q) = -\mathbb{E}\_{x \sim p}\left[\log\frac{q(x)}{p(x)}\right]$.
 
 **(b)** Apply Jensen's inequality using the fact that $\log$ is concave:
 
@@ -71,9 +71,9 @@ $$
 
 **(c)** Show that $\mathbb{E}\_{x \sim p}\left[\frac{q(x)}{p(x)}\right] = 1$.
 
-**(d)** Combine (a), (b), and (c) to conclude that $D\_{\text{KL}}(p \Vert  q) \geq 0$.
+**(d)** Combine (a), (b), and (c) to conclude that $D\_{\text{KL}}(p \Vert q) \geq 0$.
 
-**(e)** When does equality hold in Jensen's inequality? Use this to argue that $D\_{\text{KL}}(p \Vert  q) = 0$ iff $p = q$ a.e.
+**(e)** When does equality hold in Jensen's inequality? Use this to argue that $D\_{\text{KL}}(p \Vert q) = 0$ iff $p = q$ a.e.
 
 ---
 
@@ -127,23 +127,23 @@ Verify both give the same answer.
 Start from the definition:
 
 $$
-D_{\text{KL}}(p \Vert  q) = \mathbb{E}_{x \sim p}\left[\log\frac{p(x)}{q(x)}\right]
+D_{\text{KL}}(p \Vert q) = \mathbb{E}_{x \sim p}\left[\log\frac{p(x)}{q(x)}\right]
 $$
 
 Substitute the Gaussian PDFs, expand the logarithm, and use the facts $\mathbb{E}\_p[x] = \mu\_1$, $\mathbb{E}\_p[x^2] = \sigma\_1^2 + \mu\_1^2$. You should arrive at:
 
 $$
-D_{\text{KL}}(p \Vert  q) = \log\frac{\sigma_2}{\sigma_1} + \frac{\sigma_1^2 + (\mu_1 - \mu_2)^2}{2\sigma_2^2} - \frac{1}{2}
+D_{\text{KL}}(p \Vert q) = \log\frac{\sigma_2}{\sigma_1} + \frac{\sigma_1^2 + (\mu_1 - \mu_2)^2}{2\sigma_2^2} - \frac{1}{2}
 $$
 
 **(b) (Implementation)** Write a Python function `kl_gaussian(mu1, sigma1, mu2, sigma2)` that computes this formula. Verify your implementation by:
-1. Checking that $D\_{\text{KL}}(p \Vert  p) = 0$ for several values of $\mu$ and $\sigma$.
-2. Checking that $D\_{\text{KL}}(p \Vert  q) \geq 0$ for many random pairs.
+1. Checking that $D\_{\text{KL}}(p \Vert p) = 0$ for several values of $\mu$ and $\sigma$.
+2. Checking that $D\_{\text{KL}}(p \Vert q) \geq 0$ for many random pairs.
 3. Comparing against a numerical estimate: sample 100,000 points from $p$, compute $\frac{1}{N}\sum\_{i=1}^N \log\frac{p(x\_i)}{q(x\_i)}$, and verify it's close to the formula.
 
-**(c) (Implementation)** Fix $q = \mathcal{N}(0, 1)$ and plot $D\_{\text{KL}}(p \Vert  q)$ as a function of $\mu\_1$ for $\sigma\_1 = 1$, and as a function of $\sigma\_1$ for $\mu\_1 = 0$. Interpret the plots: what does the KL divergence "penalize" when comparing to a standard normal?
+**(c) (Implementation)** Fix $q = \mathcal{N}(0, 1)$ and plot $D\_{\text{KL}}(p \Vert q)$ as a function of $\mu\_1$ for $\sigma\_1 = 1$, and as a function of $\sigma\_1$ for $\mu\_1 = 0$. Interpret the plots: what does the KL divergence "penalize" when comparing to a standard normal?
 
-**(d)** In the VAE (Week 8), the loss includes $D\_{\text{KL}}(\mathcal{N}(\mu, \sigma^2) \Vert  \mathcal{N}(0, 1))$ where $\mu$ and $\sigma$ are outputs of the encoder. Using your formula from (a), show this simplifies to:
+**(d)** In the VAE (Week 8), the loss includes $D\_{\text{KL}}(\mathcal{N}(\mu, \sigma^2) \Vert \mathcal{N}(0, 1))$ where $\mu$ and $\sigma$ are outputs of the encoder. Using your formula from (a), show this simplifies to:
 
 $$
 D_{\text{KL}} = -\frac{1}{2}\left(1 + \log\sigma^2 - \mu^2 - \sigma^2\right)

@@ -34,7 +34,7 @@ $$
 Use $p\_\theta(x, z) = p\_\theta(x|z) p(z)$ to decompose this into:
 
 $$
-\mathcal{L} = \mathbb{E}_{z \sim q_\phi}[\log p_\theta(x|z)] - D_{\text{KL}}(q_\phi(z|x) \Vert  p(z))
+\mathcal{L} = \mathbb{E}_{z \sim q_\phi}[\log p_\theta(x|z)] - D_{\text{KL}}(q_\phi(z|x) \Vert p(z))
 $$
 
 Show every step of the algebra.
@@ -44,14 +44,14 @@ Show every step of the algebra.
 Prove that:
 
 $$
-\log p_\theta(x) = \mathcal{L}(\theta, \phi; x) + D_{\text{KL}}(q_\phi(z|x) \Vert  p_\theta(z|x))
+\log p_\theta(x) = \mathcal{L}(\theta, \phi; x) + D_{\text{KL}}(q_\phi(z|x) \Vert p_\theta(z|x))
 $$
 
-*Hint: Start from the definition of $D\_{\text{KL}}(q\_\phi(z|x) \Vert  p\_\theta(z|x))$ and use Bayes' rule to substitute for $p\_\theta(z|x)$.*
+*Hint: Start from the definition of $D\_{\text{KL}}(q\_\phi(z|x) \Vert p\_\theta(z|x))$ and use Bayes' rule to substitute for $p\_\theta(z|x)$.*
 
 ### Part (e): Interpretation
 
-1. Why does the gap being $D\_{\text{KL}}(q\_\phi(z|x) \Vert  p\_\theta(z|x)) \geq 0$ guarantee that the ELBO is indeed a lower bound?
+1. Why does the gap being $D\_{\text{KL}}(q\_\phi(z|x) \Vert p\_\theta(z|x)) \geq 0$ guarantee that the ELBO is indeed a lower bound?
 2. Under what condition is the bound tight (gap = 0)?
 3. Why can't we just minimize this KL divergence directly?
 
@@ -64,13 +64,13 @@ $$
 Derive the KL divergence between two multivariate Gaussians:
 
 $$
-D_{\text{KL}}(\mathcal{N}(\mu_1, \Sigma_1) \Vert  \mathcal{N}(\mu_2, \Sigma_2))
+D_{\text{KL}}(\mathcal{N}(\mu_1, \Sigma_1) \Vert \mathcal{N}(\mu_2, \Sigma_2))
 $$
 
 Start from the definition:
 
 $$
-D_{\text{KL}}(p \Vert  q) = \mathbb{E}_{x \sim p}\left[\log p(x) - \log q(x)\right]
+D_{\text{KL}}(p \Vert q) = \mathbb{E}_{x \sim p}\left[\log p(x) - \log q(x)\right]
 $$
 
 Write out the Gaussian log-densities, expand, and simplify. You will need these identities:
@@ -112,7 +112,7 @@ Explain intuitively why case (4) has a higher KL than case (3).
 
 ### Part (a)
 
-Starting from the definition of KL divergence as an expectation, derive the closed-form expression for the KL divergence $D\_{\text{KL}}(q(z|x) \Vert  p(z))$ where $q(z|x) = \mathcal{N}(\mu, \text{diag}(\sigma^2))$ and $p(z) = \mathcal{N}(0, I)$.
+Starting from the definition of KL divergence as an expectation, derive the closed-form expression for the KL divergence $D\_{\text{KL}}(q(z|x) \Vert p(z))$ where $q(z|x) = \mathcal{N}(\mu, \text{diag}(\sigma^2))$ and $p(z) = \mathcal{N}(0, I)$.
 
 Do this **without** using the general multivariate Gaussian result from Problem 2. Instead, work from:
 
@@ -126,7 +126,7 @@ Write out the log-densities for the diagonal Gaussian $q$ and standard Gaussian 
 
 ### Part (b)
 
-Prove that $D\_{\text{KL}}(q \Vert  p) = 0$ if and only if $\mu = 0$ and $\sigma^2 = \mathbf{1}$ (the vector of all ones).
+Prove that $D\_{\text{KL}}(q \Vert p) = 0$ if and only if $\mu = 0$ and $\sigma^2 = \mathbf{1}$ (the vector of all ones).
 
 *Hint: Show that for each dimension $j$, the function $f(\mu\_j, \sigma\_j^2) = \mu\_j^2 + \sigma\_j^2 - \log \sigma\_j^2 - 1$ has a unique minimum at $\mu\_j = 0, \sigma\_j^2 = 1$.*
 
@@ -224,7 +224,7 @@ $$
 
 ### Part (a): Training
 
-Train VAEs with $\beta \in \lbrace 0.1, 0.5, 1.0, 2.0, 5.0, 10.0\rbrace $, all with $d\_z = 10$. For each:
+Train VAEs with $\beta \in \lbrace 0.1, 0.5, 1.0, 2.0, 5.0, 10.0\rbrace$, all with $d\_z = 10$. For each:
 1. Report the final reconstruction loss and KL divergence separately.
 2. Show 10 reconstructed test images.
 

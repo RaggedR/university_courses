@@ -97,7 +97,7 @@ $$
 **(a)** [3 marks] The variational lower bound (VLB) on $-\log p\_\theta(\mathbf{x}\_0)$ decomposes as:
 
 $$
-\mathcal{L}_{\text{VLB}} = D_{\text{KL}}(q(\mathbf{x}_T | \mathbf{x}_0) \Vert  p(\mathbf{x}_T)) + \sum_{t=2}^{T} D_{\text{KL}}(q(\mathbf{x}_{t-1} | \mathbf{x}_t, \mathbf{x}_0) \Vert  p_\theta(\mathbf{x}_{t-1} | \mathbf{x}_t)) + \mathcal{L}_0
+\mathcal{L}_{\text{VLB}} = D_{\text{KL}}(q(\mathbf{x}_T | \mathbf{x}_0) \Vert p(\mathbf{x}_T)) + \sum_{t=2}^{T} D_{\text{KL}}(q(\mathbf{x}_{t-1} | \mathbf{x}_t, \mathbf{x}_0) \Vert p_\theta(\mathbf{x}_{t-1} | \mathbf{x}_t)) + \mathcal{L}_0
 $$
 
 The key term is $q(\mathbf{x}\_{t-1} | \mathbf{x}\_t, \mathbf{x}\_0)$, the forward process posterior. Show that this is Gaussian and derive its mean $\tilde{\boldsymbol{\mu}}\_t(\mathbf{x}\_t, \mathbf{x}\_0)$ and variance $\tilde{\beta}\_t$.
@@ -108,7 +108,7 @@ $$
 \boldsymbol{\mu}_\theta(\mathbf{x}_t, t) = \frac{1}{\sqrt{\alpha_t}}\left(\mathbf{x}_t - \frac{\beta_t}{\sqrt{1 - \bar{\alpha}_t}}\boldsymbol{\epsilon}_\theta(\mathbf{x}_t, t)\right)
 $$
 
-Show that minimizing the KL term $D\_{\text{KL}}(q(\mathbf{x}\_{t-1} | \mathbf{x}\_t, \mathbf{x}\_0) \Vert  p\_\theta(\mathbf{x}\_{t-1} | \mathbf{x}\_t))$ reduces to minimizing $\Vert \boldsymbol{\epsilon} - \boldsymbol{\epsilon}\_\theta(\mathbf{x}\_t, t)\Vert ^2$ (up to a time-dependent weighting factor).
+Show that minimizing the KL term $D\_{\text{KL}}(q(\mathbf{x}\_{t-1} | \mathbf{x}\_t, \mathbf{x}\_0) \Vert p\_\theta(\mathbf{x}\_{t-1} | \mathbf{x}\_t))$ reduces to minimizing $\Vert \boldsymbol{\epsilon} - \boldsymbol{\epsilon}\_\theta(\mathbf{x}\_t, t)\Vert ^2$ (up to a time-dependent weighting factor).
 
 **(c)** [3 marks] Ho et al. found that dropping the time-dependent weighting and using the simplified loss $\mathcal{L}\_{\text{simple}} = \mathbb{E}\_{t, \mathbf{x}\_0, \boldsymbol{\epsilon}}[\Vert \boldsymbol{\epsilon} - \boldsymbol{\epsilon}\_\theta(\mathbf{x}\_t, t)\Vert ^2]$ works better in practice. Why might equal weighting across timesteps improve sample quality, even though it no longer corresponds to the exact variational bound?
 

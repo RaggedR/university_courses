@@ -96,7 +96,7 @@ A patch-based discriminator $D\_\psi$ distinguishes real images from reconstruct
 
 **KL regularization:**
 $$
-\mathcal{L}_{\text{KL}} = D_{\text{KL}}(q(z|x) \Vert  \mathcal{N}(0, I))
+\mathcal{L}_{\text{KL}} = D_{\text{KL}}(q(z|x) \Vert \mathcal{N}(0, I))
 $$
 
 This is the crucial term for latent diffusion. Without it, the latent space can have an arbitrary, pathological distribution. The KL term encourages the latent distribution to be close to a standard Gaussian, making it smooth and well-behaved -- exactly what a diffusion model needs.
@@ -458,7 +458,7 @@ There is a subtle gap between reconstruction quality (how well $\mathcal{D}(\mat
 |---------|----------|
 | VAE encoding | $z = \mathcal{E}(x), \quad z \in \mathbb{R}^{h \times w \times c}$ |
 | VAE decoding | $\hat{x} = \mathcal{D}(z), \quad \hat{x} \in \mathbb{R}^{H \times W \times 3}$ |
-| KL regularization | $\mathcal{L}\_{\text{KL}} = D\_{\text{KL}}(q(z|x) \Vert  \mathcal{N}(0,I))$ |
+| KL regularization | $\mathcal{L}\_{\text{KL}} = D\_{\text{KL}}(q(z|x) \Vert \mathcal{N}(0,I))$ |
 | Latent diffusion training | $\mathcal{L} = \mathbb{E}\_{z\_0, \epsilon, t}[\Vert \epsilon - \epsilon\_\theta(z\_t, t)\Vert ^2]$ |
 | Latent forward process | $z\_t = \sqrt{\bar{\alpha}\_t}\, z\_0 + \sqrt{1-\bar{\alpha}\_t}\, \epsilon$ |
 | Time embedding | $\text{PE}(t, 2i) = \sin(t / 10000^{2i/d})$ |

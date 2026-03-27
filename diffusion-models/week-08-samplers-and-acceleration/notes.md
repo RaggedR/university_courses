@@ -108,7 +108,7 @@ The deterministic case ($\eta = 0$) is remarkable: it means the mapping from noi
 
 The critical practical advantage: DDIM can skip timesteps. Instead of running through all $T = 1000$ steps, we choose a subsequence $\tau\_1 < \tau\_2 < \cdots < \tau\_S$ of $S \ll T$ timesteps and apply the DDIM update only at these times.
 
-For example, with $S = 50$ and uniform spacing: $\tau = \lbrace 1, 21, 41, \ldots, 981\rbrace $. The DDIM formula is applied with $(t, t-1)$ replaced by $(\tau\_{i+1}, \tau\_i)$, using the $\bar{\alpha}$ values at the subsequence times.
+For example, with $S = 50$ and uniform spacing: $\tau = \lbrace 1, 21, 41, \ldots, 981\rbrace$. The DDIM formula is applied with $(t, t-1)$ replaced by $(\tau\_{i+1}, \tau\_i)$, using the $\bar{\alpha}$ values at the subsequence times.
 
 This works because the DDIM update does not assume small step sizes in the same way DDPM does. The "predicted $x\_0$" reparameterization allows the model to make a global prediction of the clean image at each step, rather than taking a small local step. Even with 50 steps instead of 1000, DDIM produces high-quality samples.
 

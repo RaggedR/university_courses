@@ -1,5 +1,6 @@
 import { useState, useCallback } from 'react';
 import { createNote, type FlashcardData, type QuizQuestionData } from './note-store';
+import { getApiKey, setApiKey, generateCards } from './ai-generate';
 import MarkdownPreview from './MarkdownPreview';
 import CardCreator from './CardCreator';
 import Flashcard from './Flashcard';
@@ -13,7 +14,10 @@ export default function UploadPage({ basePath }: { basePath: string }) {
   const [editorOpen, setEditorOpen] = useState(true);
   const [flashcards, setFlashcards] = useState<FlashcardData[]>([]);
   const [quizQuestions, setQuizQuestions] = useState<QuizQuestionData[]>([]);
+  const [generating, setGenerating] = useState(false);
   const [showCreator, setShowCreator] = useState(false);
+  const [showKeyInput, setShowKeyInput] = useState(false);
+  const [keyInput, setKeyInput] = useState('');
   const [toast, setToast] = useState<{ msg: string; type: 'success' | 'error' } | null>(null);
 
   const showToast = useCallback((msg: string, type: 'success' | 'error' = 'success') => {
@@ -69,6 +73,44 @@ export default function UploadPage({ basePath }: { basePath: string }) {
     } finally {
       setFetching(false);
     }
+  }
+
+  async function handleGenerate() {
+    const key = getApiKey();
+    if (!key) {
+      setShowKeyInput(true);
+      setKeyInput('');
+      return;
+    }
+    setGenerating(true);
+    try {
+      const result = await generateCards(markdown, 'both');
+      if (result.flashcards.length > 0) {
+        setFlashcards(prev => [...prev, ...result.flashcards]);
+      }
+      if (result.quizQuestions.length > 0) {
+        setQuizQuestions(prev => [...prev, ...result.quizQuestions]);
+      }
+      if (result.flashcards.length === 0 && result.quizQuestions.length === 0) {
+        showToast('AI returned empty results — try notes with more content', 'error');
+      } else {
+        showToast(`Generated ${result.flashcards.length} cards + ${result.quizQuestions.length} questions`);
+      }
+    } catch (err: any) {
+      if (err.message === 'Invalid API key') {
+        setShowKeyInput(true);
+        setKeyInput('');
+      }
+      showToast(err.message || 'Generation failed', 'error');
+    } finally {
+      setGenerating(false);
+    }
+  }
+
+  function saveKey() {
+    setApiKey(keyInput.trim());
+    setShowKeyInput(false);
+    handleGenerate();
   }
 
   function handleSave() {
@@ -156,16 +198,49 @@ export default function UploadPage({ basePath }: { basePath: string }) {
                 Save Note
               </button>
               <button
-                className={`btn ${showCreator ? 'btn-primary' : 'btn-secondary'}`}
+                className="btn btn-primary"
+                onClick={handleGenerate}
+                disabled={generating || !markdown.trim()}
+              >
+                {generating ? 'Generating...' : 'Generate Flashcards & Quiz'}
+              </button>
+              <button
+                className={`btn btn-sm ${showCreator ? 'btn-secondary' : 'btn-secondary'}`}
                 onClick={() => setShowCreator(!showCreator)}
                 disabled={!markdown.trim()}
+                style={{ fontSize: '0.8rem' }}
               >
-                {showCreator ? 'Hide Cards' : 'Add Flashcards & Quiz'}
+                {showCreator ? 'Hide Manual' : 'Add Manually'}
               </button>
               <a className="btn btn-secondary" href={`${basePath}/my-notes/`}>
                 My Notes
               </a>
             </div>
+
+            {showKeyInput && (
+              <div className="creator-section" style={{ marginTop: '0.75rem' }}>
+                <label style={{ fontSize: '0.85rem', fontWeight: 500, color: 'var(--app-text-muted)' }}>
+                  Anthropic API Key
+                </label>
+                <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.4rem' }}>
+                  <input
+                    type="password"
+                    className="title-input"
+                    placeholder="sk-ant-..."
+                    value={keyInput}
+                    onChange={e => setKeyInput(e.target.value)}
+                    onKeyDown={e => { if (e.key === 'Enter' && keyInput.trim()) saveKey(); }}
+                    style={{ marginBottom: 0, flex: 1 }}
+                  />
+                  <button className="btn btn-primary btn-sm" onClick={saveKey} disabled={!keyInput.trim()}>
+                    Save & Generate
+                  </button>
+                </div>
+                <span style={{ fontSize: '0.8rem', color: 'var(--app-text-muted)', marginTop: '0.3rem', display: 'block' }}>
+                  Stored locally in your browser. Only sent to Anthropic's API.
+                </span>
+              </div>
+            )}
           </div>
         )}
 

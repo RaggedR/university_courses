@@ -1,6 +1,9 @@
 import { useState, useCallback } from 'react';
-import { createNote } from './note-store';
+import { createNote, type FlashcardData, type QuizQuestionData } from './note-store';
 import MarkdownPreview from './MarkdownPreview';
+import CardCreator from './CardCreator';
+import Flashcard from './Flashcard';
+import Quiz from './Quiz';
 
 export default function UploadPage({ basePath }: { basePath: string }) {
   const [title, setTitle] = useState('');
@@ -8,6 +11,9 @@ export default function UploadPage({ basePath }: { basePath: string }) {
   const [url, setUrl] = useState('');
   const [fetching, setFetching] = useState(false);
   const [editorOpen, setEditorOpen] = useState(true);
+  const [flashcards, setFlashcards] = useState<FlashcardData[]>([]);
+  const [quizQuestions, setQuizQuestions] = useState<QuizQuestionData[]>([]);
+  const [showCreator, setShowCreator] = useState(false);
   const [toast, setToast] = useState<{ msg: string; type: 'success' | 'error' } | null>(null);
 
   const showToast = useCallback((msg: string, type: 'success' | 'error' = 'success') => {
@@ -74,10 +80,13 @@ export default function UploadPage({ basePath }: { basePath: string }) {
       showToast('Please enter some content', 'error');
       return;
     }
-    createNote(title.trim(), markdown);
+    createNote(title.trim(), markdown, flashcards, quizQuestions);
     showToast('Note saved!');
     setTitle('');
     setMarkdown('');
+    setFlashcards([]);
+    setQuizQuestions([]);
+    setShowCreator(false);
   }
 
   function handleKeyDown(e: React.KeyboardEvent<HTMLTextAreaElement>) {
@@ -146,6 +155,13 @@ export default function UploadPage({ basePath }: { basePath: string }) {
               <button className="btn btn-primary" onClick={handleSave}>
                 Save Note
               </button>
+              <button
+                className={`btn ${showCreator ? 'btn-primary' : 'btn-secondary'}`}
+                onClick={() => setShowCreator(!showCreator)}
+                disabled={!markdown.trim()}
+              >
+                {showCreator ? 'Hide Cards' : 'Add Flashcards & Quiz'}
+              </button>
               <a className="btn btn-secondary" href={`${basePath}/my-notes/`}>
                 My Notes
               </a>
@@ -166,6 +182,30 @@ export default function UploadPage({ basePath }: { basePath: string }) {
           </div>
         </div>
       </div>
+
+      {showCreator && markdown.trim() && (
+        <CardCreator
+          flashcards={flashcards}
+          quizQuestions={quizQuestions}
+          noteContent={markdown}
+          onUpdateFlashcards={setFlashcards}
+          onUpdateQuiz={setQuizQuestions}
+        />
+      )}
+
+      {flashcards.length > 0 && (
+        <div style={{ marginTop: '2rem' }}>
+          <h2>Flashcards</h2>
+          <Flashcard cards={flashcards} />
+        </div>
+      )}
+
+      {quizQuestions.length > 0 && (
+        <div style={{ marginTop: '2rem' }}>
+          <h2>Quiz</h2>
+          <Quiz questions={quizQuestions} />
+        </div>
+      )}
 
       {toast && <div className={`toast toast-${toast.type}`}>{toast.msg}</div>}
     </>

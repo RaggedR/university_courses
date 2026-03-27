@@ -43,14 +43,19 @@ export function getNote(id: string): SavedNote | undefined {
   return loadAll().find(n => n.id === id);
 }
 
-export function createNote(title: string, markdown: string): SavedNote {
+export function createNote(
+  title: string,
+  markdown: string,
+  flashcards: FlashcardData[] = [],
+  quizQuestions: QuizQuestionData[] = [],
+): SavedNote {
   const notes = loadAll();
   const note: SavedNote = {
     id: crypto.randomUUID(),
     title,
     markdown,
-    flashcards: [],
-    quizQuestions: [],
+    flashcards,
+    quizQuestions,
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   };

@@ -99,8 +99,8 @@ export default function UploadPage({ basePath }: { basePath: string }) {
       <div className={`upload-layout ${editorOpen ? '' : 'preview-only'}`}>
         <div className="upload-panel">
           <button className="editor-toggle" onClick={() => setEditorOpen(!editorOpen)}>
-            <span className={`toggle-arrow ${editorOpen ? 'open' : ''}`}>&#9654;</span>
-            Editor
+            <span className={`toggle-arrow ${editorOpen ? 'open' : ''}`}>&#9656;</span>
+            {editorOpen ? 'Hide Editor' : 'Show Editor'}
           </button>
           {editorOpen && (
             <>

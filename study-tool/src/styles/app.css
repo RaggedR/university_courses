@@ -112,28 +112,31 @@ body {
 }
 
 .editor-toggle {
-  display: flex;
+  display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  background: none;
-  border: none;
+  background: var(--app-surface);
+  border: 1px solid var(--app-border);
+  border-radius: 6px;
   cursor: pointer;
-  font-size: 1rem;
+  font-size: 0.85rem;
   font-weight: 600;
   margin-bottom: 0.75rem;
   color: var(--app-text-muted);
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  padding: 0;
+  padding: 0.45rem 0.85rem;
+  transition: border-color 0.15s, color 0.15s;
 }
 
 .editor-toggle:hover {
   color: var(--app-accent);
+  border-color: var(--app-accent);
 }
 
 .toggle-arrow {
   display: inline-block;
-  font-size: 0.7rem;
+  font-size: 0.6rem;
   transition: transform 0.2s;
 }
 

@@ -96,64 +96,62 @@ export default function UploadPage({ basePath }: { basePath: string }) {
 
   return (
     <>
+      <button className="editor-toggle" onClick={() => setEditorOpen(!editorOpen)}>
+        <span className={`toggle-arrow ${editorOpen ? 'open' : ''}`}>&#9656;</span>
+        {editorOpen ? 'Hide Editor' : 'Show Editor'}
+      </button>
       <div className={`upload-layout ${editorOpen ? '' : 'preview-only'}`}>
-        <div className="upload-panel">
-          <button className="editor-toggle" onClick={() => setEditorOpen(!editorOpen)}>
-            <span className={`toggle-arrow ${editorOpen ? 'open' : ''}`}>&#9656;</span>
-            {editorOpen ? 'Hide Editor' : 'Show Editor'}
-          </button>
-          {editorOpen && (
-            <>
+        {editorOpen && (
+          <div className="upload-panel">
+            <input
+              type="text"
+              className="title-input"
+              placeholder="Note title..."
+              value={title}
+              onChange={e => setTitle(e.target.value)}
+            />
+            <div className="file-upload-row">
+              <label className="file-input-label">
+                Upload .md file
+                <input type="file" accept=".md,.mdx,.txt,.markdown" onChange={handleFile} />
+              </label>
+            </div>
+            <div className="url-fetch-row">
               <input
-                type="text"
+                type="url"
                 className="title-input"
-                placeholder="Note title..."
-                value={title}
-                onChange={e => setTitle(e.target.value)}
+                placeholder="Or paste a URL to a raw markdown file..."
+                value={url}
+                onChange={e => setUrl(e.target.value)}
+                onKeyDown={e => { if (e.key === 'Enter') handleFetchUrl(); }}
+                style={{ marginBottom: 0, flex: 1 }}
               />
-              <div className="file-upload-row">
-                <label className="file-input-label">
-                  Upload .md file
-                  <input type="file" accept=".md,.mdx,.txt,.markdown" onChange={handleFile} />
-                </label>
-              </div>
-              <div className="url-fetch-row">
-                <input
-                  type="url"
-                  className="title-input"
-                  placeholder="Or paste a URL to a raw markdown file..."
-                  value={url}
-                  onChange={e => setUrl(e.target.value)}
-                  onKeyDown={e => { if (e.key === 'Enter') handleFetchUrl(); }}
-                  style={{ marginBottom: 0, flex: 1 }}
-                />
-                <button
-                  className="btn btn-secondary"
-                  onClick={handleFetchUrl}
-                  disabled={fetching || !url.trim()}
-                >
-                  {fetching ? 'Fetching...' : 'Fetch'}
-                </button>
-              </div>
-              <textarea
-                className="md-editor"
-                placeholder={"Paste your markdown here...\n\nSupports LaTeX: $E = mc^2$\nCode blocks: ```python\nAnd all standard markdown."}
-                value={markdown}
-                onChange={e => setMarkdown(e.target.value)}
-                onKeyDown={handleKeyDown}
-                spellCheck={false}
-              />
-              <div className="upload-actions">
-                <button className="btn btn-primary" onClick={handleSave}>
-                  Save Note
-                </button>
-                <a className="btn btn-secondary" href={`${basePath}/my-notes/`}>
-                  My Notes
-                </a>
-              </div>
-            </>
-          )}
-        </div>
+              <button
+                className="btn btn-secondary"
+                onClick={handleFetchUrl}
+                disabled={fetching || !url.trim()}
+              >
+                {fetching ? 'Fetching...' : 'Fetch'}
+              </button>
+            </div>
+            <textarea
+              className="md-editor"
+              placeholder={"Paste your markdown here...\n\nSupports LaTeX: $E = mc^2$\nCode blocks: ```python\nAnd all standard markdown."}
+              value={markdown}
+              onChange={e => setMarkdown(e.target.value)}
+              onKeyDown={handleKeyDown}
+              spellCheck={false}
+            />
+            <div className="upload-actions">
+              <button className="btn btn-primary" onClick={handleSave}>
+                Save Note
+              </button>
+              <a className="btn btn-secondary" href={`${basePath}/my-notes/`}>
+                My Notes
+              </a>
+            </div>
+          </div>
+        )}
 
         <div className="preview-panel">
           <h2>Preview</h2>

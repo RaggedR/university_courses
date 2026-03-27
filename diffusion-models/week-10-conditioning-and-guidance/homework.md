@@ -9,17 +9,21 @@
 
 ### Part (a): Derive the Guided Score
 
-Starting from Bayes' theorem $p(x|y) = p(y|x)p(x)/p(y)$, take the gradient $\nabla_x \log$ of both sides to derive:
+Starting from Bayes' theorem $p(x|y) = p(y|x)p(x)/p(y)$, take the gradient $\nabla\_x \log$ of both sides to derive:
 
-$$\nabla_x \log p(x|y) = \nabla_x \log p(x) + \nabla_x \log p(y|x)$$
+$$
+\nabla_x \log p(x|y) = \nabla_x \log p(x) + \nabla_x \log p(y|x)
+$$
 
-Explain why the $\nabla_x \log p(y)$ term vanishes.
+Explain why the $\nabla\_x \log p(y)$ term vanishes.
 
 ### Part (b): From Score to $\epsilon$
 
-Using the relationship $s_\theta(x_t, t) = -\epsilon_\theta(x_t, t) / \sigma_t$ (where $\sigma_t = \sqrt{1-\bar{\alpha}_t}$), show that the guided noise prediction is:
+Using the relationship $s\_\theta(x\_t, t) = -\epsilon\_\theta(x\_t, t) / \sigma\_t$ (where $\sigma\_t = \sqrt{1-\bar{\alpha}\_t}$), show that the guided noise prediction is:
 
-$$\hat{\epsilon}_{\text{guided}} = \epsilon_\theta(x_t, t) - s \cdot \sigma_t \cdot \nabla_x \log p_\phi(y|x_t)$$
+$$
+\hat{\epsilon}_{\text{guided}} = \epsilon_\theta(x_t, t) - s \cdot \sigma_t \cdot \nabla_x \log p_\phi(y|x_t)
+$$
 
 where $s$ is the guidance scale. What happens to the guidance term as $t \to 0$ (low noise)? As $t \to T$ (high noise)? Is this intuitively correct?
 
@@ -27,9 +31,11 @@ where $s$ is the guidance scale. What happens to the guidance term as $t \to 0$ 
 
 Classifier-free guidance with weight $w$ corresponds to sampling from:
 
-$$\tilde{p}(x|y) \propto p(x) \cdot p(y|x)^{w}$$
+$$
+\tilde{p}(x|y) \propto p(x) \cdot p(y|x)^{w}
+$$
 
-1. Derive this by showing that the guided score $\tilde{s} = \nabla_x \log p(x) + w \cdot \nabla_x \log p(y|x)$ is the score of $\tilde{p}$.
+1. Derive this by showing that the guided score $\tilde{s} = \nabla\_x \log p(x) + w \cdot \nabla\_x \log p(y|x)$ is the score of $\tilde{p}$.
 
 2. What distribution does this reduce to when $w = 0$? When $w = 1$?
 
@@ -65,9 +71,9 @@ class NoisyClassifier(nn.Module):
 ```
 
 Training procedure:
-1. For each batch of $(x_0, y)$, sample $t \sim \text{Uniform}(0, T)$ and $\epsilon \sim \mathcal{N}(0, I)$
-2. Compute $x_t = \sqrt{\bar{\alpha}_t}\, x_0 + \sqrt{1-\bar{\alpha}_t}\, \epsilon$
-3. Predict $\hat{y} = \text{Classifier}(x_t, t)$
+1. For each batch of $(x\_0, y)$, sample $t \sim \text{Uniform}(0, T)$ and $\epsilon \sim \mathcal{N}(0, I)$
+2. Compute $x\_t = \sqrt{\bar{\alpha}\_t}\, x\_0 + \sqrt{1-\bar{\alpha}\_t}\, \epsilon$
+3. Predict $\hat{y} = \text{Classifier}(x\_t, t)$
 4. Loss: cross-entropy between $\hat{y}$ and $y$
 
 After training, report the classification accuracy at noise levels $t = 0, 100, 500, 900$ on the test set. The classifier should work well at low noise and degrade gracefully at high noise.
@@ -93,14 +99,14 @@ def classifier_guided_sample(diffusion_model, classifier, class_label,
     pass
 ```
 
-2. Generate 10 samples of each digit (0-9) with guidance scales $s \in \{0, 1, 3, 5, 10\}$.
+2. Generate 10 samples of each digit (0-9) with guidance scales $s \in \lbrace 0, 1, 3, 5, 10\rbrace $.
 
 3. Display the results as a 10x5 grid (rows = digits, columns = guidance scales). Describe the visual trend as $s$ increases.
 
 ### Part (c): Guidance Strength Analysis
 
 For class "7":
-1. Generate 100 samples at each $s \in \{0, 0.5, 1, 2, 3, 5, 10, 20\}$
+1. Generate 100 samples at each $s \in \lbrace 0, 0.5, 1, 2, 3, 5, 10, 20\rbrace $
 2. Classify each sample with a clean (not noise-conditioned) MNIST classifier
 3. Report: (i) fraction correctly classified as "7", (ii) visual diversity (qualitative), (iii) presence of artifacts at high $s$
 
@@ -158,7 +164,7 @@ def cfg_sample(model, class_label, guidance_weight, num_steps=50):
     pass
 ```
 
-Generate samples for each digit with $w \in \{1, 3, 5, 7.5, 10, 15\}$.
+Generate samples for each digit with $w \in \lbrace 1, 3, 5, 7.5, 10, 15\rbrace $.
 
 ### Part (c): Compare with Classifier Guidance
 
@@ -173,11 +179,11 @@ For 10 samples of each digit:
 
 ### Part (d): The Unconditional Dropout Rate
 
-Train three models with $p_{\text{uncond}} \in \{0.05, 0.1, 0.2\}$. For each, generate samples with $w = 7.5$.
+Train three models with $p\_{\text{uncond}} \in \lbrace 0.05, 0.1, 0.2\rbrace $. For each, generate samples with $w = 7.5$.
 
 1. Does the dropout rate significantly affect sample quality?
-2. What happens if $p_{\text{uncond}} = 0$ (no unconditional training)? Try to use CFG -- what goes wrong?
-3. What happens if $p_{\text{uncond}} = 0.5$ (half unconditional)? Does the conditional model still work well at $w = 1$?
+2. What happens if $p\_{\text{uncond}} = 0$ (no unconditional training)? Try to use CFG -- what goes wrong?
+3. What happens if $p\_{\text{uncond}} = 0.5$ (half unconditional)? Does the conditional model still work well at $w = 1$?
 
 ---
 
@@ -187,7 +193,7 @@ Train three models with $p_{\text{uncond}} \in \{0.05, 0.1, 0.2\}$. For each, ge
 
 Using your CFG model from Problem 3:
 
-1. For the digit "3", generate 500 samples at each $w \in \{1, 2, 3, 5, 7, 10, 15, 20\}$
+1. For the digit "3", generate 500 samples at each $w \in \lbrace 1, 2, 3, 5, 7, 10, 15, 20\rbrace $
 
 2. For each set of 500 samples, compute:
    - **Fidelity**: Average confidence of a pretrained classifier on the correct class
@@ -205,11 +211,11 @@ Repeat Part (a) for all 10 digits at $w = 1, 5, 10$.
 
 ### Part (c): Visualizing the Guidance Direction
 
-For one fixed noisy input $x_t$ (at $t = 500$, mid-noise) and class "8":
+For one fixed noisy input $x\_t$ (at $t = 500$, mid-noise) and class "8":
 
-1. Compute $\epsilon_{\text{uncond}} = \epsilon_\theta(x_t, t, \varnothing)$
-2. Compute $\epsilon_{\text{cond}} = \epsilon_\theta(x_t, t, y=8)$
-3. Compute $\Delta = \epsilon_{\text{cond}} - \epsilon_{\text{uncond}}$
+1. Compute $\epsilon\_{\text{uncond}} = \epsilon\_\theta(x\_t, t, \varnothing)$
+2. Compute $\epsilon\_{\text{cond}} = \epsilon\_\theta(x\_t, t, y=8)$
+3. Compute $\Delta = \epsilon\_{\text{cond}} - \epsilon\_{\text{uncond}}$
 
 Reshape $\Delta$ to image dimensions and display it. What does the "guidance direction" look like? Does it visually resemble the structure of an "8"?
 
@@ -286,17 +292,19 @@ Generate samples with $w = 7.5$ for all 10 digits. Compare with the class-condit
 
 ### Part (a): Negative Prompt Derivation
 
-In standard CFG: $\tilde{\epsilon} = \epsilon_{\text{uncond}} + w(\epsilon_{\text{cond}} - \epsilon_{\text{uncond}})$
+In standard CFG: $\tilde{\epsilon} = \epsilon\_{\text{uncond}} + w(\epsilon\_{\text{cond}} - \epsilon\_{\text{uncond}})$
 
-In CFG with a negative prompt: $\tilde{\epsilon} = \epsilon_{\text{neg}} + w(\epsilon_{\text{pos}} - \epsilon_{\text{neg}})$
+In CFG with a negative prompt: $\tilde{\epsilon} = \epsilon\_{\text{neg}} + w(\epsilon\_{\text{pos}} - \epsilon\_{\text{neg}})$
 
-1. Show that when the negative prompt equals the null prompt ($y_{\text{neg}} = \varnothing$), negative-prompt CFG reduces to standard CFG.
+1. Show that when the negative prompt equals the null prompt ($y\_{\text{neg}} = \varnothing$), negative-prompt CFG reduces to standard CFG.
 
 2. Show that the negative-prompt formula can be rewritten as:
-   $$\tilde{\epsilon} = (1-w)\epsilon_{\text{neg}} + w\,\epsilon_{\text{pos}}$$
+   $$
+   \tilde{\epsilon} = (1-w)\epsilon_{\text{neg}} + w\,\epsilon_{\text{pos}}
+   $$
    What does this mean geometrically? Draw a diagram in 2D $\epsilon$-space.
 
-3. Suppose $\epsilon_{\text{pos}}$, $\epsilon_{\text{neg}}$, and $\epsilon_{\text{uncond}}$ are three distinct points in $\epsilon$-space. Compare the guidance directions (and magnitudes) for standard CFG vs. negative-prompt CFG. Under what conditions does the negative prompt produce a *different direction* (not just a different magnitude)?
+3. Suppose $\epsilon\_{\text{pos}}$, $\epsilon\_{\text{neg}}$, and $\epsilon\_{\text{uncond}}$ are three distinct points in $\epsilon$-space. Compare the guidance directions (and magnitudes) for standard CFG vs. negative-prompt CFG. Under what conditions does the negative prompt produce a *different direction* (not just a different magnitude)?
 
 ### Part (b): Implement Negative Prompts
 
@@ -322,10 +330,10 @@ Display samples for each. Does the negative class meaningfully affect the genera
 
 ### Part (c): Guidance Direction Visualization
 
-For the experiments in Part (b), compute and display the guidance direction $\Delta = \epsilon_{\text{pos}} - \epsilon_{\text{neg}}$ for each negative class. How do the guidance directions differ?
+For the experiments in Part (b), compute and display the guidance direction $\Delta = \epsilon\_{\text{pos}} - \epsilon\_{\text{neg}}$ for each negative class. How do the guidance directions differ?
 
-At a fixed noisy input $x_t$ (at $t = 500$):
-1. Compute $\epsilon_\theta(x_t, t, y)$ for all 10 classes plus null
+At a fixed noisy input $x\_t$ (at $t = 500$):
+1. Compute $\epsilon\_\theta(x\_t, t, y)$ for all 10 classes plus null
 2. Reduce to 2D using PCA on these 11 vectors
 3. Plot the 11 points in 2D, labeled by class
 4. Draw the guidance direction vectors for standard CFG and for negative-prompt CFG with different negative classes

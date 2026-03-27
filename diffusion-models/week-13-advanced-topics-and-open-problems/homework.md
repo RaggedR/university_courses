@@ -11,21 +11,23 @@ Implement a simple discrete diffusion model for binary sequences, demonstrating 
 
 ### Part (a): Forward Process
 
-Consider binary sequences $x \in \{0, 1\}^L$ of length $L = 16$.
+Consider binary sequences $x \in \lbrace 0, 1\rbrace ^L$ of length $L = 16$.
 
-Define an absorbing-state forward process where each bit independently transitions to a [MASK] state (represented as 2) with probability $\beta_t$ at each step:
+Define an absorbing-state forward process where each bit independently transitions to a [MASK] state (represented as 2) with probability $\beta\_t$ at each step:
 
-$$q(x_t^{(i)} | x_{t-1}^{(i)}) = \begin{cases} 1 - \beta_t & \text{if } x_t^{(i)} = x_{t-1}^{(i)} \text{ and } x_{t-1}^{(i)} \neq [\text{MASK}] \\ \beta_t & \text{if } x_t^{(i)} = [\text{MASK}] \text{ and } x_{t-1}^{(i)} \neq [\text{MASK}] \\ 1 & \text{if } x_t^{(i)} = x_{t-1}^{(i)} = [\text{MASK}] \end{cases}$$
+$$
+q(x_t^{(i)} | x_{t-1}^{(i)}) = \begin{cases} 1 - \beta_t & \text{if } x_t^{(i)} = x_{t-1}^{(i)} \text{ and } x_{t-1}^{(i)} \neq [\text{MASK}] \\ \beta_t & \text{if } x_t^{(i)} = [\text{MASK}] \text{ and } x_{t-1}^{(i)} \neq [\text{MASK}] \\ 1 & \text{if } x_t^{(i)} = x_{t-1}^{(i)} = [\text{MASK}] \end{cases}
+$$
 
-Use a linear schedule $\beta_t = t/T$ for $T = 100$ steps.
+Use a linear schedule $\beta\_t = t/T$ for $T = 100$ steps.
 
-Implement the forward process. Starting from the sequence $x_0 = [0, 1, 0, 1, 1, 0, 1, 0, 0, 1, 1, 0, 1, 0, 1, 1]$, plot the sequence at $t = 0, 10, 25, 50, 75, 100$, visualizing which positions are 0, 1, or [MASK]. Compute the expected fraction of masked positions as a function of $t$.
+Implement the forward process. Starting from the sequence $x\_0 = [0, 1, 0, 1, 1, 0, 1, 0, 0, 1, 1, 0, 1, 0, 1, 1]$, plot the sequence at $t = 0, 10, 25, 50, 75, 100$, visualizing which positions are 0, 1, or [MASK]. Compute the expected fraction of masked positions as a function of $t$.
 
 ### Part (b): Reverse Process Model
 
-Define a data distribution: binary sequences encoding the 4-bit representations of even numbers (i.e., sequences of the form $[b_3, b_2, b_1, 0, b_3', b_2', b_1', 0, \ldots]$ where the last bit of each 4-bit block is 0).
+Define a data distribution: binary sequences encoding the 4-bit representations of even numbers (i.e., sequences of the form $[b\_3, b\_2, b\_1, 0, b\_3', b\_2', b\_1', 0, \ldots]$ where the last bit of each 4-bit block is 0).
 
-Build a small transformer (or MLP) that takes a partially masked sequence $x_t$ and time $t$ as input and predicts the clean sequence $\hat{x}_0$:
+Build a small transformer (or MLP) that takes a partially masked sequence $x\_t$ and time $t$ as input and predicts the clean sequence $\hat{x}\_0$:
 
 ```python
 class DiscreteDenoisingModel(nn.Module):
@@ -41,7 +43,9 @@ class DiscreteDenoisingModel(nn.Module):
 
 Train the model using the discrete diffusion ELBO. For the absorbing-state case, the loss simplifies to:
 
-$$\mathcal{L} = \mathbb{E}_{t, x_0}\left[\sum_{i : x_t^{(i)} = [\text{MASK}]} -\log p_\theta(x_0^{(i)} | x_t, t)\right]$$
+$$
+\mathcal{L} = \mathbb{E}_{t, x_0}\left[\sum_{i : x_t^{(i)} = [\text{MASK}]} -\log p_\theta(x_0^{(i)} | x_t, t)\right]
+$$
 
 This is a cross-entropy loss, summed only over masked positions -- exactly a masked language model loss!
 
@@ -51,11 +55,11 @@ Train for 5000-10000 steps. Plot the training loss.
 
 Generate sequences by iteratively unmasking:
 
-1. Start with all [MASK]: $x_T = [\text{MASK}, \text{MASK}, \ldots, \text{MASK}]$
+1. Start with all [MASK]: $x\_T = [\text{MASK}, \text{MASK}, \ldots, \text{MASK}]$
 2. For $t = T, T-1, \ldots, 1$:
-   - Predict $p_\theta(x_0 | x_t, t)$ for all masked positions
+   - Predict $p\_\theta(x\_0 | x\_t, t)$ for all masked positions
    - For each masked position, sample: unmask with probability $1/(t)$, keep masked otherwise
-   - For unmasked positions, sample from $p_\theta(x_0^{(i)} | x_t, t)$
+   - For unmasked positions, sample from $p\_\theta(x\_0^{(i)} | x\_t, t)$
 
 Generate 1000 sequences and compute:
 1. The fraction of generated sequences that are valid (all 4-bit blocks represent even numbers)
@@ -71,25 +75,27 @@ Implement score distillation sampling to optimize a parameterized distribution u
 
 ### Part (a): The Diffusion Prior
 
-Use a pre-trained flow matching model on the 8-Gaussians dataset (from Week 11) as your "diffusion prior." This model represents $p_{\text{data}}$.
+Use a pre-trained flow matching model on the 8-Gaussians dataset (from Week 11) as your "diffusion prior." This model represents $p\_{\text{data}}$.
 
 ### Part (b): Optimizing a Single Point
 
-Start with a learnable 2D point $\theta = (\theta_1, \theta_2)$, initialized at the origin. Implement the SDS gradient:
+Start with a learnable 2D point $\theta = (\theta\_1, \theta\_2)$, initialized at the origin. Implement the SDS gradient:
 
-$$\nabla_\theta \mathcal{L}_{\text{SDS}} = \mathbb{E}_{t, \epsilon}\left[w(t) \left(v_\phi(x_t, t) - (x_1 - x_0)\right)\right]$$
+$$
+\nabla_\theta \mathcal{L}_{\text{SDS}} = \mathbb{E}_{t, \epsilon}\left[w(t) \left(v_\phi(x_t, t) - (x_1 - x_0)\right)\right]
+$$
 
-where $x_0 \sim \mathcal{N}(0, I)$, $x_1 = \theta$ (the current point), $x_t = (1-t)x_0 + tx_1$, and $v_\phi$ is the pre-trained velocity model.
+where $x\_0 \sim \mathcal{N}(0, I)$, $x\_1 = \theta$ (the current point), $x\_t = (1-t)x\_0 + tx\_1$, and $v\_\phi$ is the pre-trained velocity model.
 
 Run SDS optimization for 500 steps with $w(t) = 1$. Plot the trajectory of $\theta$ over the data distribution.
 
 ### Part (c): Optimizing a Gaussian
 
-Now parameterize a full Gaussian distribution $q_\psi = \mathcal{N}(\mu, \sigma^2 I)$ with learnable $\mu \in \mathbb{R}^2$ and $\sigma > 0$.
+Now parameterize a full Gaussian distribution $q\_\psi = \mathcal{N}(\mu, \sigma^2 I)$ with learnable $\mu \in \mathbb{R}^2$ and $\sigma > 0$.
 
-Implement the **variational score distillation (VSD)** gradient, which minimizes $D_{\text{KL}}(q_\psi \| p_{\text{data}})$:
+Implement the **variational score distillation (VSD)** gradient, which minimizes $D\_{\text{KL}}(q\_\psi \Vert  p\_{\text{data}})$:
 
-1. Sample $x_1 \sim q_\psi$ (reparameterization trick: $x_1 = \mu + \sigma \cdot \xi$, $\xi \sim \mathcal{N}(0, I)$)
+1. Sample $x\_1 \sim q\_\psi$ (reparameterization trick: $x\_1 = \mu + \sigma \cdot \xi$, $\xi \sim \mathcal{N}(0, I)$)
 2. Compute the flow matching SDS gradient as in Part (b)
 3. Backpropagate through the reparameterization to update $\mu$ and $\sigma$
 
@@ -97,11 +103,11 @@ Run for 2000 steps. Does the Gaussian converge to cover one mode or multiple mod
 
 ### Part (d): Mode Coverage Analysis
 
-Run 50 independent SDS optimizations (single points, as in Part b) from random initializations $\theta_0 \sim \mathcal{N}(0, 4I)$. Plot the final points.
+Run 50 independent SDS optimizations (single points, as in Part b) from random initializations $\theta\_0 \sim \mathcal{N}(0, 4I)$. Plot the final points.
 
 1. How many of the 8 Gaussian modes are covered?
 2. Is coverage uniform across modes?
-3. Explain why SDS tends to find high-density modes. *Hint: SDS minimizes $D_{\text{KL}}(\delta_\theta \| p)$, which is the "reverse KL." Which modes does reverse KL prefer?*
+3. Explain why SDS tends to find high-density modes. *Hint: SDS minimizes $D\_{\text{KL}}(\delta\_\theta \Vert  p)$, which is the "reverse KL." Which modes does reverse KL prefer?*
 
 ---
 
@@ -109,31 +115,37 @@ Run 50 independent SDS optimizations (single points, as in Part b) from random i
 
 ### Part (a): The Absorbing-State Transition Matrix
 
-For a vocabulary of size $K$ plus one absorbing state [MASK], write the $(K+1) \times (K+1)$ transition matrix $Q_t$ for the absorbing-state forward process with corruption rate $\beta_t$.
+For a vocabulary of size $K$ plus one absorbing state [MASK], write the $(K+1) \times (K+1)$ transition matrix $Q\_t$ for the absorbing-state forward process with corruption rate $\beta\_t$.
 
-Show that the cumulative transition matrix $\bar{Q}_t = Q_1 Q_2 \cdots Q_t$ has a simple form:
+Show that the cumulative transition matrix $\bar{Q}\_t = Q\_1 Q\_2 \cdots Q\_t$ has a simple form:
 
-$$[\bar{Q}_t]_{ij} = \begin{cases} \bar{\alpha}_t & \text{if } i = j \neq [\text{MASK}] \\ 1 - \bar{\alpha}_t & \text{if } j = [\text{MASK}], i \neq [\text{MASK}] \\ 1 & \text{if } i = j = [\text{MASK}] \end{cases}$$
+$$
+[\bar{Q}_t]_{ij} = \begin{cases} \bar{\alpha}_t & \text{if } i = j \neq [\text{MASK}] \\ 1 - \bar{\alpha}_t & \text{if } j = [\text{MASK}], i \neq [\text{MASK}] \\ 1 & \text{if } i = j = [\text{MASK}] \end{cases}
+$$
 
-where $\bar{\alpha}_t = \prod_{s=1}^t (1 - \beta_s)$.
+where $\bar{\alpha}\_t = \prod\_{s=1}^t (1 - \beta\_s)$.
 
 ### Part (b): The ELBO
 
 The discrete diffusion ELBO is:
 
-$$\log p(x_0) \geq \mathbb{E}\left[-D_{\text{KL}}(q(x_T | x_0) \| p(x_T)) - \sum_{t=1}^T D_{\text{KL}}(q(x_{t-1} | x_t, x_0) \| p_\theta(x_{t-1} | x_t))\right]$$
+$$
+\log p(x_0) \geq \mathbb{E}\left[-D_{\text{KL}}(q(x_T | x_0) \| p(x_T)) - \sum_{t=1}^T D_{\text{KL}}(q(x_{t-1} | x_t, x_0) \| p_\theta(x_{t-1} | x_t))\right]
+$$
 
-For the absorbing-state process, show that the posterior $q(x_{t-1} | x_t, x_0)$ has a simple form:
-- If $x_t^{(i)} \neq [\text{MASK}]$: $x_{t-1}^{(i)} = x_t^{(i)}$ with probability 1 (unmasked tokens stay unmasked going backward)
-- If $x_t^{(i)} = [\text{MASK}]$: $x_{t-1}^{(i)} = x_0^{(i)}$ with probability $\frac{\beta_t \bar{\alpha}_{t-1}}{1 - \bar{\alpha}_t}$, and $x_{t-1}^{(i)} = [\text{MASK}]$ otherwise.
+For the absorbing-state process, show that the posterior $q(x\_{t-1} | x\_t, x\_0)$ has a simple form:
+- If $x\_t^{(i)} \neq [\text{MASK}]$: $x\_{t-1}^{(i)} = x\_t^{(i)}$ with probability 1 (unmasked tokens stay unmasked going backward)
+- If $x\_t^{(i)} = [\text{MASK}]$: $x\_{t-1}^{(i)} = x\_0^{(i)}$ with probability $\frac{\beta\_t \bar{\alpha}\_{t-1}}{1 - \bar{\alpha}\_t}$, and $x\_{t-1}^{(i)} = [\text{MASK}]$ otherwise.
 
-*Hint: Apply Bayes' rule to $q(x_{t-1} | x_t, x_0) \propto q(x_t | x_{t-1}) q(x_{t-1} | x_0)$.*
+*Hint: Apply Bayes' rule to $q(x\_{t-1} | x\_t, x\_0) \propto q(x\_t | x\_{t-1}) q(x\_{t-1} | x\_0)$.*
 
 ### Part (c): Connection to MLM
 
-Show that when we parameterize $p_\theta(x_{t-1} | x_t)$ by first predicting $p_\theta(x_0 | x_t)$ and then computing the posterior, the training loss reduces to:
+Show that when we parameterize $p\_\theta(x\_{t-1} | x\_t)$ by first predicting $p\_\theta(x\_0 | x\_t)$ and then computing the posterior, the training loss reduces to:
 
-$$\mathcal{L} = \mathbb{E}_{t, x_0, x_t}\left[\sum_{i: x_t^{(i)} = [\text{MASK}]} w(t) \cdot \text{CE}(x_0^{(i)}, p_\theta(x_0^{(i)} | x_t))\right]$$
+$$
+\mathcal{L} = \mathbb{E}_{t, x_0, x_t}\left[\sum_{i: x_t^{(i)} = [\text{MASK}]} w(t) \cdot \text{CE}(x_0^{(i)}, p_\theta(x_0^{(i)} | x_t))\right]
+$$
 
 where $\text{CE}$ is the cross-entropy loss and $w(t)$ is a time-dependent weight.
 

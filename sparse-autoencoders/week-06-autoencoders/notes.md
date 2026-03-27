@@ -16,14 +16,16 @@ Autoencoders are the backbone of this course. Everything that follows — regula
 
 An autoencoder consists of two parts:
 
-- **Encoder** $f_\theta$: Maps the input to a lower-dimensional latent representation
-- **Decoder** $g_\phi$: Maps the latent representation back to the original input space
+- **Encoder** $f\_\theta$: Maps the input to a lower-dimensional latent representation
+- **Decoder** $g\_\phi$: Maps the latent representation back to the original input space
 
-The full autoencoder computes: $\hat{\mathbf{x}} = g_\phi(f_\theta(\mathbf{x}))$
+The full autoencoder computes: $\hat{\mathbf{x}} = g\_\phi(f\_\theta(\mathbf{x}))$
 
 The training objective is to minimize the **reconstruction error**:
 
-$$\mathcal{L}(\theta, \phi) = \frac{1}{N}\sum_{i=1}^N \|\mathbf{x}_i - g_\phi(f_\theta(\mathbf{x}_i))\|^2$$
+$$
+\mathcal{L}(\theta, \phi) = \frac{1}{N}\sum_{i=1}^N \|\mathbf{x}_i - g_\phi(f_\theta(\mathbf{x}_i))\|^2
+$$
 
 That is it. No labels, no external supervision. The data is its own target. The only thing forcing the autoencoder to learn anything interesting is the **bottleneck** — the latent representation has fewer dimensions than the input.
 
@@ -49,19 +51,23 @@ Loss = ‖x - x̂‖²
 
 ### 1.3 Formal Definition
 
-**Encoder:** $f_\theta: \mathbb{R}^d \to \mathbb{R}^k$ is a neural network with parameters $\theta$. Typically:
+**Encoder:** $f\_\theta: \mathbb{R}^d \to \mathbb{R}^k$ is a neural network with parameters $\theta$. Typically:
 
-$$\mathbf{z} = f_\theta(\mathbf{x}) = \sigma(W_L \cdots \sigma(W_2 \sigma(W_1 \mathbf{x} + \mathbf{b}_1) + \mathbf{b}_2) \cdots + \mathbf{b}_L)$$
+$$
+\mathbf{z} = f_\theta(\mathbf{x}) = \sigma(W_L \cdots \sigma(W_2 \sigma(W_1 \mathbf{x} + \mathbf{b}_1) + \mathbf{b}_2) \cdots + \mathbf{b}_L)
+$$
 
 where $\sigma$ is a nonlinear activation function (ReLU, etc.) and $L$ is the number of encoder layers.
 
-**Decoder:** $g_\phi: \mathbb{R}^k \to \mathbb{R}^d$ is a neural network with parameters $\phi$. Typically a mirror image of the encoder:
+**Decoder:** $g\_\phi: \mathbb{R}^k \to \mathbb{R}^d$ is a neural network with parameters $\phi$. Typically a mirror image of the encoder:
 
-$$\hat{\mathbf{x}} = g_\phi(\mathbf{z}) = \sigma(W_L' \cdots \sigma(W_2' \sigma(W_1' \mathbf{z} + \mathbf{b}_1') + \mathbf{b}_2') \cdots + \mathbf{b}_L')$$
+$$
+\hat{\mathbf{x}} = g_\phi(\mathbf{z}) = \sigma(W_L' \cdots \sigma(W_2' \sigma(W_1' \mathbf{z} + \mathbf{b}_1') + \mathbf{b}_2') \cdots + \mathbf{b}_L')
+$$
 
 The final decoder layer often uses a sigmoid activation (if inputs are normalized to $[0,1]$) or no activation (if inputs are real-valued).
 
-**Latent representation:** $\mathbf{z} = f_\theta(\mathbf{x}) \in \mathbb{R}^k$ is the compressed code. When $k < d$, we call this an **undercomplete autoencoder**.
+**Latent representation:** $\mathbf{z} = f\_\theta(\mathbf{x}) \in \mathbb{R}^k$ is the compressed code. When $k < d$, we call this an **undercomplete autoencoder**.
 
 ### 1.4 Why "Autoencoder"?
 
@@ -89,17 +95,21 @@ The bottleneck forces the network to discover the **most important factors of va
 - With $k = 32$: Good reconstructions — the latent space captures digit identity, stroke width, tilt, etc.
 - With $k = 128$: Near-perfect reconstruction — the latent space preserves essentially all relevant information
 
-The optimal bottleneck size depends on the intrinsic dimensionality of the data manifold. If the data manifold is $k_0$-dimensional, we need $k \geq k_0$ for good reconstruction. If $k \gg k_0$, the extra dimensions are wasted (or used to encode noise).
+The optimal bottleneck size depends on the intrinsic dimensionality of the data manifold. If the data manifold is $k\_0$-dimensional, we need $k \geq k\_0$ for good reconstruction. If $k \gg k\_0$, the extra dimensions are wasted (or used to encode noise).
 
 ### 2.3 Reconstruction Loss
 
 The standard loss function is **mean squared error (MSE)**:
 
-$$\mathcal{L}_{\text{MSE}} = \frac{1}{N}\sum_{i=1}^N \|\mathbf{x}_i - \hat{\mathbf{x}}_i\|^2 = \frac{1}{N}\sum_{i=1}^N \sum_{j=1}^d (x_{ij} - \hat{x}_{ij})^2$$
+$$
+\mathcal{L}_{\text{MSE}} = \frac{1}{N}\sum_{i=1}^N \|\mathbf{x}_i - \hat{\mathbf{x}}_i\|^2 = \frac{1}{N}\sum_{i=1}^N \sum_{j=1}^d (x_{ij} - \hat{x}_{ij})^2
+$$
 
 For binary or normalized-to-$[0,1]$ inputs (like MNIST pixel values), **binary cross-entropy (BCE)** is often a better choice:
 
-$$\mathcal{L}_{\text{BCE}} = -\frac{1}{N}\sum_{i=1}^N \sum_{j=1}^d \left[x_{ij} \log \hat{x}_{ij} + (1 - x_{ij})\log(1 - \hat{x}_{ij})\right]$$
+$$
+\mathcal{L}_{\text{BCE}} = -\frac{1}{N}\sum_{i=1}^N \sum_{j=1}^d \left[x_{ij} \log \hat{x}_{ij} + (1 - x_{ij})\log(1 - \hat{x}_{ij})\right]
+$$
 
 BCE treats each pixel as a Bernoulli random variable and measures the log-likelihood. It gives sharper reconstructions than MSE for binary-ish data because it more heavily penalizes confident wrong predictions.
 
@@ -119,23 +129,23 @@ But the effective compression depends on the network capacity. A very wide encod
 
 ### 3.1 The Linear Case: A Review
 
-From Week 5, we proved that a linear autoencoder (no activation functions) with MSE loss converges to PCA. Specifically, the product $W_d W_e$ converges to the projection matrix $U_k U_k^\top$ onto the top-$k$ eigenvectors of the data covariance matrix.
+From Week 5, we proved that a linear autoencoder (no activation functions) with MSE loss converges to PCA. Specifically, the product $W\_d W\_e$ converges to the projection matrix $U\_k U\_k^\top$ onto the top-$k$ eigenvectors of the data covariance matrix.
 
 Let us be more precise about what this means:
 
 **Linear autoencoder:**
-- Encoder: $\mathbf{z} = W_e \mathbf{x}$ (no activation)
-- Decoder: $\hat{\mathbf{x}} = W_d \mathbf{z}$ (no activation)
-- Loss: $\mathcal{L} = \frac{1}{N}\sum_i \|x_i - W_d W_e \mathbf{x}_i\|^2$
+- Encoder: $\mathbf{z} = W\_e \mathbf{x}$ (no activation)
+- Decoder: $\hat{\mathbf{x}} = W\_d \mathbf{z}$ (no activation)
+- Loss: $\mathcal{L} = \frac{1}{N}\sum\_i \Vert x\_i - W\_d W\_e \mathbf{x}\_i\Vert ^2$
 
-**At the global minimum:** $W_d W_e = U_k U_k^\top$, and the reconstruction error equals $\sum_{j=k+1}^d \lambda_j$ — the variance in the discarded dimensions.
+**At the global minimum:** $W\_d W\_e = U\_k U\_k^\top$, and the reconstruction error equals $\sum\_{j=k+1}^d \lambda\_j$ — the variance in the discarded dimensions.
 
 ### 3.2 Adding Nonlinearity: Beyond PCA
 
 Now add nonlinear activations:
 
-- Encoder: $\mathbf{z} = \sigma(W_e \mathbf{x} + \mathbf{b}_e)$
-- Decoder: $\hat{\mathbf{x}} = \sigma(W_d \mathbf{z} + \mathbf{b}_d)$
+- Encoder: $\mathbf{z} = \sigma(W\_e \mathbf{x} + \mathbf{b}\_e)$
+- Decoder: $\hat{\mathbf{x}} = \sigma(W\_d \mathbf{z} + \mathbf{b}\_d)$
 
 This can no longer be reduced to PCA. The encoder can learn **nonlinear** transformations, mapping the data to a latent space that respects the curved geometry of the data manifold.
 
@@ -175,7 +185,7 @@ Each step up the spectrum adds expressive power but also adds the risk of learni
 
 A common constraint: require the decoder weights to be the transpose of the encoder weights.
 
-If the encoder has weight matrix $W_e$, the tied decoder uses $W_d = W_e^\top$.
+If the encoder has weight matrix $W\_e$, the tied decoder uses $W\_d = W\_e^\top$.
 
 **Advantages:**
 - Halves the number of parameters
@@ -248,7 +258,7 @@ Training an autoencoder is no different from training any neural network:
 
 One of the most informative things you can do with a trained autoencoder is visualize its latent space.
 
-**For $k = 2$ (two-dimensional latent space):** We can directly plot $\mathbf{z} = f_\theta(\mathbf{x})$ in 2D, coloring points by digit label. If the autoencoder has learned a good representation, we should see digit clusters.
+**For $k = 2$ (two-dimensional latent space):** We can directly plot $\mathbf{z} = f\_\theta(\mathbf{x})$ in 2D, coloring points by digit label. If the autoencoder has learned a good representation, we should see digit clusters.
 
 **For $k > 2$:** Use t-SNE or UMAP to reduce the $k$-dimensional latent codes to 2D for visualization.
 
@@ -260,9 +270,11 @@ One of the most informative things you can do with a trained autoencoder is visu
 
 ### 5.2 Interpolation in Latent Space
 
-A powerful test of representation quality: take two data points $\mathbf{x}_A$ and $\mathbf{x}_B$, encode them to $\mathbf{z}_A$ and $\mathbf{z}_B$, and decode points along the line between them:
+A powerful test of representation quality: take two data points $\mathbf{x}\_A$ and $\mathbf{x}\_B$, encode them to $\mathbf{z}\_A$ and $\mathbf{z}\_B$, and decode points along the line between them:
 
-$$\hat{\mathbf{x}}_\alpha = g_\phi\left((1 - \alpha)\mathbf{z}_A + \alpha \mathbf{z}_B\right), \quad \alpha \in [0, 1]$$
+$$
+\hat{\mathbf{x}}_\alpha = g_\phi\left((1 - \alpha)\mathbf{z}_A + \alpha \mathbf{z}_B\right), \quad \alpha \in [0, 1]
+$$
 
 If the latent space is well-organized:
 - The interpolation should produce smooth, realistic transitions
@@ -294,7 +306,7 @@ In an ideal world, each latent dimension would correspond to a single, interpret
 
 To investigate what a latent dimension encodes, you can:
 1. Take a latent code $\mathbf{z}$ for a test image
-2. Vary one dimension $z_j$ while holding the others fixed
+2. Vary one dimension $z\_j$ while holding the others fixed
 3. Decode and observe how the reconstruction changes
 
 This is called a **latent traversal**. In a well-structured latent space, each traversal changes one semantic attribute. In a poorly structured space, each traversal changes multiple attributes simultaneously.
@@ -311,7 +323,9 @@ Fully-connected autoencoders treat each pixel independently — the network must
 
 **Convolutional layer:** Applies a set of small learned filters (e.g., 3x3 or 5x5) to local patches of the input. Each filter slides across the image, computing a dot product at each position. The output is a set of **feature maps** — one per filter.
 
-$$(\text{feature map})_{ij} = \sum_{m,n} w_{mn} \cdot \text{input}_{i+m, j+n} + b$$
+$$
+(\text{feature map})_{ij} = \sum_{m,n} w_{mn} \cdot \text{input}_{i+m, j+n} + b
+$$
 
 **Key properties:**
 - **Translation equivariance:** The same filter is applied everywhere, so a feature detected in one location is detected in all locations
@@ -361,10 +375,14 @@ Decoder:
 Convolutional autoencoder design follows a simple pattern:
 
 **Encoder:** Progressively increase channels while decreasing spatial dimensions.
-$$\text{channels: } 1 \to 16 \to 32 \to 64, \quad \text{spatial: } 28 \to 14 \to 7 \to 3$$
+$$
+\text{channels: } 1 \to 16 \to 32 \to 64, \quad \text{spatial: } 28 \to 14 \to 7 \to 3
+$$
 
 **Decoder:** Mirror the encoder — decrease channels while increasing spatial dimensions.
-$$\text{channels: } 64 \to 32 \to 16 \to 1, \quad \text{spatial: } 3 \to 7 \to 14 \to 28$$
+$$
+\text{channels: } 64 \to 32 \to 16 \to 1, \quad \text{spatial: } 3 \to 7 \to 14 \to 28
+$$
 
 The bottleneck can be a fully-connected layer (flattening the final feature maps) or the feature maps themselves can serve as the latent representation.
 
@@ -392,13 +410,17 @@ The whole point of an autoencoder is to force the network to discover compact, m
 
 Let us prove this formally for the linear case. Suppose $k \geq d$ and the autoencoder is linear:
 
-$$\hat{\mathbf{x}} = W_d W_e \mathbf{x}$$
+$$
+\hat{\mathbf{x}} = W_d W_e \mathbf{x}
+$$
 
-where $W_e \in \mathbb{R}^{k \times d}$ and $W_d \in \mathbb{R}^{d \times k}$.
+where $W\_e \in \mathbb{R}^{k \times d}$ and $W\_d \in \mathbb{R}^{d \times k}$.
 
-Since $k \geq d$, the product $W_d W_e$ is a $d \times d$ matrix that can have rank up to $d$. In particular, we can set $W_e = \begin{pmatrix} I_d \\ 0 \end{pmatrix}$ (identity padded with zeros) and $W_d = \begin{pmatrix} I_d & 0 \end{pmatrix}$ (identity with zero columns), giving:
+Since $k \geq d$, the product $W\_d W\_e$ is a $d \times d$ matrix that can have rank up to $d$. In particular, we can set $W\_e = \begin{pmatrix} I\_d \\ 0 \end{pmatrix}$ (identity padded with zeros) and $W\_d = \begin{pmatrix} I\_d & 0 \end{pmatrix}$ (identity with zero columns), giving:
 
-$$W_d W_e = I_d$$
+$$
+W_d W_e = I_d
+$$
 
 The reconstruction error is zero. The encoder simply copies the input to the first $d$ latent dimensions.
 
@@ -412,7 +434,9 @@ For nonlinear overcomplete autoencoders, the identity function is not the only s
 
 The overcomplete case is not inherently useless — it just requires *additional constraints* beyond reconstruction error. If we want an overcomplete autoencoder to learn a meaningful representation, we must add a regularization term to the loss:
 
-$$\mathcal{L} = \underbrace{\|\mathbf{x} - \hat{\mathbf{x}}\|^2}_{\text{reconstruction}} + \lambda \cdot \underbrace{R(\mathbf{z})}_{\text{regularization}}$$
+$$
+\mathcal{L} = \underbrace{\|\mathbf{x} - \hat{\mathbf{x}}\|^2}_{\text{reconstruction}} + \lambda \cdot \underbrace{R(\mathbf{z})}_{\text{regularization}}
+$$
 
 Different choices of $R(\mathbf{z})$ give different autoencoder variants:
 
@@ -438,7 +462,7 @@ The bottleneck size $k$ is the most important hyperparameter. Here is a systemat
 
 1. **Start with PCA:** Compute PCA on your data and look at the explained variance curve. If 95% of variance is captured by 50 components, $k = 50$ is a reasonable starting point for the autoencoder.
 
-2. **Reconstruction quality sweep:** Train autoencoders with $k \in \{2, 5, 10, 20, 50, 100\}$ and plot reconstruction loss vs. $k$. There is usually a "knee" — below it, reconstruction degrades rapidly; above it, adding dimensions yields diminishing returns.
+2. **Reconstruction quality sweep:** Train autoencoders with $k \in \lbrace 2, 5, 10, 20, 50, 100\rbrace $ and plot reconstruction loss vs. $k$. There is usually a "knee" — below it, reconstruction degrades rapidly; above it, adding dimensions yields diminishing returns.
 
 3. **Task-dependent:** If the autoencoder feeds into a downstream task (classification, generation), choose $k$ by cross-validation on the downstream metric.
 

@@ -22,8 +22,12 @@ Before we can apply SAEs to transformers, we need to understand where to apply t
 
 A transformer processes a sequence of tokens. At each layer $\ell$, each token has an activation vector $\mathbf{h}^{(\ell)} \in \mathbb{R}^d$ (the **residual stream** representation). A single transformer block applies two operations:
 
-$$\mathbf{h}^{(\ell + 0.5)} = \mathbf{h}^{(\ell)} + \text{Attention}^{(\ell)}(\mathbf{h}^{(\ell)})$$
-$$\mathbf{h}^{(\ell + 1)} = \mathbf{h}^{(\ell + 0.5)} + \text{MLP}^{(\ell)}(\mathbf{h}^{(\ell + 0.5)})$$
+$$
+\mathbf{h}^{(\ell + 0.5)} = \mathbf{h}^{(\ell)} + \text{Attention}^{(\ell)}(\mathbf{h}^{(\ell)})
+$$
+$$
+\mathbf{h}^{(\ell + 1)} = \mathbf{h}^{(\ell + 0.5)} + \text{MLP}^{(\ell)}(\mathbf{h}^{(\ell + 0.5)})
+$$
 
 Note the **residual connections** (the $+$ signs). Each layer *adds* to the residual stream rather than replacing it. This is crucial: the residual stream is a "highway" that carries information across layers. Any layer can write to it, and any later layer can read from it.
 
@@ -31,11 +35,15 @@ Note the **residual connections** (the $+$ signs). Each layer *adds* to the resi
 
 The attention mechanism allows each token to "look at" other tokens in the sequence and aggregate information from them. For a single attention head $h$:
 
-$$\text{head}_h(\mathbf{h}) = \text{softmax}\left(\frac{\mathbf{Q}_h \mathbf{K}_h^T}{\sqrt{d_k}}\right) \mathbf{V}_h$$
+$$
+\text{head}_h(\mathbf{h}) = \text{softmax}\left(\frac{\mathbf{Q}_h \mathbf{K}_h^T}{\sqrt{d_k}}\right) \mathbf{V}_h
+$$
 
-where $\mathbf{Q}_h, \mathbf{K}_h, \mathbf{V}_h$ are linear projections of the input (query, key, value). The attention output is the sum across all heads:
+where $\mathbf{Q}\_h, \mathbf{K}\_h, \mathbf{V}\_h$ are linear projections of the input (query, key, value). The attention output is the sum across all heads:
 
-$$\text{Attention}(\mathbf{h}) = \sum_h \mathbf{W}_O^{(h)} \text{head}_h(\mathbf{h})$$
+$$
+\text{Attention}(\mathbf{h}) = \sum_h \mathbf{W}_O^{(h)} \text{head}_h(\mathbf{h})
+$$
 
 For our purposes, the key facts are:
 - Attention moves information between token positions.
@@ -46,9 +54,11 @@ For our purposes, the key facts are:
 
 The MLP (multi-layer perceptron) layer is a position-wise feedforward network:
 
-$$\text{MLP}(\mathbf{h}) = \mathbf{W}_{\text{out}} \cdot \sigma(\mathbf{W}_{\text{in}} \mathbf{h} + \mathbf{b}_{\text{in}}) + \mathbf{b}_{\text{out}}$$
+$$
+\text{MLP}(\mathbf{h}) = \mathbf{W}_{\text{out}} \cdot \sigma(\mathbf{W}_{\text{in}} \mathbf{h} + \mathbf{b}_{\text{in}}) + \mathbf{b}_{\text{out}}
+$$
 
-where $\mathbf{W}_{\text{in}} \in \mathbb{R}^{d_{\text{ff}} \times d}$ expands the dimension (typically $d_{\text{ff}} = 4d$), $\sigma$ is an activation function (ReLU or GELU), and $\mathbf{W}_{\text{out}} \in \mathbb{R}^{d \times d_{\text{ff}}}$ projects back down.
+where $\mathbf{W}\_{\text{in}} \in \mathbb{R}^{d\_{\text{ff}} \times d}$ expands the dimension (typically $d\_{\text{ff}} = 4d$), $\sigma$ is an activation function (ReLU or GELU), and $\mathbf{W}\_{\text{out}} \in \mathbb{R}^{d \times d\_{\text{ff}}}$ projects back down.
 
 The MLP is where much of the model's "knowledge" is believed to be stored. It processes each token independently (no cross-token interaction) and adds its output to the residual stream.
 
@@ -56,7 +66,9 @@ The MLP is where much of the model's "knowledge" is believed to be stored. It pr
 
 A useful perspective (due to Elhage et al., 2021): think of the residual stream as a shared communication channel. Each attention head and MLP layer reads from the residual stream, computes something, and writes the result back. The final token representation is the sum of contributions from all layers:
 
-$$\mathbf{h}^{(L)} = \mathbf{h}^{(0)} + \sum_{\ell=1}^{L} \left[\text{Attention}^{(\ell)}(\cdot) + \text{MLP}^{(\ell)}(\cdot)\right]$$
+$$
+\mathbf{h}^{(L)} = \mathbf{h}^{(0)} + \sum_{\ell=1}^{L} \left[\text{Attention}^{(\ell)}(\cdot) + \text{MLP}^{(\ell)}(\cdot)\right]
+$$
 
 This view clarifies where SAEs can be applied: at any point along the residual stream, we have a $d$-dimensional vector that encodes "everything the model knows about this token so far." We can train an SAE on these vectors to decompose the information into interpretable features.
 
@@ -82,9 +94,9 @@ There are several natural locations to apply SAEs in a transformer:
 - These capture cross-token information movement at layer $\ell$.
 - Features found here often relate to syntactic or positional patterns.
 
-**MLP hidden activations** $\sigma(\mathbf{W}_{\text{in}} \mathbf{h} + \mathbf{b}_{\text{in}})$:
+**MLP hidden activations** $\sigma(\mathbf{W}\_{\text{in}} \mathbf{h} + \mathbf{b}\_{\text{in}})$:
 - The pre-output activations of the MLP.
-- Already high-dimensional ($d_{\text{ff}} = 4d$), so the expansion factor of the SAE can be smaller.
+- Already high-dimensional ($d\_{\text{ff}} = 4d$), so the expansion factor of the SAE can be smaller.
 
 ### 2.2 Practical Considerations
 
@@ -213,7 +225,9 @@ The most viral result from the paper: by artificially amplifying the Golden Gate
 **How it works:**
 1. Identify the SAE feature for "Golden Gate Bridge."
 2. During model inference, at the layer where the SAE was trained, add a multiple of this feature's direction to the residual stream:
-   $$\mathbf{h}_{\text{steered}} = \mathbf{h} + \alpha \cdot \mathbf{W}_d[:, j_{\text{GGB}}]$$
+   $$
+   \mathbf{h}_{\text{steered}} = \mathbf{h} + \alpha \cdot \mathbf{W}_d[:, j_{\text{GGB}}]
+   $$
    where $\alpha$ controls the steering strength.
 3. The model continues processing with the modified activations.
 
@@ -283,7 +297,7 @@ For training an SAE, you need millions of activation vectors. The typical approa
 
 ### 5.3 Architecture Choices
 
-**Expansion factor** $r = d_{\text{SAE}} / d_{\text{model}}$:
+**Expansion factor** $r = d\_{\text{SAE}} / d\_{\text{model}}$:
 - $r = 4$: Discovers coarse-grained features. Good for initial exploration.
 - $r = 8$: Standard choice. Balances feature granularity and training cost.
 - $r = 16$: Finer-grained features. More feature splitting.
@@ -305,9 +319,11 @@ For GPT-2 small ($d = 768$):
 For SAEs trained on language model activations, the standard metrics are:
 
 **CE loss recovered** (the most important metric):
-$$\text{CE recovered} = 1 - \frac{L_{\text{SAE}} - L_{\text{orig}}}{L_{\text{zero}} - L_{\text{orig}}}$$
+$$
+\text{CE recovered} = 1 - \frac{L_{\text{SAE}} - L_{\text{orig}}}{L_{\text{zero}} - L_{\text{orig}}}
+$$
 
-where $L_{\text{SAE}}$ is the cross-entropy loss of the model when the SAE's reconstructed activations replace the original activations, $L_{\text{orig}}$ is the original model's loss, and $L_{\text{zero}}$ is the loss when activations are replaced with zeros.
+where $L\_{\text{SAE}}$ is the cross-entropy loss of the model when the SAE's reconstructed activations replace the original activations, $L\_{\text{orig}}$ is the original model's loss, and $L\_{\text{zero}}$ is the loss when activations are replaced with zeros.
 
 Good SAEs achieve CE recovered > 0.95, meaning they preserve almost all of the model's predictive ability.
 
@@ -325,7 +341,7 @@ Once you have a trained SAE, the real work begins: understanding what the featur
 
 ### 6.1 Finding Maximally Activating Examples
 
-For each feature $j$, find the input tokens (in context) that produce the highest activation $z_j$:
+For each feature $j$, find the input tokens (in context) that produce the highest activation $z\_j$:
 
 1. Run the model on a large, diverse corpus.
 2. For each token, compute the SAE hidden activations.

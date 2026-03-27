@@ -44,7 +44,7 @@ Plot the training loss curve (loss per epoch).
 
 ## Problem 2: Bottleneck Size Experiment
 
-**(a)** Train autoencoders with bottleneck sizes $k \in \{2, 5, 10, 20, 50, 100, 200\}$. Use the same architecture and training setup as Problem 1 (but vary $k$).
+**(a)** Train autoencoders with bottleneck sizes $k \in \lbrace 2, 5, 10, 20, 50, 100, 200\rbrace $. Use the same architecture and training setup as Problem 1 (but vary $k$).
 
 **(b)** For each value of $k$, record:
 - Final test reconstruction loss (MSE)
@@ -84,16 +84,16 @@ For example: if the encoded test data spans roughly $[-3, 3]$ in both dimensions
 - A "4" and a "9"
 - A "0" and a "6"
 
-**(b)** For each pair $(\mathbf{x}_A, \mathbf{x}_B)$:
-1. Encode: $\mathbf{z}_A = f(\mathbf{x}_A)$, $\mathbf{z}_B = f(\mathbf{x}_B)$
-2. Interpolate: $\mathbf{z}_\alpha = (1 - \alpha)\mathbf{z}_A + \alpha\mathbf{z}_B$ for $\alpha \in \{0, 0.1, 0.2, \ldots, 0.9, 1.0\}$
-3. Decode: $\hat{\mathbf{x}}_\alpha = g(\mathbf{z}_\alpha)$
+**(b)** For each pair $(\mathbf{x}\_A, \mathbf{x}\_B)$:
+1. Encode: $\mathbf{z}\_A = f(\mathbf{x}\_A)$, $\mathbf{z}\_B = f(\mathbf{x}\_B)$
+2. Interpolate: $\mathbf{z}\_\alpha = (1 - \alpha)\mathbf{z}\_A + \alpha\mathbf{z}\_B$ for $\alpha \in \lbrace 0, 0.1, 0.2, \ldots, 0.9, 1.0\rbrace $
+3. Decode: $\hat{\mathbf{x}}\_\alpha = g(\mathbf{z}\_\alpha)$
 
 Display each interpolation as a row of 11 images ($\alpha$ from 0 to 1).
 
 **(c)** Are the interpolations smooth and realistic? Do they pass through recognizable digit shapes, or do they become blurry/noisy in the middle?
 
-**(d)** Compare with **pixel-space interpolation**: for the same pairs, compute $\hat{\mathbf{x}}_\alpha = (1 - \alpha)\mathbf{x}_A + \alpha\mathbf{x}_B$ (interpolating directly in pixel space). Display the results. Which interpolation — latent space or pixel space — produces more realistic intermediate images?
+**(d)** Compare with **pixel-space interpolation**: for the same pairs, compute $\hat{\mathbf{x}}\_\alpha = (1 - \alpha)\mathbf{x}\_A + \alpha\mathbf{x}\_B$ (interpolating directly in pixel space). Display the results. Which interpolation — latent space or pixel space — produces more realistic intermediate images?
 
 **(e)** In a few sentences, explain why latent space interpolation is typically better than pixel space interpolation. What does this tell us about the structure of the latent space?
 
@@ -102,12 +102,12 @@ Display each interpolation as a row of 11 images ($\alpha$ from 0 to 1).
 ## Problem 5: Tied Weights
 
 **(a)** Implement a tied-weight autoencoder. Use a single hidden layer for simplicity:
-- Encoder: $\mathbf{z} = \text{ReLU}(W_e \mathbf{x} + \mathbf{b}_e)$, where $W_e \in \mathbb{R}^{k \times 784}$
-- Decoder: $\hat{\mathbf{x}} = \sigma(W_e^\top \mathbf{z} + \mathbf{b}_d)$
+- Encoder: $\mathbf{z} = \text{ReLU}(W\_e \mathbf{x} + \mathbf{b}\_e)$, where $W\_e \in \mathbb{R}^{k \times 784}$
+- Decoder: $\hat{\mathbf{x}} = \sigma(W\_e^\top \mathbf{z} + \mathbf{b}\_d)$
 
-Note: the decoder weight matrix is $W_e^\top$ — the transpose of the encoder weight. Only the biases $\mathbf{b}_e$ and $\mathbf{b}_d$ are independent.
+Note: the decoder weight matrix is $W\_e^\top$ — the transpose of the encoder weight. Only the biases $\mathbf{b}\_e$ and $\mathbf{b}\_d$ are independent.
 
-**(b)** Also implement the untied version: same architecture but with an independent decoder weight matrix $W_d$.
+**(b)** Also implement the untied version: same architecture but with an independent decoder weight matrix $W\_d$.
 
 **(c)** Train both models on MNIST with $k = 64$, using the same hyperparameters:
 - Adam, lr = $10^{-3}$, 20 epochs, batch size 128, BCE loss
@@ -117,7 +117,7 @@ Report:
 - Final test reconstruction loss for each model
 - Train a linear classifier on the latent codes of each model and report test accuracy
 
-**(d)** Visualize the rows of $W_e$ as $28 \times 28$ images for both models (these are the "encoder filters" — patterns that each latent dimension responds to). Do the tied and untied models learn similar or different filters?
+**(d)** Visualize the rows of $W\_e$ as $28 \times 28$ images for both models (these are the "encoder filters" — patterns that each latent dimension responds to). Do the tied and untied models learn similar or different filters?
 
 **(e)** In 3-4 sentences, discuss the trade-offs of tied weights. When might tied weights be preferable? When might they hurt?
 
@@ -160,13 +160,13 @@ Decoder:
 
 ## Problem 7: Overcomplete Linear Autoencoders (Theory)
 
-**(a)** Consider a linear autoencoder with $d = 3$ (input dimension) and $k = 5$ (latent dimension). The encoder is $W_e \in \mathbb{R}^{5 \times 3}$ and the decoder is $W_d \in \mathbb{R}^{3 \times 5}$.
+**(a)** Consider a linear autoencoder with $d = 3$ (input dimension) and $k = 5$ (latent dimension). The encoder is $W\_e \in \mathbb{R}^{5 \times 3}$ and the decoder is $W\_d \in \mathbb{R}^{3 \times 5}$.
 
-Construct specific matrices $W_e$ and $W_d$ such that $W_d W_e = I_3$ (the $3 \times 3$ identity matrix). Verify by computing the product.
+Construct specific matrices $W\_e$ and $W\_d$ such that $W\_d W\_e = I\_3$ (the $3 \times 3$ identity matrix). Verify by computing the product.
 
-**(b)** With your construction from (a), what is the reconstruction error? What is the latent code $\mathbf{z} = W_e \mathbf{x}$ for an arbitrary input $\mathbf{x}$? Is $\mathbf{z}$ a "useful" representation?
+**(b)** With your construction from (a), what is the reconstruction error? What is the latent code $\mathbf{z} = W\_e \mathbf{x}$ for an arbitrary input $\mathbf{x}$? Is $\mathbf{z}$ a "useful" representation?
 
-**(c)** Prove that for any $k \geq d$, there exist $W_e \in \mathbb{R}^{k \times d}$ and $W_d \in \mathbb{R}^{d \times k}$ such that $W_d W_e = I_d$. (Hint: use the fact that a $d \times k$ matrix with $k \geq d$ can have rank $d$.)
+**(c)** Prove that for any $k \geq d$, there exist $W\_e \in \mathbb{R}^{k \times d}$ and $W\_d \in \mathbb{R}^{d \times k}$ such that $W\_d W\_e = I\_d$. (Hint: use the fact that a $d \times k$ matrix with $k \geq d$ can have rank $d$.)
 
 **(d)** Now consider a *nonlinear* overcomplete autoencoder with ReLU activations and $k > d$. Can it still learn the identity function? Explain why or why not. (Hint: think about what happens if the encoder maps all data to the positive orthant, where ReLU is the identity.)
 

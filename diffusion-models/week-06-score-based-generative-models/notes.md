@@ -9,7 +9,7 @@
 
 While Ho et al. were developing DDPMs from the variational inference tradition, Yang Song and Stefano Ermon were building an independent path to the same destination from a different starting point: **score matching and Langevin dynamics**.
 
-The core idea: if you can estimate the score function $\nabla_x \log p(x)$ -- the gradient of the log-density -- you can generate samples using Langevin dynamics, no likelihood computation required. The problem is that score estimation fails in low-density regions (where you have no data to learn from). The solution: add noise at multiple scales, estimate the score at each scale, and generate by gradually denoising from high to low noise using *annealed* Langevin dynamics.
+The core idea: if you can estimate the score function $\nabla\_x \log p(x)$ -- the gradient of the log-density -- you can generate samples using Langevin dynamics, no likelihood computation required. The problem is that score estimation fails in low-density regions (where you have no data to learn from). The solution: add noise at multiple scales, estimate the score at each scale, and generate by gradually denoising from high to low noise using *annealed* Langevin dynamics.
 
 This is the **Noise Conditional Score Network (NCSN)** framework. It was developed in parallel with DDPM and, as we will show, is mathematically equivalent to it. The two communities -- variational inference and score matching -- discovered the same model through different lenses. This week, we study the score-based perspective and make the equivalence explicit.
 
@@ -26,21 +26,27 @@ This is the **Noise Conditional Score Network (NCSN)** framework. It was develop
 
 Recall from Week 2 that the **score function** of a distribution $p(x)$ is:
 
-$$s(x) = \nabla_x \log p(x)$$
+$$
+s(x) = \nabla_x \log p(x)
+$$
 
-The score points in the direction of steepest increase of the log-density -- toward the modes of the distribution. It has a remarkable property: it does not depend on the normalizing constant of $p(x)$. If $p(x) = \frac{1}{Z} \tilde{p}(x)$, then $\nabla_x \log p(x) = \nabla_x \log \tilde{p}(x)$.
+The score points in the direction of steepest increase of the log-density -- toward the modes of the distribution. It has a remarkable property: it does not depend on the normalizing constant of $p(x)$. If $p(x) = \frac{1}{Z} \tilde{p}(x)$, then $\nabla\_x \log p(x) = \nabla\_x \log \tilde{p}(x)$.
 
 Given the score, **Langevin dynamics** generates samples from $p(x)$ by iterating:
 
-$$x_{k+1} = x_k + \frac{\eta}{2} \nabla_x \log p(x_k) + \sqrt{\eta}\, z_k, \qquad z_k \sim \mathcal{N}(0, I)$$
+$$
+x_{k+1} = x_k + \frac{\eta}{2} \nabla_x \log p(x_k) + \sqrt{\eta}\, z_k, \qquad z_k \sim \mathcal{N}(0, I)
+$$
 
-For small enough step size $\eta$ and enough iterations, $x_k$ converges in distribution to $p(x)$. The gradient term pushes $x$ toward high-density regions; the noise term ensures exploration and prevents collapse to a single mode.
+For small enough step size $\eta$ and enough iterations, $x\_k$ converges in distribution to $p(x)$. The gradient term pushes $x$ toward high-density regions; the noise term ensures exploration and prevents collapse to a single mode.
 
 ### 1.2 The Problem: Score Estimation Fails in the Tails
 
-In Week 4, we learned how to estimate the score from data using **score matching** (Hyvarinen, 2005) or **denoising score matching** (Vincent, 2011). We train a network $s_\theta(x)$ to approximate $\nabla_x \log p(x)$ by minimizing:
+In Week 4, we learned how to estimate the score from data using **score matching** (Hyvarinen, 2005) or **denoising score matching** (Vincent, 2011). We train a network $s\_\theta(x)$ to approximate $\nabla\_x \log p(x)$ by minimizing:
 
-$$\mathcal{L}_{\text{SM}} = \mathbb{E}_{p(x)}\!\left[\frac{1}{2}\|s_\theta(x) - \nabla_x \log p(x)\|^2\right]$$
+$$
+\mathcal{L}_{\text{SM}} = \mathbb{E}_{p(x)}\!\left[\frac{1}{2}\|s_\theta(x) - \nabla_x \log p(x)\|^2\right]
+$$
 
 or its tractable denoising variant.
 
@@ -55,7 +61,7 @@ Why does this matter for Langevin dynamics? Because sampling starts from random 
 
 Consider a mixture of two Gaussians in 1D: $p(x) = 0.5\,\mathcal{N}(x; -5, 0.5^2) + 0.5\,\mathcal{N}(x; 5, 0.5^2)$. The two modes are well-separated, with a vast low-density region between them.
 
-If we train a score network on samples from $p(x)$, the network sees data near $x = -5$ and $x = 5$, but almost nothing near $x = 0$. The score estimate between the modes is unreliable. Langevin dynamics initialized at $x_0 = 0$ might go either way, or get stuck, or oscillate -- the poor score estimate gives no useful guidance.
+If we train a score network on samples from $p(x)$, the network sees data near $x = -5$ and $x = 5$, but almost nothing near $x = 0$. The score estimate between the modes is unreliable. Langevin dynamics initialized at $x\_0 = 0$ might go either way, or get stuck, or oscillate -- the poor score estimate gives no useful guidance.
 
 Even worse: in high dimensions, *almost everywhere* is low-density. Real data (images, text) lives on a thin manifold in a vast ambient space. The score is well-estimated only on or very near this manifold.
 
@@ -69,26 +75,30 @@ Song and Ermon's insight: **perturbing the data with noise fills in the low-dens
 
 If we convolve the data distribution $p(x)$ with Gaussian noise of standard deviation $\sigma$:
 
-$$p_\sigma(x) = \int p(y)\, \mathcal{N}(x; y, \sigma^2 I)\, dy$$
+$$
+p_\sigma(x) = \int p(y)\, \mathcal{N}(x; y, \sigma^2 I)\, dy
+$$
 
-then $p_\sigma(x)$ has support everywhere (no more zero-density regions). The score $\nabla_x \log p_\sigma(x)$ is well-defined and estimable everywhere.
+then $p\_\sigma(x)$ has support everywhere (no more zero-density regions). The score $\nabla\_x \log p\_\sigma(x)$ is well-defined and estimable everywhere.
 
-At high $\sigma$, $p_\sigma$ is a heavily smoothed version of $p$ -- the modes are blurred together, and the score provides useful gradient signal even far from the data. At low $\sigma$, $p_\sigma \approx p$ -- the score captures fine detail.
+At high $\sigma$, $p\_\sigma$ is a heavily smoothed version of $p$ -- the modes are blurred together, and the score provides useful gradient signal even far from the data. At low $\sigma$, $p\_\sigma \approx p$ -- the score captures fine detail.
 
 ### 2.2 Geometric Noise Levels
 
 NCSN uses $L$ noise levels, geometrically spaced:
 
-$$\sigma_1 > \sigma_2 > \cdots > \sigma_L$$
+$$
+\sigma_1 > \sigma_2 > \cdots > \sigma_L
+$$
 
-with $\sigma_1$ large enough that $p_{\sigma_1}$ is nearly a single Gaussian (modes merged), and $\sigma_L$ small enough that $p_{\sigma_L} \approx p$ (data approximately unperturbed).
+with $\sigma\_1$ large enough that $p\_{\sigma\_1}$ is nearly a single Gaussian (modes merged), and $\sigma\_L$ small enough that $p\_{\sigma\_L} \approx p$ (data approximately unperturbed).
 
 Song and Ermon (2019) recommend:
-- $\sigma_1$ should be approximately the maximum pairwise distance between data points
-- $\sigma_L$ should be small enough to be imperceptible (e.g., 0.01)
-- Geometric spacing: $\sigma_i = \sigma_1 \cdot (\sigma_L / \sigma_1)^{(i-1)/(L-1)}$
+- $\sigma\_1$ should be approximately the maximum pairwise distance between data points
+- $\sigma\_L$ should be small enough to be imperceptible (e.g., 0.01)
+- Geometric spacing: $\sigma\_i = \sigma\_1 \cdot (\sigma\_L / \sigma\_1)^{(i-1)/(L-1)}$
 
-A typical choice is $L = 10$ to $L = 1000$, with $\sigma_1 = 50$ and $\sigma_L = 0.01$.
+A typical choice is $L = 10$ to $L = 1000$, with $\sigma\_1 = 50$ and $\sigma\_L = 0.01$.
 
 ### 2.3 Why Multiple Scales Work: The Connectivity Argument
 
@@ -108,39 +118,51 @@ The strategy: start with high noise (easy mixing, poor detail), gradually reduce
 
 ### 3.1 Noise-Conditional Score Network
 
-We train a single network $s_\theta(x, \sigma)$ to estimate the score at all noise levels simultaneously:
+We train a single network $s\_\theta(x, \sigma)$ to estimate the score at all noise levels simultaneously:
 
-$$s_\theta(x, \sigma) \approx \nabla_x \log p_\sigma(x)$$
+$$
+s_\theta(x, \sigma) \approx \nabla_x \log p_\sigma(x)
+$$
 
-The network takes both $x$ and $\sigma$ (or an index $i$ corresponding to $\sigma_i$) as input.
+The network takes both $x$ and $\sigma$ (or an index $i$ corresponding to $\sigma\_i$) as input.
 
 ### 3.2 The Denoising Score Matching Loss
 
 From Week 4, we know that denoising score matching provides a tractable loss for score estimation. For a single noise level $\sigma$:
 
-$$\mathcal{L}_{\text{DSM}}(\sigma) = \mathbb{E}_{p(x)}\, \mathbb{E}_{\tilde{x} \sim \mathcal{N}(x, \sigma^2 I)}\!\left[\frac{1}{2}\left\|s_\theta(\tilde{x}, \sigma) - \nabla_{\tilde{x}} \log p(\tilde{x} \mid x)\right\|^2\right]$$
+$$
+\mathcal{L}_{\text{DSM}}(\sigma) = \mathbb{E}_{p(x)}\, \mathbb{E}_{\tilde{x} \sim \mathcal{N}(x, \sigma^2 I)}\!\left[\frac{1}{2}\left\|s_\theta(\tilde{x}, \sigma) - \nabla_{\tilde{x}} \log p(\tilde{x} \mid x)\right\|^2\right]
+$$
 
 Since $p(\tilde{x} \mid x) = \mathcal{N}(\tilde{x}; x, \sigma^2 I)$, the target score is:
 
-$$\nabla_{\tilde{x}} \log p(\tilde{x} \mid x) = -\frac{\tilde{x} - x}{\sigma^2} = -\frac{\varepsilon}{\sigma}$$
+$$
+\nabla_{\tilde{x}} \log p(\tilde{x} \mid x) = -\frac{\tilde{x} - x}{\sigma^2} = -\frac{\varepsilon}{\sigma}
+$$
 
 where $\tilde{x} = x + \sigma \varepsilon$ and $\varepsilon \sim \mathcal{N}(0, I)$.
 
 So the per-noise-level loss is:
 
-$$\mathcal{L}_{\text{DSM}}(\sigma) = \mathbb{E}_{p(x)}\, \mathbb{E}_{\varepsilon \sim \mathcal{N}(0,I)}\!\left[\frac{1}{2}\left\|s_\theta(x + \sigma\varepsilon, \sigma) + \frac{\varepsilon}{\sigma}\right\|^2\right]$$
+$$
+\mathcal{L}_{\text{DSM}}(\sigma) = \mathbb{E}_{p(x)}\, \mathbb{E}_{\varepsilon \sim \mathcal{N}(0,I)}\!\left[\frac{1}{2}\left\|s_\theta(x + \sigma\varepsilon, \sigma) + \frac{\varepsilon}{\sigma}\right\|^2\right]
+$$
 
 ### 3.3 The Combined Objective
 
 The full NCSN objective averages over all noise levels with weights $\lambda(\sigma)$:
 
-$$\mathcal{L}_{\text{NCSN}} = \sum_{i=1}^{L} \lambda(\sigma_i)\, \mathcal{L}_{\text{DSM}}(\sigma_i)$$
+$$
+\mathcal{L}_{\text{NCSN}} = \sum_{i=1}^{L} \lambda(\sigma_i)\, \mathcal{L}_{\text{DSM}}(\sigma_i)
+$$
 
-Song and Ermon (2019) use $\lambda(\sigma) = \sigma^2$, which ensures that the loss magnitude is comparable across noise levels (since $\|\nabla_x \log p_\sigma(x)\| \sim 1/\sigma$, multiplying by $\sigma^2$ normalizes the expected loss).
+Song and Ermon (2019) use $\lambda(\sigma) = \sigma^2$, which ensures that the loss magnitude is comparable across noise levels (since $\Vert \nabla\_x \log p\_\sigma(x)\Vert  \sim 1/\sigma$, multiplying by $\sigma^2$ normalizes the expected loss).
 
 With $\lambda(\sigma) = \sigma^2$, the loss for a single noise level becomes:
 
-$$\lambda(\sigma)\,\mathcal{L}_{\text{DSM}}(\sigma) = \frac{1}{2}\,\mathbb{E}\!\left[\|\sigma\, s_\theta(x + \sigma\varepsilon, \sigma) + \varepsilon\|^2\right]$$
+$$
+\lambda(\sigma)\,\mathcal{L}_{\text{DSM}}(\sigma) = \frac{1}{2}\,\mathbb{E}\!\left[\|\sigma\, s_\theta(x + \sigma\varepsilon, \sigma) + \varepsilon\|^2\right]
+$$
 
 This is strikingly similar to the DDPM loss. We will make this precise in Section 6.
 
@@ -150,7 +172,7 @@ This is strikingly similar to the DDPM loss. We will make this precise in Sectio
 
 ### 4.1 The Sampling Algorithm
 
-Given a trained score network $s_\theta(x, \sigma)$, we generate samples as follows:
+Given a trained score network $s\_\theta(x, \sigma)$, we generate samples as follows:
 
 ```
 Initialize x_0 ~ N(0, σ_1² I)      (or some broad distribution)
@@ -166,10 +188,10 @@ return x
 
 ### 4.2 Interpretation
 
-At each noise level $\sigma_i$, we run $K$ steps of Langevin dynamics targeting $p_{\sigma_i}(x)$. As $i$ increases (noise decreases):
+At each noise level $\sigma\_i$, we run $K$ steps of Langevin dynamics targeting $p\_{\sigma\_i}(x)$. As $i$ increases (noise decreases):
 
-- The target distribution $p_{\sigma_i}$ becomes sharper and more detailed
-- The step size $\eta_i$ shrinks (finer adjustments)
+- The target distribution $p\_{\sigma\_i}$ becomes sharper and more detailed
+- The step size $\eta\_i$ shrinks (finer adjustments)
 - The samples from the previous level provide warm starts (they are already in roughly the right region)
 
 This is analogous to **simulated annealing**: start at high "temperature" (large noise, easy mixing) and gradually cool to the target distribution.
@@ -188,7 +210,7 @@ Compare to DDPM, which uses $T = 1000$ evaluations. The two methods require comp
 
 The original NCSN (Song and Ermon, 2019) produced good results but had several practical issues:
 
-1. **Sensitivity to noise level selection**: the choice of $\sigma_1, \sigma_L, L$ required careful tuning.
+1. **Sensitivity to noise level selection**: the choice of $\sigma\_1, \sigma\_L, L$ required careful tuning.
 2. **Training instability**: the score magnitudes vary enormously across noise levels, leading to gradient imbalance.
 3. **Sample quality gap**: NCSN v1 was competitive with but did not surpass GANs.
 
@@ -200,7 +222,9 @@ Song and Ermon (2020) addressed these issues in their follow-up paper, "Improved
 
 **Noise level conditioning.** Instead of concatenating $\sigma$ to the input, use it to modulate the network activations via conditional instance normalization or FiLM (Feature-wise Linear Modulation):
 
-$$h \leftarrow \gamma(\sigma) \cdot \frac{h - \mu_h}{\sigma_h} + \beta(\sigma)$$
+$$
+h \leftarrow \gamma(\sigma) \cdot \frac{h - \mu_h}{\sigma_h} + \beta(\sigma)
+$$
 
 where $\gamma(\sigma)$ and $\beta(\sigma)$ are learned functions of $\sigma$.
 
@@ -220,43 +244,57 @@ This is the intellectual climax of this week. We now show explicitly that DDPM a
 
 ### 6.1 Matching the Noise Levels
 
-In DDPM, the noise level at timestep $t$ is controlled by $\bar{\alpha}_t$:
+In DDPM, the noise level at timestep $t$ is controlled by $\bar{\alpha}\_t$:
 
-$$q(x_t \mid x_0) = \mathcal{N}\!\left(\sqrt{\bar{\alpha}_t}\, x_0,\; (1 - \bar{\alpha}_t)\, I\right)$$
+$$
+q(x_t \mid x_0) = \mathcal{N}\!\left(\sqrt{\bar{\alpha}_t}\, x_0,\; (1 - \bar{\alpha}_t)\, I\right)
+$$
 
-In NCSN, the noise level is controlled by $\sigma_i$:
+In NCSN, the noise level is controlled by $\sigma\_i$:
 
-$$p_{\sigma_i}(\tilde{x}) = \mathbb{E}_{p(x)}\!\left[\mathcal{N}(\tilde{x}; x, \sigma_i^2 I)\right]$$
+$$
+p_{\sigma_i}(\tilde{x}) = \mathbb{E}_{p(x)}\!\left[\mathcal{N}(\tilde{x}; x, \sigma_i^2 I)\right]
+$$
 
 To match them, note that the DDPM forward process can be rewritten as:
 
-$$x_t = \sqrt{\bar{\alpha}_t}\, x_0 + \sqrt{1 - \bar{\alpha}_t}\, \varepsilon$$
+$$
+x_t = \sqrt{\bar{\alpha}_t}\, x_0 + \sqrt{1 - \bar{\alpha}_t}\, \varepsilon
+$$
 
-If we define $\hat{x} = x_t / \sqrt{\bar{\alpha}_t}$, then:
+If we define $\hat{x} = x\_t / \sqrt{\bar{\alpha}\_t}$, then:
 
-$$\hat{x} = x_0 + \frac{\sqrt{1 - \bar{\alpha}_t}}{\sqrt{\bar{\alpha}_t}}\, \varepsilon$$
+$$
+\hat{x} = x_0 + \frac{\sqrt{1 - \bar{\alpha}_t}}{\sqrt{\bar{\alpha}_t}}\, \varepsilon
+$$
 
-This is exactly data plus Gaussian noise with standard deviation $\sigma = \sqrt{(1 - \bar{\alpha}_t)/\bar{\alpha}_t}$. The DDPM forward process is NCSN's noise perturbation with a specific noise-to-signal mapping plus a global rescaling.
+This is exactly data plus Gaussian noise with standard deviation $\sigma = \sqrt{(1 - \bar{\alpha}\_t)/\bar{\alpha}\_t}$. The DDPM forward process is NCSN's noise perturbation with a specific noise-to-signal mapping plus a global rescaling.
 
-More directly: the DDPM noise variance at step $t$ is $(1 - \bar{\alpha}_t)$, and the signal coefficient is $\sqrt{\bar{\alpha}_t}$. The NCSN noise variance is $\sigma_i^2$ with signal coefficient 1. The two formulations are related by the change of variables $\sigma_i^2 = (1 - \bar{\alpha}_t)/\bar{\alpha}_t$.
+More directly: the DDPM noise variance at step $t$ is $(1 - \bar{\alpha}\_t)$, and the signal coefficient is $\sqrt{\bar{\alpha}\_t}$. The NCSN noise variance is $\sigma\_i^2$ with signal coefficient 1. The two formulations are related by the change of variables $\sigma\_i^2 = (1 - \bar{\alpha}\_t)/\bar{\alpha}\_t$.
 
 ### 6.2 Matching the Networks
 
-In DDPM, the network $\varepsilon_\theta(x_t, t)$ predicts the noise $\varepsilon$ added to create $x_t$.
+In DDPM, the network $\varepsilon\_\theta(x\_t, t)$ predicts the noise $\varepsilon$ added to create $x\_t$.
 
-In NCSN, the network $s_\theta(\tilde{x}, \sigma)$ estimates $\nabla_{\tilde{x}} \log p_\sigma(\tilde{x})$.
+In NCSN, the network $s\_\theta(\tilde{x}, \sigma)$ estimates $\nabla\_{\tilde{x}} \log p\_\sigma(\tilde{x})$.
 
 From Section 5.3 of the Week 5 notes:
 
-$$\nabla_{x_t} \log q(x_t \mid x_0) = -\frac{\varepsilon}{\sqrt{1 - \bar{\alpha}_t}}$$
+$$
+\nabla_{x_t} \log q(x_t \mid x_0) = -\frac{\varepsilon}{\sqrt{1 - \bar{\alpha}_t}}
+$$
 
 Therefore, a DDPM noise predictor and an NCSN score estimator are related by:
 
-$$\boxed{s_\theta(x_t, t) = -\frac{\varepsilon_\theta(x_t, t)}{\sqrt{1 - \bar{\alpha}_t}}}$$
+$$
+\boxed{s_\theta(x_t, t) = -\frac{\varepsilon_\theta(x_t, t)}{\sqrt{1 - \bar{\alpha}_t}}}
+$$
 
 Or equivalently:
 
-$$\boxed{\varepsilon_\theta(x_t, t) = -\sqrt{1 - \bar{\alpha}_t}\; s_\theta(x_t, t)}$$
+$$
+\boxed{\varepsilon_\theta(x_t, t) = -\sqrt{1 - \bar{\alpha}_t}\; s_\theta(x_t, t)}
+$$
 
 They are the *same function* up to a known, timestep-dependent scaling factor. A network trained to predict noise is a network trained to estimate the score. The DDPM loss and the NCSN loss are the same loss with different constants.
 
@@ -264,33 +302,47 @@ They are the *same function* up to a known, timestep-dependent scaling factor. A
 
 The DDPM simplified loss:
 
-$$L_{\text{DDPM}} = \mathbb{E}_{t, x_0, \varepsilon}\!\left[\|\varepsilon - \varepsilon_\theta(x_t, t)\|^2\right]$$
+$$
+L_{\text{DDPM}} = \mathbb{E}_{t, x_0, \varepsilon}\!\left[\|\varepsilon - \varepsilon_\theta(x_t, t)\|^2\right]
+$$
 
-Substituting $\varepsilon_\theta = -\sqrt{1 - \bar{\alpha}_t}\, s_\theta$:
+Substituting $\varepsilon\_\theta = -\sqrt{1 - \bar{\alpha}\_t}\, s\_\theta$:
 
-$$L_{\text{DDPM}} = \mathbb{E}\!\left[\left\|\varepsilon + \sqrt{1 - \bar{\alpha}_t}\, s_\theta(x_t, t)\right\|^2\right]$$
+$$
+L_{\text{DDPM}} = \mathbb{E}\!\left[\left\|\varepsilon + \sqrt{1 - \bar{\alpha}_t}\, s_\theta(x_t, t)\right\|^2\right]
+$$
 
-$$= (1 - \bar{\alpha}_t)\,\mathbb{E}\!\left[\left\|\frac{\varepsilon}{\sqrt{1 - \bar{\alpha}_t}} + s_\theta(x_t, t)\right\|^2\right]$$
+$$
+= (1 - \bar{\alpha}_t)\,\mathbb{E}\!\left[\left\|\frac{\varepsilon}{\sqrt{1 - \bar{\alpha}_t}} + s_\theta(x_t, t)\right\|^2\right]
+$$
 
-$$= (1 - \bar{\alpha}_t)\,\mathbb{E}\!\left[\left\|s_\theta(x_t, t) - \nabla_{x_t}\log q(x_t \mid x_0)\right\|^2\right]$$
+$$
+= (1 - \bar{\alpha}_t)\,\mathbb{E}\!\left[\left\|s_\theta(x_t, t) - \nabla_{x_t}\log q(x_t \mid x_0)\right\|^2\right]
+$$
 
-This is exactly the NCSN denoising score matching loss with weight $\lambda(\sigma) = 1 - \bar{\alpha}_t$ (which is the noise variance, playing the role of $\sigma^2$ in the NCSN weighting).
+This is exactly the NCSN denoising score matching loss with weight $\lambda(\sigma) = 1 - \bar{\alpha}\_t$ (which is the noise variance, playing the role of $\sigma^2$ in the NCSN weighting).
 
 ### 6.4 Matching the Sampling
 
 DDPM sampling:
 
-$$x_{t-1} = \frac{1}{\sqrt{\alpha_t}}\!\left(x_t - \frac{\beta_t}{\sqrt{1 - \bar{\alpha}_t}}\,\varepsilon_\theta(x_t, t)\right) + \sigma_t z$$
+$$
+x_{t-1} = \frac{1}{\sqrt{\alpha_t}}\!\left(x_t - \frac{\beta_t}{\sqrt{1 - \bar{\alpha}_t}}\,\varepsilon_\theta(x_t, t)\right) + \sigma_t z
+$$
 
-Substituting $\varepsilon_\theta = -\sqrt{1 - \bar{\alpha}_t}\, s_\theta$:
+Substituting $\varepsilon\_\theta = -\sqrt{1 - \bar{\alpha}\_t}\, s\_\theta$:
 
-$$x_{t-1} = \frac{1}{\sqrt{\alpha_t}}\!\left(x_t + \beta_t\, s_\theta(x_t, t)\right) + \sigma_t z$$
+$$
+x_{t-1} = \frac{1}{\sqrt{\alpha_t}}\!\left(x_t + \beta_t\, s_\theta(x_t, t)\right) + \sigma_t z
+$$
 
-This is a discretization of Langevin dynamics with the score $s_\theta$, plus a scaling by $1/\sqrt{\alpha_t}$ that accounts for the signal shrinkage in the DDPM forward process.
+This is a discretization of Langevin dynamics with the score $s\_\theta$, plus a scaling by $1/\sqrt{\alpha\_t}$ that accounts for the signal shrinkage in the DDPM forward process.
 
 NCSN's annealed Langevin dynamics:
 
-$$x \leftarrow x + \frac{\eta}{2}\, s_\theta(x, \sigma_i) + \sqrt{\eta}\, z$$
+$$
+x \leftarrow x + \frac{\eta}{2}\, s_\theta(x, \sigma_i) + \sqrt{\eta}\, z
+$$
 
 The structure is the same: move in the score direction, add noise. The coefficients differ because of the different forward process conventions, but the underlying dynamics are equivalent.
 
@@ -299,11 +351,11 @@ The structure is the same: move in the score direction, add noise. The coefficie
 | Aspect | DDPM | NCSN |
 |--------|------|------|
 | Intellectual tradition | Variational inference | Score matching |
-| Network output | Noise $\varepsilon_\theta$ | Score $s_\theta$ |
-| Relationship | $\varepsilon_\theta = -\sqrt{1-\bar{\alpha}_t}\, s_\theta$ | $s_\theta = -\varepsilon_\theta / \sqrt{1-\bar{\alpha}_t}$ |
-| Loss | $\|\varepsilon - \varepsilon_\theta\|^2$ | $\|s_\theta - \nabla \log p_\sigma\|^2$ |
+| Network output | Noise $\varepsilon\_\theta$ | Score $s\_\theta$ |
+| Relationship | $\varepsilon\_\theta = -\sqrt{1-\bar{\alpha}\_t}\, s\_\theta$ | $s\_\theta = -\varepsilon\_\theta / \sqrt{1-\bar{\alpha}\_t}$ |
+| Loss | $\Vert \varepsilon - \varepsilon\_\theta\Vert ^2$ | $\Vert s\_\theta - \nabla \log p\_\sigma\Vert ^2$ |
 | Sampling | Reverse Markov chain | Annealed Langevin dynamics |
-| Noise parameterization | $\bar{\alpha}_t$ schedule | $\sigma_i$ levels |
+| Noise parameterization | $\bar{\alpha}\_t$ schedule | $\sigma\_i$ levels |
 
 The two methods converge to the same algorithm from different starting points. This convergence is the strongest evidence that the underlying mathematical structure is fundamental, not an artifact of a particular derivation.
 
@@ -315,7 +367,7 @@ Despite their mathematical equivalence, DDPM and NCSN have some practical differ
 
 ### 7.1 Discrete vs. Continuous Noise Levels
 
-DDPM uses a fixed number of discrete timesteps $t \in \{1, \ldots, T\}$. NCSN uses discrete noise levels $\sigma_1, \ldots, \sigma_L$ but the framework naturally invites the continuous limit $\sigma \in [\sigma_{\min}, \sigma_{\max}]$.
+DDPM uses a fixed number of discrete timesteps $t \in \lbrace 1, \ldots, T\rbrace $. NCSN uses discrete noise levels $\sigma\_1, \ldots, \sigma\_L$ but the framework naturally invites the continuous limit $\sigma \in [\sigma\_{\min}, \sigma\_{\max}]$.
 
 The continuous perspective, which we will develop in Week 7, leads to the SDE framework.
 
@@ -330,7 +382,7 @@ DDPM's reverse chain uses the *exact* reverse posterior (conditioned on the nois
 ### 7.3 Training
 
 Both train with a denoising objective. The differences are:
-- DDPM samples $t$ uniformly; NCSN samples $\sigma_i$ uniformly (or with weights)
+- DDPM samples $t$ uniformly; NCSN samples $\sigma\_i$ uniformly (or with weights)
 - DDPM predicts $\varepsilon$; NCSN predicts $s$ (equivalent up to rescaling)
 - The weighting of the loss across noise levels differs and can affect convergence
 
@@ -366,11 +418,11 @@ Score-based generative models have been applied to:
 
 2. **Noise perturbation** solves this problem: by convolving the data with Gaussian noise, we fill in low-density regions and make the score estimable everywhere.
 
-3. **NCSN** uses multiple noise levels $\sigma_1 > \cdots > \sigma_L$ and trains a single network $s_\theta(x, \sigma)$ to estimate the score at all levels. At high noise, the score captures global structure; at low noise, fine details.
+3. **NCSN** uses multiple noise levels $\sigma\_1 > \cdots > \sigma\_L$ and trains a single network $s\_\theta(x, \sigma)$ to estimate the score at all levels. At high noise, the score captures global structure; at low noise, fine details.
 
 4. **Annealed Langevin dynamics** generates samples by running Langevin dynamics at decreasing noise levels, starting from pure noise and gradually refining.
 
-5. **DDPM and NCSN are mathematically equivalent**: $\varepsilon_\theta = -\sqrt{1-\bar{\alpha}_t}\, s_\theta$. Noise prediction is score estimation. The DDPM loss is the NCSN denoising score matching loss with specific weights.
+5. **DDPM and NCSN are mathematically equivalent**: $\varepsilon\_\theta = -\sqrt{1-\bar{\alpha}\_t}\, s\_\theta$. Noise prediction is score estimation. The DDPM loss is the NCSN denoising score matching loss with specific weights.
 
 6. This equivalence points to a deeper mathematical structure -- the **stochastic differential equation** formulation -- which we will develop next week.
 
@@ -380,12 +432,12 @@ Score-based generative models have been applied to:
 
 | Concept | Equation |
 |---------|----------|
-| Score function | $s(x) = \nabla_x \log p(x)$ |
-| Langevin dynamics | $x_{k+1} = x_k + \frac{\eta}{2}\nabla_x \log p(x_k) + \sqrt{\eta}\, z_k$ |
-| Noised distribution | $p_\sigma(x) = \int p(y)\,\mathcal{N}(x; y, \sigma^2 I)\,dy$ |
-| DSM target | $\nabla_{\tilde{x}} \log p(\tilde{x} \mid x) = -(\tilde{x} - x)/\sigma^2$ |
-| NCSN loss | $\sum_i \sigma_i^2\,\mathbb{E}\left[\|s_\theta(x+\sigma_i\varepsilon, \sigma_i) + \varepsilon/\sigma_i\|^2\right]$ |
-| DDPM-NCSN equivalence | $\varepsilon_\theta(x_t, t) = -\sqrt{1-\bar{\alpha}_t}\; s_\theta(x_t, t)$ |
+| Score function | $s(x) = \nabla\_x \log p(x)$ |
+| Langevin dynamics | $x\_{k+1} = x\_k + \frac{\eta}{2}\nabla\_x \log p(x\_k) + \sqrt{\eta}\, z\_k$ |
+| Noised distribution | $p\_\sigma(x) = \int p(y)\,\mathcal{N}(x; y, \sigma^2 I)\,dy$ |
+| DSM target | $\nabla\_{\tilde{x}} \log p(\tilde{x} \mid x) = -(\tilde{x} - x)/\sigma^2$ |
+| NCSN loss | $\sum\_i \sigma\_i^2\,\mathbb{E}\left[\Vert s\_\theta(x+\sigma\_i\varepsilon, \sigma\_i) + \varepsilon/\sigma\_i\Vert ^2\right]$ |
+| DDPM-NCSN equivalence | $\varepsilon\_\theta(x\_t, t) = -\sqrt{1-\bar{\alpha}\_t}\; s\_\theta(x\_t, t)$ |
 
 ---
 

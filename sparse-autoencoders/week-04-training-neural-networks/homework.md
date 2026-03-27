@@ -20,9 +20,13 @@ Consider a neural network with the following architecture:
 
 The parameters are:
 
-$$W^{(1)} = \begin{pmatrix} 0.5 & -0.3 \\ 0.2 & 0.8 \\ -0.1 & 0.4 \end{pmatrix}, \quad \mathbf{b}^{(1)} = \begin{pmatrix} 0.1 \\ -0.2 \\ 0.0 \end{pmatrix}$$
+$$
+W^{(1)} = \begin{pmatrix} 0.5 & -0.3 \\ 0.2 & 0.8 \\ -0.1 & 0.4 \end{pmatrix}, \quad \mathbf{b}^{(1)} = \begin{pmatrix} 0.1 \\ -0.2 \\ 0.0 \end{pmatrix}
+$$
 
-$$W^{(2)} = \begin{pmatrix} 0.6 & -0.4 & 0.3 \end{pmatrix}, \quad b^{(2)} = 0.1$$
+$$
+W^{(2)} = \begin{pmatrix} 0.6 & -0.4 & 0.3 \end{pmatrix}, \quad b^{(2)} = 0.1
+$$
 
 The input is $\mathbf{x} = (1, -1)^\top$ and the target is $y = 0.5$.
 
@@ -43,13 +47,13 @@ The input is $\mathbf{x} = (1, -1)^\top$ and the target is $y = 0.5$.
 
 ## Problem 2: Deriving Adam (Pen and Paper)
 
-**(a)** Write out the complete Adam algorithm, starting from the initialization of $m_0 = 0$, $v_0 = 0$, through the bias-corrected update at step $t$.
+**(a)** Write out the complete Adam algorithm, starting from the initialization of $m\_0 = 0$, $v\_0 = 0$, through the bias-corrected update at step $t$.
 
-**(b)** Show that at step $t=1$ with $\beta_1 = 0.9$ and $\beta_2 = 0.999$, the uncorrected first moment $m_1$ underestimates the gradient by a factor of 10. What is the bias correction factor at $t=1$?
+**(b)** Show that at step $t=1$ with $\beta\_1 = 0.9$ and $\beta\_2 = 0.999$, the uncorrected first moment $m\_1$ underestimates the gradient by a factor of 10. What is the bias correction factor at $t=1$?
 
-**(c)** What happens to Adam when $\beta_1 = 0$ (no momentum)? Write the simplified update rule and identify which optimizer it reduces to.
+**(c)** What happens to Adam when $\beta\_1 = 0$ (no momentum)? Write the simplified update rule and identify which optimizer it reduces to.
 
-**(d)** What happens to Adam when $\beta_2 = 0$ (no second moment tracking, i.e., $v_t = g_t^2$ at each step)? Write the simplified update rule. How does this compare to standard SGD?
+**(d)** What happens to Adam when $\beta\_2 = 0$ (no second moment tracking, i.e., $v\_t = g\_t^2$ at each step)? Write the simplified update rule. How does this compare to standard SGD?
 
 **(e)** Explain in 3-4 sentences why Adam's update is approximately scale-invariant: if you multiply all the gradients by a constant $c$, the step direction remains approximately the same. (Hint: consider the ratio $\hat{m} / \sqrt{\hat{v}}$.)
 
@@ -169,7 +173,7 @@ Your goal: achieve **>97% test accuracy** on MNIST. This is an exercise in pract
 
 **(a)** Consider a function $f(x, y) = x^2 - y^2$. Compute the gradient and Hessian at the origin. Show that the origin is a saddle point. What are the eigenvalues of the Hessian? In which direction does the function decrease, and in which does it increase?
 
-**(b)** Generalize: consider $f(\mathbf{x}) = \sum_{i=1}^d \lambda_i x_i^2$ where each $\lambda_i$ is independently $+1$ or $-1$ with equal probability. What is the probability that the origin is a local minimum (all $\lambda_i > 0$)? Compute this for $d = 10$, $d = 100$, and $d = 10^6$.
+**(b)** Generalize: consider $f(\mathbf{x}) = \sum\_{i=1}^d \lambda\_i x\_i^2$ where each $\lambda\_i$ is independently $+1$ or $-1$ with equal probability. What is the probability that the origin is a local minimum (all $\lambda\_i > 0$)? Compute this for $d = 10$, $d = 100$, and $d = 10^6$.
 
 **(c)** This is a toy model, but it illustrates a real phenomenon. In a neural network with $10^6$ parameters, which type of critical point dominates — local minima or saddle points? Why does this make optimization easier than you might expect?
 

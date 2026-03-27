@@ -9,27 +9,29 @@
 
 ### Part (a): The Inductive Proof
 
-Prove that $q(x_t \mid x_0) = \mathcal{N}\!\left(x_t;\; \sqrt{\bar{\alpha}_t}\, x_0,\; (1 - \bar{\alpha}_t)\, I\right)$ where $\bar{\alpha}_t = \prod_{s=1}^{t}(1 - \beta_s)$.
+Prove that $q(x\_t \mid x\_0) = \mathcal{N}\!\left(x\_t;\; \sqrt{\bar{\alpha}\_t}\, x\_0,\; (1 - \bar{\alpha}\_t)\, I\right)$ where $\bar{\alpha}\_t = \prod\_{s=1}^{t}(1 - \beta\_s)$.
 
 Proceed by induction on $t$:
 
-1. **Base case ($t = 1$):** Write $q(x_1 \mid x_0)$ from the forward process definition. Verify that it matches the claimed formula with $\bar{\alpha}_1 = 1 - \beta_1$.
+1. **Base case ($t = 1$):** Write $q(x\_1 \mid x\_0)$ from the forward process definition. Verify that it matches the claimed formula with $\bar{\alpha}\_1 = 1 - \beta\_1$.
 
-2. **Inductive step:** Assume the formula holds for $t-1$. Using the reparameterization $x_{t-1} = \sqrt{\bar{\alpha}_{t-1}}\, x_0 + \sqrt{1 - \bar{\alpha}_{t-1}}\, \varepsilon_1$ and $x_t = \sqrt{1 - \beta_t}\, x_{t-1} + \sqrt{\beta_t}\, \varepsilon_2$ (with $\varepsilon_1, \varepsilon_2$ independent standard Gaussians), substitute to express $x_t$ in terms of $x_0$ and show that the result is Gaussian with the claimed mean and variance.
+2. **Inductive step:** Assume the formula holds for $t-1$. Using the reparameterization $x\_{t-1} = \sqrt{\bar{\alpha}\_{t-1}}\, x\_0 + \sqrt{1 - \bar{\alpha}\_{t-1}}\, \varepsilon\_1$ and $x\_t = \sqrt{1 - \beta\_t}\, x\_{t-1} + \sqrt{\beta\_t}\, \varepsilon\_2$ (with $\varepsilon\_1, \varepsilon\_2$ independent standard Gaussians), substitute to express $x\_t$ in terms of $x\_0$ and show that the result is Gaussian with the claimed mean and variance.
 
-*Hint: when you combine two independent Gaussian noise terms $a \varepsilon_1 + b \varepsilon_2$, the result is Gaussian with variance $a^2 + b^2$. You will need to verify that $\alpha_t(1 - \bar{\alpha}_{t-1}) + \beta_t = 1 - \bar{\alpha}_t$.*
+*Hint: when you combine two independent Gaussian noise terms $a \varepsilon\_1 + b \varepsilon\_2$, the result is Gaussian with variance $a^2 + b^2$. You will need to verify that $\alpha\_t(1 - \bar{\alpha}\_{t-1}) + \beta\_t = 1 - \bar{\alpha}\_t$.*
 
 ### Part (b): Signal-to-Noise Ratio
 
 Define the signal-to-noise ratio at time $t$ as:
 
-$$\text{SNR}(t) = \frac{\bar{\alpha}_t}{1 - \bar{\alpha}_t}$$
+$$
+\text{SNR}(t) = \frac{\bar{\alpha}_t}{1 - \bar{\alpha}_t}
+$$
 
-1. Show that $\text{SNR}(t)$ is monotonically decreasing with $t$ (assuming $\beta_t > 0$ for all $t$).
+1. Show that $\text{SNR}(t)$ is monotonically decreasing with $t$ (assuming $\beta\_t > 0$ for all $t$).
 
-2. For the linear schedule $\beta_t = \beta_{\min} + \frac{t-1}{T-1}(\beta_{\max} - \beta_{\min})$ with $\beta_{\min} = 10^{-4}$, $\beta_{\max} = 0.02$, $T = 1000$, compute and plot $\text{SNR}(t)$ on a log scale. At which timestep does $\text{SNR}(t) = 1$ (equal parts signal and noise)?
+2. For the linear schedule $\beta\_t = \beta\_{\min} + \frac{t-1}{T-1}(\beta\_{\max} - \beta\_{\min})$ with $\beta\_{\min} = 10^{-4}$, $\beta\_{\max} = 0.02$, $T = 1000$, compute and plot $\text{SNR}(t)$ on a log scale. At which timestep does $\text{SNR}(t) = 1$ (equal parts signal and noise)?
 
-3. Repeat for the cosine schedule: $\bar{\alpha}_t = \frac{f(t/T)}{f(0)}$ where $f(s) = \cos^2\!\left(\frac{s + 0.008}{1.008} \cdot \frac{\pi}{2}\right)$. How does the SNR profile differ? Why might this produce better results?
+3. Repeat for the cosine schedule: $\bar{\alpha}\_t = \frac{f(t/T)}{f(0)}$ where $f(s) = \cos^2\!\left(\frac{s + 0.008}{1.008} \cdot \frac{\pi}{2}\right)$. How does the SNR profile differ? Why might this produce better results?
 
 ---
 
@@ -37,43 +39,55 @@ $$\text{SNR}(t) = \frac{\bar{\alpha}_t}{1 - \bar{\alpha}_t}$$
 
 Starting from the evidence lower bound:
 
-$$\log p_\theta(x_0) \geq \mathbb{E}_{q(x_{1:T} \mid x_0)}\!\left[\log \frac{p_\theta(x_{0:T})}{q(x_{1:T} \mid x_0)}\right]$$
+$$
+\log p_\theta(x_0) \geq \mathbb{E}_{q(x_{1:T} \mid x_0)}\!\left[\log \frac{p_\theta(x_{0:T})}{q(x_{1:T} \mid x_0)}\right]
+$$
 
 ### Part (a): Expand and Regroup
 
-1. Write out $\log p_\theta(x_{0:T})$ using the definition of the reverse process.
-2. Write out $\log q(x_{1:T} \mid x_0)$ using the Markov property of the forward process.
+1. Write out $\log p\_\theta(x\_{0:T})$ using the definition of the reverse process.
+2. Write out $\log q(x\_{1:T} \mid x\_0)$ using the Markov property of the forward process.
 3. Substitute both into the ELBO and show that it can be rewritten as:
 
-$$-L_{\text{VLB}} = \mathbb{E}_q\!\left[\log \frac{p(x_T)}{q(x_T \mid x_0)} + \sum_{t=2}^{T} \log \frac{p_\theta(x_{t-1} \mid x_t)}{q(x_{t-1} \mid x_t, x_0)} + \log p_\theta(x_0 \mid x_1)\right]$$
+$$
+-L_{\text{VLB}} = \mathbb{E}_q\!\left[\log \frac{p(x_T)}{q(x_T \mid x_0)} + \sum_{t=2}^{T} \log \frac{p_\theta(x_{t-1} \mid x_t)}{q(x_{t-1} \mid x_t, x_0)} + \log p_\theta(x_0 \mid x_1)\right]
+$$
 
-*Hint: use Bayes' rule to rewrite $q(x_t \mid x_{t-1}) = \frac{q(x_{t-1} \mid x_t, x_0)\, q(x_t \mid x_0)}{q(x_{t-1} \mid x_0)}$ and telescope the resulting products.*
+*Hint: use Bayes' rule to rewrite $q(x\_t \mid x\_{t-1}) = \frac{q(x\_{t-1} \mid x\_t, x\_0)\, q(x\_t \mid x\_0)}{q(x\_{t-1} \mid x\_0)}$ and telescope the resulting products.*
 
 ### Part (b): Identify the KL Divergences
 
 Show that the expression from Part (a) equals:
 
-$$-L_{\text{VLB}} = -D_{\text{KL}}(q(x_T \mid x_0) \| p(x_T)) - \sum_{t=2}^{T} D_{\text{KL}}(q(x_{t-1} \mid x_t, x_0) \| p_\theta(x_{t-1} \mid x_t)) + \mathbb{E}_q[\log p_\theta(x_0 \mid x_1)]$$
+$$
+-L_{\text{VLB}} = -D_{\text{KL}}(q(x_T \mid x_0) \| p(x_T)) - \sum_{t=2}^{T} D_{\text{KL}}(q(x_{t-1} \mid x_t, x_0) \| p_\theta(x_{t-1} \mid x_t)) + \mathbb{E}_q[\log p_\theta(x_0 \mid x_1)]
+$$
 
 ### Part (c): The Reverse Posterior
 
-Derive $q(x_{t-1} \mid x_t, x_0)$ by computing:
+Derive $q(x\_{t-1} \mid x\_t, x\_0)$ by computing:
 
-$$q(x_{t-1} \mid x_t, x_0) = \frac{q(x_t \mid x_{t-1})\, q(x_{t-1} \mid x_0)}{q(x_t \mid x_0)}$$
+$$
+q(x_{t-1} \mid x_t, x_0) = \frac{q(x_t \mid x_{t-1})\, q(x_{t-1} \mid x_0)}{q(x_t \mid x_0)}
+$$
 
 All three distributions on the right are Gaussians. Complete the square in the exponent to show:
 
-$$q(x_{t-1} \mid x_t, x_0) = \mathcal{N}\!\left(x_{t-1};\; \tilde{\mu}_t,\; \tilde{\beta}_t I\right)$$
+$$
+q(x_{t-1} \mid x_t, x_0) = \mathcal{N}\!\left(x_{t-1};\; \tilde{\mu}_t,\; \tilde{\beta}_t I\right)
+$$
 
-and derive the expressions for $\tilde{\mu}_t$ and $\tilde{\beta}_t$ given in the notes.
+and derive the expressions for $\tilde{\mu}\_t$ and $\tilde{\beta}\_t$ given in the notes.
 
 ### Part (d): From Mean Prediction to Noise Prediction
 
-Starting from the KL term $L_{t-1} = \frac{1}{2\sigma_t^2}\|\tilde{\mu}_t - \mu_\theta(x_t, t)\|^2$, substitute $x_0 = \frac{1}{\sqrt{\bar{\alpha}_t}}(x_t - \sqrt{1-\bar{\alpha}_t}\,\varepsilon)$ into $\tilde{\mu}_t$ and show that the loss can be written as:
+Starting from the KL term $L\_{t-1} = \frac{1}{2\sigma\_t^2}\Vert \tilde{\mu}\_t - \mu\_\theta(x\_t, t)\Vert ^2$, substitute $x\_0 = \frac{1}{\sqrt{\bar{\alpha}\_t}}(x\_t - \sqrt{1-\bar{\alpha}\_t}\,\varepsilon)$ into $\tilde{\mu}\_t$ and show that the loss can be written as:
 
-$$L_{t-1} = \frac{\beta_t^2}{2\sigma_t^2 \alpha_t(1 - \bar{\alpha}_t)} \|\varepsilon - \varepsilon_\theta(x_t, t)\|^2$$
+$$
+L_{t-1} = \frac{\beta_t^2}{2\sigma_t^2 \alpha_t(1 - \bar{\alpha}_t)} \|\varepsilon - \varepsilon_\theta(x_t, t)\|^2
+$$
 
-where $\varepsilon_\theta$ is the noise-prediction network.
+where $\varepsilon\_\theta$ is the noise-prediction network.
 
 ---
 
@@ -93,7 +107,7 @@ def linear_beta_schedule(T, beta_min=1e-4, beta_max=0.02):
 
 Implement this function. Also implement a `cosine_beta_schedule(T)` following Nichol and Dhariwal (2021).
 
-Plot $\bar{\alpha}_t$ for both schedules. Verify that $\bar{\alpha}_T \approx 0$ (the signal is destroyed by the end).
+Plot $\bar{\alpha}\_t$ for both schedules. Verify that $\bar{\alpha}\_T \approx 0$ (the signal is destroyed by the end).
 
 ### Part (b): The Forward Process
 
@@ -114,7 +128,7 @@ def q_sample(x_0, t, alpha_bar, noise=None):
     pass
 ```
 
-Implement this. Visualize the forward process: take one MNIST digit, compute $x_t$ for $t \in \{0, 50, 100, 200, 500, 999\}$, and display them side by side.
+Implement this. Visualize the forward process: take one MNIST digit, compute $x\_t$ for $t \in \lbrace 0, 50, 100, 200, 500, 999\rbrace $, and display them side by side.
 
 ### Part (c): A Simple U-Net
 
@@ -126,7 +140,7 @@ Implement a small U-Net suitable for 28x28 (MNIST) or 32x32 images:
 - Skip connections via concatenation
 - ~2-5M parameters (keep it small for training on CPU/single GPU)
 
-You may use a reference implementation for guidance, but write the code yourself and understand every layer. The key architectural requirement is that the network takes $(x_t, t)$ as input and outputs a tensor of the same shape as $x_t$.
+You may use a reference implementation for guidance, but write the code yourself and understand every layer. The key architectural requirement is that the network takes $(x\_t, t)$ as input and outputs a tensor of the same shape as $x\_t$.
 
 ### Part (d): The Training Loop
 
@@ -185,7 +199,7 @@ Draw 10000 samples for training.
 
 ### Part (b): 2D DDPM
 
-Implement a DDPM where $\varepsilon_\theta$ is a small MLP (3-4 hidden layers, 256 units, SiLU activations) conditioned on $t$ (e.g., concatenate the sinusoidal embedding of $t$ with $x_t$).
+Implement a DDPM where $\varepsilon\_\theta$ is a small MLP (3-4 hidden layers, 256 units, SiLU activations) conditioned on $t$ (e.g., concatenate the sinusoidal embedding of $t$ with $x\_t$).
 
 Use $T = 100$ steps and a linear schedule.
 
@@ -193,11 +207,11 @@ Train for 5000-10000 gradient steps.
 
 ### Part (c): Visualization
 
-1. **Forward process**: Plot $q(x_t)$ for $t \in \{0, 10, 25, 50, 75, 100\}$ by sampling from $q(x_t \mid x_0)$ for all training points. You should see the 8 clusters gradually blur into an isotropic Gaussian.
+1. **Forward process**: Plot $q(x\_t)$ for $t \in \lbrace 0, 10, 25, 50, 75, 100\rbrace $ by sampling from $q(x\_t \mid x\_0)$ for all training points. You should see the 8 clusters gradually blur into an isotropic Gaussian.
 
-2. **Reverse process**: Starting from $x_T \sim \mathcal{N}(0, I)$, run the reverse process and plot $x_t$ at $t \in \{100, 75, 50, 25, 10, 0\}$. You should see noise gradually organize into 8 clusters.
+2. **Reverse process**: Starting from $x\_T \sim \mathcal{N}(0, I)$, run the reverse process and plot $x\_t$ at $t \in \lbrace 100, 75, 50, 25, 10, 0\rbrace $. You should see noise gradually organize into 8 clusters.
 
-3. **Learned score field**: At timestep $t = 50$, plot the vector field $-\varepsilon_\theta(x, t)/\sqrt{1-\bar{\alpha}_t}$ (the estimated score) over a grid. The arrows should point toward the data modes.
+3. **Learned score field**: At timestep $t = 50$, plot the vector field $-\varepsilon\_\theta(x, t)/\sqrt{1-\bar{\alpha}\_t}$ (the estimated score) over a grid. The arrows should point toward the data modes.
 
 ---
 
@@ -207,7 +221,7 @@ Using your 2D DDPM from Problem 4, investigate the effect of design choices.
 
 ### Part (a): Number of Diffusion Steps
 
-Train and sample with $T \in \{10, 50, 100, 500, 1000\}$. For each:
+Train and sample with $T \in \lbrace 10, 50, 100, 500, 1000\rbrace $. For each:
 1. Generate 5000 samples
 2. Plot the samples
 3. Compute the Wasserstein-2 distance to the true distribution (or approximate it by computing the distance between empirical histograms on a grid)
@@ -217,15 +231,15 @@ How does sample quality scale with $T$? Is there a point of diminishing returns?
 ### Part (b): The Weighting
 
 Compare three losses:
-1. $L_{\text{simple}}$ (uniform weighting over $t$)
-2. $L_{\text{VLB}}$ (weighted by $w_t = \frac{\beta_t^2}{2\sigma_t^2 \alpha_t(1-\bar{\alpha}_t)}$)
-3. $L_{\text{SNR}}$ (weight $w_t = \text{SNR}(t) - \text{SNR}(t+1)$, the min-SNR weighting from Hang et al. 2023)
+1. $L\_{\text{simple}}$ (uniform weighting over $t$)
+2. $L\_{\text{VLB}}$ (weighted by $w\_t = \frac{\beta\_t^2}{2\sigma\_t^2 \alpha\_t(1-\bar{\alpha}\_t)}$)
+3. $L\_{\text{SNR}}$ (weight $w\_t = \text{SNR}(t) - \text{SNR}(t+1)$, the min-SNR weighting from Hang et al. 2023)
 
 Train each for the same number of steps. Compare sample quality. Does the simplified loss outperform the VLB loss, as reported by Ho et al.?
 
 ### Part (c): Variance Choice
 
-Sample with $\sigma_t^2 = \beta_t$ (upper bound) vs. $\sigma_t^2 = \tilde{\beta}_t$ (posterior variance) vs. $\sigma_t = 0$ (deterministic, DDIM-like). Compare sample quality and diversity for each. What happens when you use $\sigma_t = 0$?
+Sample with $\sigma\_t^2 = \beta\_t$ (upper bound) vs. $\sigma\_t^2 = \tilde{\beta}\_t$ (posterior variance) vs. $\sigma\_t = 0$ (deterministic, DDIM-like). Compare sample quality and diversity for each. What happens when you use $\sigma\_t = 0$?
 
 ---
 
@@ -235,23 +249,27 @@ Sample with $\sigma_t^2 = \beta_t$ (upper bound) vs. $\sigma_t^2 = \tilde{\beta}
 
 Starting from the score of the noised distribution:
 
-$$\nabla_{x_t} \log q(x_t \mid x_0) = -\frac{x_t - \sqrt{\bar{\alpha}_t}\, x_0}{1 - \bar{\alpha}_t}$$
+$$
+\nabla_{x_t} \log q(x_t \mid x_0) = -\frac{x_t - \sqrt{\bar{\alpha}_t}\, x_0}{1 - \bar{\alpha}_t}
+$$
 
-1. Derive this expression from $q(x_t \mid x_0) = \mathcal{N}(\sqrt{\bar{\alpha}_t}\, x_0, (1-\bar{\alpha}_t)\, I)$.
+1. Derive this expression from $q(x\_t \mid x\_0) = \mathcal{N}(\sqrt{\bar{\alpha}\_t}\, x\_0, (1-\bar{\alpha}\_t)\, I)$.
 
-2. Using $x_t = \sqrt{\bar{\alpha}_t}\, x_0 + \sqrt{1 - \bar{\alpha}_t}\, \varepsilon$, show that:
+2. Using $x\_t = \sqrt{\bar{\alpha}\_t}\, x\_0 + \sqrt{1 - \bar{\alpha}\_t}\, \varepsilon$, show that:
 
-$$\nabla_{x_t} \log q(x_t \mid x_0) = -\frac{\varepsilon}{\sqrt{1 - \bar{\alpha}_t}}$$
+$$
+\nabla_{x_t} \log q(x_t \mid x_0) = -\frac{\varepsilon}{\sqrt{1 - \bar{\alpha}_t}}
+$$
 
-3. Explain why this means that the DDPM loss $\mathbb{E}\|\varepsilon - \varepsilon_\theta(x_t, t)\|^2$ is equivalent to denoising score matching (up to a timestep-dependent constant).
+3. Explain why this means that the DDPM loss $\mathbb{E}\Vert \varepsilon - \varepsilon\_\theta(x\_t, t)\Vert ^2$ is equivalent to denoising score matching (up to a timestep-dependent constant).
 
 ### Part (b): Empirical Verification (Implementation)
 
 Using your trained 2D DDPM from Problem 4:
 
-1. At timestep $t = 50$, compute the empirical score $\nabla_{x_t} \log q_t(x_t)$ on a grid using kernel density estimation (KDE) on the noised data.
+1. At timestep $t = 50$, compute the empirical score $\nabla\_{x\_t} \log q\_t(x\_t)$ on a grid using kernel density estimation (KDE) on the noised data.
 
-2. Compute the DDPM-implied score: $s_\theta(x_t, t) = -\varepsilon_\theta(x_t, t) / \sqrt{1 - \bar{\alpha}_t}$.
+2. Compute the DDPM-implied score: $s\_\theta(x\_t, t) = -\varepsilon\_\theta(x\_t, t) / \sqrt{1 - \bar{\alpha}\_t}$.
 
 3. Plot both vector fields side by side. How closely do they match?
 

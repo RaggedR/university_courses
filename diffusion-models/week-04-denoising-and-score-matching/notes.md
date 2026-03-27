@@ -7,14 +7,14 @@
 
 ## Overview
 
-Last week, we established the mathematical foundations: SDEs, Ito calculus, the Fokker-Planck equation, and Anderson's reverse-time SDE. The punchline was that reversing a diffusion process requires knowledge of the score function $\nabla_x \log p_t(x)$ at each noise level.
+Last week, we established the mathematical foundations: SDEs, Ito calculus, the Fokker-Planck equation, and Anderson's reverse-time SDE. The punchline was that reversing a diffusion process requires knowledge of the score function $\nabla\_x \log p\_t(x)$ at each noise level.
 
 This week, we answer the obvious follow-up: **how do you actually estimate the score function?**
 
 The answer is one of the most beautiful results in the intersection of statistics and machine learning. It connects two problems that seem entirely unrelated:
 
 1. **Denoising:** Given a noisy observation $\tilde{x} = x + \sigma\epsilon$, estimate the clean signal $x$.
-2. **Score estimation:** Estimate $\nabla_x \log p(x)$, the gradient of the log-density.
+2. **Score estimation:** Estimate $\nabla\_x \log p(x)$, the gradient of the log-density.
 
 These are the **same problem**. The optimal denoiser directly gives the score, and training a neural network to denoise is equivalent to training it to estimate the score. The bridge between them is **Tweedie's formula**, and the formal connection is the **denoising score matching** identity of Vincent (2011).
 
@@ -33,11 +33,15 @@ This is not just an elegant theoretical observation -- it is the practical recip
 
 Consider a clean signal $x \sim p(x)$ corrupted by additive Gaussian noise:
 
-$$\tilde{x} = x + \sigma \epsilon, \qquad \epsilon \sim \mathcal{N}(0, I)$$
+$$
+\tilde{x} = x + \sigma \epsilon, \qquad \epsilon \sim \mathcal{N}(0, I)
+$$
 
 The noisy observation $\tilde{x}$ is drawn from the convolved distribution:
 
-$$p_\sigma(\tilde{x}) = \int p(x) \, \mathcal{N}(\tilde{x}; x, \sigma^2 I) \, dx = (p * \mathcal{N}_{\sigma^2})(\tilde{x})$$
+$$
+p_\sigma(\tilde{x}) = \int p(x) \, \mathcal{N}(\tilde{x}; x, \sigma^2 I) \, dx = (p * \mathcal{N}_{\sigma^2})(\tilde{x})
+$$
 
 where $*$ denotes convolution. The noise blurs the data distribution by convolving it with a Gaussian kernel.
 
@@ -47,13 +51,17 @@ where $*$ denotes convolution. The noise blurs the data distribution by convolvi
 
 The optimal denoiser under mean squared error is the **posterior mean** (also called the Bayes estimator):
 
-$$\hat{x}(\tilde{x}) = \mathbb{E}[x \mid \tilde{x}]$$
+$$
+\hat{x}(\tilde{x}) = \mathbb{E}[x \mid \tilde{x}]
+$$
 
-This minimizes $\mathbb{E}[\|x - \hat{x}(\tilde{x})\|^2]$ over all possible estimators $\hat{x}$. The proof is a standard exercise in estimation theory: any other estimator adds variance without reducing bias.
+This minimizes $\mathbb{E}[\Vert x - \hat{x}(\tilde{x})\Vert ^2]$ over all possible estimators $\hat{x}$. The proof is a standard exercise in estimation theory: any other estimator adds variance without reducing bias.
 
 The posterior mean is determined by Bayes' theorem:
 
-$$p(x \mid \tilde{x}) = \frac{p(\tilde{x} \mid x) p(x)}{p(\tilde{x})} = \frac{\mathcal{N}(\tilde{x}; x, \sigma^2 I) \, p(x)}{p_\sigma(\tilde{x})}$$
+$$
+p(x \mid \tilde{x}) = \frac{p(\tilde{x} \mid x) p(x)}{p(\tilde{x})} = \frac{\mathcal{N}(\tilde{x}; x, \sigma^2 I) \, p(x)}{p_\sigma(\tilde{x})}
+$$
 
 For general $p(x)$, the posterior $p(x|\tilde{x})$ and hence the posterior mean $\mathbb{E}[x|\tilde{x}]$ are intractable. But there is a remarkable shortcut.
 
@@ -61,19 +69,25 @@ For general $p(x)$, the posterior $p(x|\tilde{x})$ and hence the posterior mean 
 
 Before the general theory, consider a concrete case. Suppose $x \sim \mathcal{N}(\mu, \tau^2)$ and $\tilde{x} = x + \sigma\epsilon$. Then:
 
-$$p(x \mid \tilde{x}) \propto \exp\left(-\frac{(\tilde{x} - x)^2}{2\sigma^2}\right) \exp\left(-\frac{(x - \mu)^2}{2\tau^2}\right)$$
+$$
+p(x \mid \tilde{x}) \propto \exp\left(-\frac{(\tilde{x} - x)^2}{2\sigma^2}\right) \exp\left(-\frac{(x - \mu)^2}{2\tau^2}\right)
+$$
 
 Completing the square, $p(x|\tilde{x})$ is Gaussian with mean:
 
-$$\mathbb{E}[x \mid \tilde{x}] = \frac{\sigma^2 \mu + \tau^2 \tilde{x}}{\sigma^2 + \tau^2} = \tilde{x} - \frac{\sigma^2(\tilde{x} - \mu)}{\sigma^2 + \tau^2}$$
+$$
+\mathbb{E}[x \mid \tilde{x}] = \frac{\sigma^2 \mu + \tau^2 \tilde{x}}{\sigma^2 + \tau^2} = \tilde{x} - \frac{\sigma^2(\tilde{x} - \mu)}{\sigma^2 + \tau^2}
+$$
 
 The optimal denoiser shrinks $\tilde{x}$ toward the prior mean $\mu$. The amount of shrinkage depends on the signal-to-noise ratio $\tau^2/\sigma^2$: high noise means more shrinkage.
 
 We can rewrite this as:
 
-$$\mathbb{E}[x \mid \tilde{x}] = \tilde{x} + \sigma^2 \underbrace{\left(-\frac{\tilde{x} - \mu}{\sigma^2 + \tau^2}\right)}_{\nabla_{\tilde{x}} \log p_\sigma(\tilde{x})}$$
+$$
+\mathbb{E}[x \mid \tilde{x}] = \tilde{x} + \sigma^2 \underbrace{\left(-\frac{\tilde{x} - \mu}{\sigma^2 + \tau^2}\right)}_{\nabla_{\tilde{x}} \log p_\sigma(\tilde{x})}
+$$
 
-Since $p_\sigma(\tilde{x}) = \mathcal{N}(\tilde{x}; \mu, \sigma^2 + \tau^2)$, we have $\nabla_{\tilde{x}} \log p_\sigma(\tilde{x}) = -\frac{\tilde{x} - \mu}{\sigma^2 + \tau^2}$, confirming the formula. This is Tweedie's formula for the Gaussian case.
+Since $p\_\sigma(\tilde{x}) = \mathcal{N}(\tilde{x}; \mu, \sigma^2 + \tau^2)$, we have $\nabla\_{\tilde{x}} \log p\_\sigma(\tilde{x}) = -\frac{\tilde{x} - \mu}{\sigma^2 + \tau^2}$, confirming the formula. This is Tweedie's formula for the Gaussian case.
 
 ---
 
@@ -83,19 +97,25 @@ Since $p_\sigma(\tilde{x}) = \mathcal{N}(\tilde{x}; \mu, \sigma^2 + \tau^2)$, we
 
 For the noise model $\tilde{x} = x + \sigma\epsilon$ with $\epsilon \sim \mathcal{N}(0, I)$:
 
-$$\boxed{\mathbb{E}[x \mid \tilde{x}] = \tilde{x} + \sigma^2 \nabla_{\tilde{x}} \log p_\sigma(\tilde{x})}$$
+$$
+\boxed{\mathbb{E}[x \mid \tilde{x}] = \tilde{x} + \sigma^2 \nabla_{\tilde{x}} \log p_\sigma(\tilde{x})}
+$$
 
-where $p_\sigma(\tilde{x}) = \int p(x) \mathcal{N}(\tilde{x}; x, \sigma^2 I) \, dx$ is the marginal density of the noisy observation.
+where $p\_\sigma(\tilde{x}) = \int p(x) \mathcal{N}(\tilde{x}; x, \sigma^2 I) \, dx$ is the marginal density of the noisy observation.
 
 This is **Tweedie's formula** (Robbins 1956, Efron 2011). It holds for **any** data distribution $p(x)$ -- not just Gaussians.
 
 The formula says: the optimal denoiser equals the noisy observation plus $\sigma^2$ times the score of the noisy distribution. In other words:
 
-$$\text{Optimal denoiser} = \text{Identity} + \sigma^2 \times \text{Score}$$
+$$
+\text{Optimal denoiser} = \text{Identity} + \sigma^2 \times \text{Score}
+$$
 
 Or equivalently:
 
-$$\nabla_{\tilde{x}} \log p_\sigma(\tilde{x}) = \frac{\mathbb{E}[x \mid \tilde{x}] - \tilde{x}}{\sigma^2} = -\frac{\mathbb{E}[\epsilon \mid \tilde{x}]}{\sigma}$$
+$$
+\nabla_{\tilde{x}} \log p_\sigma(\tilde{x}) = \frac{\mathbb{E}[x \mid \tilde{x}] - \tilde{x}}{\sigma^2} = -\frac{\mathbb{E}[\epsilon \mid \tilde{x}]}{\sigma}
+$$
 
 The score points from the noisy observation toward the clean signal (in expectation).
 
@@ -105,27 +125,39 @@ The proof is a direct computation using Bayes' theorem and integration by parts.
 
 **Step 1.** Write the score:
 
-$$\nabla_{\tilde{x}} \log p_\sigma(\tilde{x}) = \frac{\nabla_{\tilde{x}} p_\sigma(\tilde{x})}{p_\sigma(\tilde{x})}$$
+$$
+\nabla_{\tilde{x}} \log p_\sigma(\tilde{x}) = \frac{\nabla_{\tilde{x}} p_\sigma(\tilde{x})}{p_\sigma(\tilde{x})}
+$$
 
-**Step 2.** Compute $\nabla_{\tilde{x}} p_\sigma(\tilde{x})$:
+**Step 2.** Compute $\nabla\_{\tilde{x}} p\_\sigma(\tilde{x})$:
 
-$$\nabla_{\tilde{x}} p_\sigma(\tilde{x}) = \nabla_{\tilde{x}} \int p(x) \mathcal{N}(\tilde{x}; x, \sigma^2 I) \, dx = \int p(x) \nabla_{\tilde{x}} \mathcal{N}(\tilde{x}; x, \sigma^2 I) \, dx$$
+$$
+\nabla_{\tilde{x}} p_\sigma(\tilde{x}) = \nabla_{\tilde{x}} \int p(x) \mathcal{N}(\tilde{x}; x, \sigma^2 I) \, dx = \int p(x) \nabla_{\tilde{x}} \mathcal{N}(\tilde{x}; x, \sigma^2 I) \, dx
+$$
 
 The gradient of the Gaussian likelihood:
 
-$$\nabla_{\tilde{x}} \mathcal{N}(\tilde{x}; x, \sigma^2 I) = \mathcal{N}(\tilde{x}; x, \sigma^2 I) \cdot \frac{x - \tilde{x}}{\sigma^2}$$
+$$
+\nabla_{\tilde{x}} \mathcal{N}(\tilde{x}; x, \sigma^2 I) = \mathcal{N}(\tilde{x}; x, \sigma^2 I) \cdot \frac{x - \tilde{x}}{\sigma^2}
+$$
 
 So:
 
-$$\nabla_{\tilde{x}} p_\sigma(\tilde{x}) = \int p(x) \mathcal{N}(\tilde{x}; x, \sigma^2 I) \frac{x - \tilde{x}}{\sigma^2} \, dx = \frac{1}{\sigma^2} \int (x - \tilde{x}) \, p(x) \mathcal{N}(\tilde{x}; x, \sigma^2 I) \, dx$$
+$$
+\nabla_{\tilde{x}} p_\sigma(\tilde{x}) = \int p(x) \mathcal{N}(\tilde{x}; x, \sigma^2 I) \frac{x - \tilde{x}}{\sigma^2} \, dx = \frac{1}{\sigma^2} \int (x - \tilde{x}) \, p(x) \mathcal{N}(\tilde{x}; x, \sigma^2 I) \, dx
+$$
 
-**Step 3.** Divide by $p_\sigma(\tilde{x})$:
+**Step 3.** Divide by $p\_\sigma(\tilde{x})$:
 
-$$\nabla_{\tilde{x}} \log p_\sigma(\tilde{x}) = \frac{1}{\sigma^2} \frac{\int (x - \tilde{x}) p(x) \mathcal{N}(\tilde{x}; x, \sigma^2 I) \, dx}{\int p(x) \mathcal{N}(\tilde{x}; x, \sigma^2 I) \, dx}$$
+$$
+\nabla_{\tilde{x}} \log p_\sigma(\tilde{x}) = \frac{1}{\sigma^2} \frac{\int (x - \tilde{x}) p(x) \mathcal{N}(\tilde{x}; x, \sigma^2 I) \, dx}{\int p(x) \mathcal{N}(\tilde{x}; x, \sigma^2 I) \, dx}
+$$
 
-The numerator is $\mathbb{E}[x - \tilde{x} \mid \tilde{x}] \cdot p_\sigma(\tilde{x})$ (by definition of conditional expectation). So:
+The numerator is $\mathbb{E}[x - \tilde{x} \mid \tilde{x}] \cdot p\_\sigma(\tilde{x})$ (by definition of conditional expectation). So:
 
-$$\nabla_{\tilde{x}} \log p_\sigma(\tilde{x}) = \frac{\mathbb{E}[x \mid \tilde{x}] - \tilde{x}}{\sigma^2}$$
+$$
+\nabla_{\tilde{x}} \log p_\sigma(\tilde{x}) = \frac{\mathbb{E}[x \mid \tilde{x}] - \tilde{x}}{\sigma^2}
+$$
 
 Rearranging gives Tweedie's formula. $\square$
 
@@ -135,13 +167,17 @@ Let us state this again, because it is the single most important idea in the cou
 
 > **Denoising and score estimation are the same problem.**
 
-If you have a perfect denoiser $D_\sigma(\tilde{x}) = \mathbb{E}[x|\tilde{x}]$, you can extract the score:
+If you have a perfect denoiser $D\_\sigma(\tilde{x}) = \mathbb{E}[x|\tilde{x}]$, you can extract the score:
 
-$$\nabla_{\tilde{x}} \log p_\sigma(\tilde{x}) = \frac{D_\sigma(\tilde{x}) - \tilde{x}}{\sigma^2}$$
+$$
+\nabla_{\tilde{x}} \log p_\sigma(\tilde{x}) = \frac{D_\sigma(\tilde{x}) - \tilde{x}}{\sigma^2}
+$$
 
-If you have the score $\nabla_{\tilde{x}} \log p_\sigma(\tilde{x})$, you can construct the optimal denoiser:
+If you have the score $\nabla\_{\tilde{x}} \log p\_\sigma(\tilde{x})$, you can construct the optimal denoiser:
 
-$$D_\sigma(\tilde{x}) = \tilde{x} + \sigma^2 \nabla_{\tilde{x}} \log p_\sigma(\tilde{x})$$
+$$
+D_\sigma(\tilde{x}) = \tilde{x} + \sigma^2 \nabla_{\tilde{x}} \log p_\sigma(\tilde{x})
+$$
 
 They are two views of the same mathematical object. This is why diffusion models can be trained as denoisers -- they are simultaneously learning the score function needed for Anderson's reverse SDE.
 
@@ -149,13 +185,15 @@ They are two views of the same mathematical object. This is why diffusion models
 
 Given the noise model $\tilde{x} = x + \sigma\epsilon$, a neural network can be trained to predict any of:
 
-1. **The clean signal $x$:** The network $D_\theta(\tilde{x}, \sigma) \approx \mathbb{E}[x|\tilde{x}]$ directly outputs the denoised signal.
-2. **The noise $\epsilon$:** The network $\epsilon_\theta(\tilde{x}, \sigma) \approx \mathbb{E}[\epsilon|\tilde{x}]$ predicts what noise was added.
-3. **The score $\nabla \log p_\sigma$:** The network $s_\theta(\tilde{x}, \sigma) \approx \nabla_{\tilde{x}} \log p_\sigma(\tilde{x})$ directly estimates the score.
+1. **The clean signal $x$:** The network $D\_\theta(\tilde{x}, \sigma) \approx \mathbb{E}[x|\tilde{x}]$ directly outputs the denoised signal.
+2. **The noise $\epsilon$:** The network $\epsilon\_\theta(\tilde{x}, \sigma) \approx \mathbb{E}[\epsilon|\tilde{x}]$ predicts what noise was added.
+3. **The score $\nabla \log p\_\sigma$:** The network $s\_\theta(\tilde{x}, \sigma) \approx \nabla\_{\tilde{x}} \log p\_\sigma(\tilde{x})$ directly estimates the score.
 
 These are all equivalent, related by:
 
-$$s_\theta = \frac{D_\theta - \tilde{x}}{\sigma^2} = -\frac{\epsilon_\theta}{\sigma}$$
+$$
+s_\theta = \frac{D_\theta - \tilde{x}}{\sigma^2} = -\frac{\epsilon_\theta}{\sigma}
+$$
 
 In practice:
 - DDPM (Ho et al. 2020) predicts the noise $\epsilon$
@@ -170,28 +208,32 @@ All three parameterizations are mathematically identical. The choice affects num
 
 ### 3.1 The Basic Problem
 
-We want to train a neural network $s_\theta(x)$ to approximate $\nabla_x \log p(x)$. The natural loss function is:
+We want to train a neural network $s\_\theta(x)$ to approximate $\nabla\_x \log p(x)$. The natural loss function is:
 
-$$\mathcal{L}_{\text{SM}}(\theta) = \frac{1}{2}\mathbb{E}_{x \sim p}\left[\|s_\theta(x) - \nabla_x \log p(x)\|^2\right]$$
+$$
+\mathcal{L}_{\text{SM}}(\theta) = \frac{1}{2}\mathbb{E}_{x \sim p}\left[\|s_\theta(x) - \nabla_x \log p(x)\|^2\right]
+$$
 
-But we do not know $\nabla_x \log p(x)$ -- that is what we are trying to estimate! This loss is not computable.
+But we do not know $\nabla\_x \log p(x)$ -- that is what we are trying to estimate! This loss is not computable.
 
 ### 3.2 Hyvarinen's Trick (2005)
 
 Hyvarinen (2005) showed that the loss above can be rewritten as:
 
-$$\mathcal{L}_{\text{SM}}(\theta) = \mathbb{E}_{x \sim p}\left[\frac{1}{2}\|s_\theta(x)\|^2 + \nabla_x \cdot s_\theta(x)\right] + \text{const}$$
+$$
+\mathcal{L}_{\text{SM}}(\theta) = \mathbb{E}_{x \sim p}\left[\frac{1}{2}\|s_\theta(x)\|^2 + \nabla_x \cdot s_\theta(x)\right] + \text{const}
+$$
 
-where $\nabla_x \cdot s_\theta = \sum_i \frac{\partial [s_\theta]_i}{\partial x_i}$ is the divergence of the score model, and the constant does not depend on $\theta$.
+where $\nabla\_x \cdot s\_\theta = \sum\_i \frac{\partial [s\_\theta]\_i}{\partial x\_i}$ is the divergence of the score model, and the constant does not depend on $\theta$.
 
-The proof uses integration by parts (see Week 2). This is remarkable: the true score $\nabla_x \log p(x)$ has disappeared from the loss. We only need samples from $p$ and the ability to compute the divergence of $s_\theta$.
+The proof uses integration by parts (see Week 2). This is remarkable: the true score $\nabla\_x \log p(x)$ has disappeared from the loss. We only need samples from $p$ and the ability to compute the divergence of $s\_\theta$.
 
-**The problem:** Computing $\nabla_x \cdot s_\theta(x)$ requires computing a diagonal of the Jacobian of $s_\theta$, which is expensive for high-dimensional $x$ (it requires $d$ backward passes). This makes explicit score matching impractical for images.
+**The problem:** Computing $\nabla\_x \cdot s\_\theta(x)$ requires computing a diagonal of the Jacobian of $s\_\theta$, which is expensive for high-dimensional $x$ (it requires $d$ backward passes). This makes explicit score matching impractical for images.
 
 ### 3.3 The Key Question
 
 Is there a way to train a score network that:
-1. Does not require knowing the true score $\nabla_x \log p(x)$
+1. Does not require knowing the true score $\nabla\_x \log p(x)$
 2. Does not require computing the expensive divergence term
 3. Only requires samples from $p(x)$
 
@@ -203,29 +245,37 @@ The answer is **denoising score matching**.
 
 ### 4.1 The Idea (Vincent, 2011)
 
-Instead of matching the score of the data distribution $p(x)$, match the score of the **noised** distribution $p_\sigma(\tilde{x})$.
+Instead of matching the score of the data distribution $p(x)$, match the score of the **noised** distribution $p\_\sigma(\tilde{x})$.
 
 The noised distribution is:
 
-$$p_\sigma(\tilde{x}) = \int p(x) \, \mathcal{N}(\tilde{x}; x, \sigma^2 I) \, dx$$
+$$
+p_\sigma(\tilde{x}) = \int p(x) \, \mathcal{N}(\tilde{x}; x, \sigma^2 I) \, dx
+$$
 
-Its score $\nabla_{\tilde{x}} \log p_\sigma(\tilde{x})$ is well-defined (unlike $\nabla_x \log p(x)$, which may be problematic at low-density regions). More importantly, we can compute a tractable training objective.
+Its score $\nabla\_{\tilde{x}} \log p\_\sigma(\tilde{x})$ is well-defined (unlike $\nabla\_x \log p(x)$, which may be problematic at low-density regions). More importantly, we can compute a tractable training objective.
 
 ### 4.2 The Denoising Score Matching Loss
 
-Train $s_\theta(\tilde{x})$ to minimize:
+Train $s\_\theta(\tilde{x})$ to minimize:
 
-$$\mathcal{L}_{\text{DSM}}(\theta) = \frac{1}{2}\mathbb{E}_{x \sim p, \, \epsilon \sim \mathcal{N}(0, I)}\left[\left\|s_\theta(x + \sigma\epsilon) - \nabla_{\tilde{x}} \log p(\tilde{x} \mid x)\right\|^2\right]$$
+$$
+\mathcal{L}_{\text{DSM}}(\theta) = \frac{1}{2}\mathbb{E}_{x \sim p, \, \epsilon \sim \mathcal{N}(0, I)}\left[\left\|s_\theta(x + \sigma\epsilon) - \nabla_{\tilde{x}} \log p(\tilde{x} \mid x)\right\|^2\right]
+$$
 
-The key: we replaced the intractable $\nabla_{\tilde{x}} \log p_\sigma(\tilde{x})$ with the **tractable** $\nabla_{\tilde{x}} \log p(\tilde{x} \mid x)$.
+The key: we replaced the intractable $\nabla\_{\tilde{x}} \log p\_\sigma(\tilde{x})$ with the **tractable** $\nabla\_{\tilde{x}} \log p(\tilde{x} \mid x)$.
 
 Since $p(\tilde{x} \mid x) = \mathcal{N}(\tilde{x}; x, \sigma^2 I)$:
 
-$$\nabla_{\tilde{x}} \log p(\tilde{x} \mid x) = \frac{x - \tilde{x}}{\sigma^2} = -\frac{\epsilon}{\sigma}$$
+$$
+\nabla_{\tilde{x}} \log p(\tilde{x} \mid x) = \frac{x - \tilde{x}}{\sigma^2} = -\frac{\epsilon}{\sigma}
+$$
 
 So the loss becomes:
 
-$$\boxed{\mathcal{L}_{\text{DSM}}(\theta) = \frac{1}{2}\mathbb{E}_{x \sim p, \, \epsilon \sim \mathcal{N}(0,I)}\left[\left\|s_\theta(x + \sigma\epsilon) + \frac{\epsilon}{\sigma}\right\|^2\right]}$$
+$$
+\boxed{\mathcal{L}_{\text{DSM}}(\theta) = \frac{1}{2}\mathbb{E}_{x \sim p, \, \epsilon \sim \mathcal{N}(0,I)}\left[\left\|s_\theta(x + \sigma\epsilon) + \frac{\epsilon}{\sigma}\right\|^2\right]}
+$$
 
 This is stunning in its simplicity:
 1. Sample a data point $x$
@@ -236,65 +286,95 @@ That is it. No knowledge of $p(x)$. No divergence computation. Just noise predic
 
 ### 4.3 The Equivalence Theorem
 
-**Theorem (Vincent, 2011).** The denoising score matching loss $\mathcal{L}_{\text{DSM}}(\theta)$ differs from the score matching loss $\mathcal{L}_{\text{SM}}(\theta)$ by a constant independent of $\theta$:
+**Theorem (Vincent, 2011).** The denoising score matching loss $\mathcal{L}\_{\text{DSM}}(\theta)$ differs from the score matching loss $\mathcal{L}\_{\text{SM}}(\theta)$ by a constant independent of $\theta$:
 
-$$\mathcal{L}_{\text{DSM}}(\theta) = \frac{1}{2}\mathbb{E}_{\tilde{x} \sim p_\sigma}\left[\|s_\theta(\tilde{x}) - \nabla_{\tilde{x}} \log p_\sigma(\tilde{x})\|^2\right] + C$$
+$$
+\mathcal{L}_{\text{DSM}}(\theta) = \frac{1}{2}\mathbb{E}_{\tilde{x} \sim p_\sigma}\left[\|s_\theta(\tilde{x}) - \nabla_{\tilde{x}} \log p_\sigma(\tilde{x})\|^2\right] + C
+$$
 
 where $C$ does not depend on $\theta$.
 
-In other words: **minimizing the denoising score matching loss finds the score of the noised distribution.** The network $s_\theta$ that minimizes $\mathcal{L}_{\text{DSM}}$ satisfies $s_\theta(\tilde{x}) = \nabla_{\tilde{x}} \log p_\sigma(\tilde{x})$.
+In other words: **minimizing the denoising score matching loss finds the score of the noised distribution.** The network $s\_\theta$ that minimizes $\mathcal{L}\_{\text{DSM}}$ satisfies $s\_\theta(\tilde{x}) = \nabla\_{\tilde{x}} \log p\_\sigma(\tilde{x})$.
 
 ### 4.4 Proof of the Equivalence
 
 Expand the score matching loss for the noised distribution:
 
-$$\mathcal{L}_{\text{SM}}(\theta) = \frac{1}{2}\mathbb{E}_{\tilde{x} \sim p_\sigma}\left[\|s_\theta(\tilde{x}) - \nabla_{\tilde{x}} \log p_\sigma(\tilde{x})\|^2\right]$$
+$$
+\mathcal{L}_{\text{SM}}(\theta) = \frac{1}{2}\mathbb{E}_{\tilde{x} \sim p_\sigma}\left[\|s_\theta(\tilde{x}) - \nabla_{\tilde{x}} \log p_\sigma(\tilde{x})\|^2\right]
+$$
 
-$$= \frac{1}{2}\mathbb{E}_{\tilde{x}}\left[\|s_\theta(\tilde{x})\|^2 - 2 s_\theta(\tilde{x})^\top \nabla_{\tilde{x}} \log p_\sigma(\tilde{x}) + \|\nabla_{\tilde{x}} \log p_\sigma(\tilde{x})\|^2\right]$$
+$$
+= \frac{1}{2}\mathbb{E}_{\tilde{x}}\left[\|s_\theta(\tilde{x})\|^2 - 2 s_\theta(\tilde{x})^\top \nabla_{\tilde{x}} \log p_\sigma(\tilde{x}) + \|\nabla_{\tilde{x}} \log p_\sigma(\tilde{x})\|^2\right]
+$$
 
 The last term is a constant (does not depend on $\theta$). Focus on the cross term:
 
-$$\mathbb{E}_{\tilde{x} \sim p_\sigma}\left[s_\theta(\tilde{x})^\top \nabla_{\tilde{x}} \log p_\sigma(\tilde{x})\right]$$
+$$
+\mathbb{E}_{\tilde{x} \sim p_\sigma}\left[s_\theta(\tilde{x})^\top \nabla_{\tilde{x}} \log p_\sigma(\tilde{x})\right]
+$$
 
-Now, $\nabla_{\tilde{x}} \log p_\sigma(\tilde{x}) = \frac{\nabla_{\tilde{x}} p_\sigma(\tilde{x})}{p_\sigma(\tilde{x})}$, so:
+Now, $\nabla\_{\tilde{x}} \log p\_\sigma(\tilde{x}) = \frac{\nabla\_{\tilde{x}} p\_\sigma(\tilde{x})}{p\_\sigma(\tilde{x})}$, so:
 
-$$= \int s_\theta(\tilde{x})^\top \frac{\nabla_{\tilde{x}} p_\sigma(\tilde{x})}{p_\sigma(\tilde{x})} \, p_\sigma(\tilde{x}) \, d\tilde{x} = \int s_\theta(\tilde{x})^\top \nabla_{\tilde{x}} p_\sigma(\tilde{x}) \, d\tilde{x}$$
+$$
+= \int s_\theta(\tilde{x})^\top \frac{\nabla_{\tilde{x}} p_\sigma(\tilde{x})}{p_\sigma(\tilde{x})} \, p_\sigma(\tilde{x}) \, d\tilde{x} = \int s_\theta(\tilde{x})^\top \nabla_{\tilde{x}} p_\sigma(\tilde{x}) \, d\tilde{x}
+$$
 
-Substituting $p_\sigma(\tilde{x}) = \int p(x) \mathcal{N}(\tilde{x}; x, \sigma^2 I) dx$:
+Substituting $p\_\sigma(\tilde{x}) = \int p(x) \mathcal{N}(\tilde{x}; x, \sigma^2 I) dx$:
 
-$$= \int \int s_\theta(\tilde{x})^\top \nabla_{\tilde{x}} \mathcal{N}(\tilde{x}; x, \sigma^2 I) \, p(x) \, dx \, d\tilde{x}$$
+$$
+= \int \int s_\theta(\tilde{x})^\top \nabla_{\tilde{x}} \mathcal{N}(\tilde{x}; x, \sigma^2 I) \, p(x) \, dx \, d\tilde{x}
+$$
 
-$$= \int \int s_\theta(\tilde{x})^\top \frac{x - \tilde{x}}{\sigma^2} \mathcal{N}(\tilde{x}; x, \sigma^2 I) \, p(x) \, dx \, d\tilde{x}$$
+$$
+= \int \int s_\theta(\tilde{x})^\top \frac{x - \tilde{x}}{\sigma^2} \mathcal{N}(\tilde{x}; x, \sigma^2 I) \, p(x) \, dx \, d\tilde{x}
+$$
 
-$$= \mathbb{E}_{x \sim p, \, \tilde{x} \sim \mathcal{N}(x, \sigma^2 I)}\left[s_\theta(\tilde{x})^\top \frac{x - \tilde{x}}{\sigma^2}\right]$$
+$$
+= \mathbb{E}_{x \sim p, \, \tilde{x} \sim \mathcal{N}(x, \sigma^2 I)}\left[s_\theta(\tilde{x})^\top \frac{x - \tilde{x}}{\sigma^2}\right]
+$$
 
-$$= \mathbb{E}_{x, \tilde{x}}\left[s_\theta(\tilde{x})^\top \nabla_{\tilde{x}} \log p(\tilde{x} | x)\right]$$
+$$
+= \mathbb{E}_{x, \tilde{x}}\left[s_\theta(\tilde{x})^\top \nabla_{\tilde{x}} \log p(\tilde{x} | x)\right]
+$$
 
-Substituting back into $\mathcal{L}_{\text{SM}}$:
+Substituting back into $\mathcal{L}\_{\text{SM}}$:
 
-$$\mathcal{L}_{\text{SM}}(\theta) = \frac{1}{2}\mathbb{E}_{\tilde{x}}\|s_\theta(\tilde{x})\|^2 - \mathbb{E}_{x, \tilde{x}}\left[s_\theta(\tilde{x})^\top \nabla_{\tilde{x}} \log p(\tilde{x}|x)\right] + C$$
+$$
+\mathcal{L}_{\text{SM}}(\theta) = \frac{1}{2}\mathbb{E}_{\tilde{x}}\|s_\theta(\tilde{x})\|^2 - \mathbb{E}_{x, \tilde{x}}\left[s_\theta(\tilde{x})^\top \nabla_{\tilde{x}} \log p(\tilde{x}|x)\right] + C
+$$
 
 Now expand the denoising score matching loss:
 
-$$\mathcal{L}_{\text{DSM}}(\theta) = \frac{1}{2}\mathbb{E}_{x, \tilde{x}}\left[\|s_\theta(\tilde{x}) - \nabla_{\tilde{x}} \log p(\tilde{x}|x)\|^2\right]$$
+$$
+\mathcal{L}_{\text{DSM}}(\theta) = \frac{1}{2}\mathbb{E}_{x, \tilde{x}}\left[\|s_\theta(\tilde{x}) - \nabla_{\tilde{x}} \log p(\tilde{x}|x)\|^2\right]
+$$
 
-$$= \frac{1}{2}\mathbb{E}\|s_\theta(\tilde{x})\|^2 - \mathbb{E}\left[s_\theta(\tilde{x})^\top \nabla_{\tilde{x}} \log p(\tilde{x}|x)\right] + \frac{1}{2}\mathbb{E}\|\nabla_{\tilde{x}} \log p(\tilde{x}|x)\|^2$$
+$$
+= \frac{1}{2}\mathbb{E}\|s_\theta(\tilde{x})\|^2 - \mathbb{E}\left[s_\theta(\tilde{x})^\top \nabla_{\tilde{x}} \log p(\tilde{x}|x)\right] + \frac{1}{2}\mathbb{E}\|\nabla_{\tilde{x}} \log p(\tilde{x}|x)\|^2
+$$
 
-The first two terms are identical to $\mathcal{L}_{\text{SM}}$ (after noting that $\mathbb{E}_{\tilde{x}}\|s_\theta\|^2 = \mathbb{E}_{x, \tilde{x}}\|s_\theta\|^2$ since $s_\theta$ depends only on $\tilde{x}$). The last term is a constant. Therefore:
+The first two terms are identical to $\mathcal{L}\_{\text{SM}}$ (after noting that $\mathbb{E}\_{\tilde{x}}\Vert s\_\theta\Vert ^2 = \mathbb{E}\_{x, \tilde{x}}\Vert s\_\theta\Vert ^2$ since $s\_\theta$ depends only on $\tilde{x}$). The last term is a constant. Therefore:
 
-$$\mathcal{L}_{\text{DSM}}(\theta) = \mathcal{L}_{\text{SM}}(\theta) + C'$$
+$$
+\mathcal{L}_{\text{DSM}}(\theta) = \mathcal{L}_{\text{SM}}(\theta) + C'
+$$
 
-where $C' = \frac{1}{2}\mathbb{E}\|\nabla_{\tilde{x}} \log p(\tilde{x}|x)\|^2 - C$ is independent of $\theta$. $\square$
+where $C' = \frac{1}{2}\mathbb{E}\Vert \nabla\_{\tilde{x}} \log p(\tilde{x}|x)\Vert ^2 - C$ is independent of $\theta$. $\square$
 
 ### 4.5 The Loss in Practice
 
-Substituting $\nabla_{\tilde{x}} \log p(\tilde{x}|x) = -\epsilon/\sigma$, the DSM loss is:
+Substituting $\nabla\_{\tilde{x}} \log p(\tilde{x}|x) = -\epsilon/\sigma$, the DSM loss is:
 
-$$\mathcal{L}_{\text{DSM}}(\theta) = \frac{1}{2}\mathbb{E}_{x, \epsilon}\left[\left\|s_\theta(x + \sigma\epsilon) + \frac{\epsilon}{\sigma}\right\|^2\right]$$
+$$
+\mathcal{L}_{\text{DSM}}(\theta) = \frac{1}{2}\mathbb{E}_{x, \epsilon}\left[\left\|s_\theta(x + \sigma\epsilon) + \frac{\epsilon}{\sigma}\right\|^2\right]
+$$
 
-If we reparameterize the network as $s_\theta(\tilde{x}, \sigma) = -\epsilon_\theta(\tilde{x}, \sigma)/\sigma$, the loss becomes:
+If we reparameterize the network as $s\_\theta(\tilde{x}, \sigma) = -\epsilon\_\theta(\tilde{x}, \sigma)/\sigma$, the loss becomes:
 
-$$\mathcal{L}(\theta) = \frac{1}{2\sigma^2}\mathbb{E}_{x, \epsilon}\left[\|\epsilon_\theta(x + \sigma\epsilon, \sigma) - \epsilon\|^2\right]$$
+$$
+\mathcal{L}(\theta) = \frac{1}{2\sigma^2}\mathbb{E}_{x, \epsilon}\left[\|\epsilon_\theta(x + \sigma\epsilon, \sigma) - \epsilon\|^2\right]
+$$
 
 This is the **noise prediction loss**: train the network to predict the noise that was added. DDPM (Ho et al. 2020) uses exactly this loss (without the $1/\sigma^2$ weighting, as we discuss below).
 
@@ -304,39 +384,45 @@ This is the **noise prediction loss**: train the network to predict the noise th
 
 ### 5.1 The Single-Scale Problem
 
-So far, we have a score network $s_\theta(\tilde{x})$ trained at a single noise level $\sigma$. But for the reverse SDE (Anderson's theorem), we need the score at every noise level $t$ along the diffusion trajectory.
+So far, we have a score network $s\_\theta(\tilde{x})$ trained at a single noise level $\sigma$. But for the reverse SDE (Anderson's theorem), we need the score at every noise level $t$ along the diffusion trajectory.
 
-If $\sigma$ is too small, the noised distribution $p_\sigma$ is nearly identical to $p$ -- the score is accurate but the landscape is complex (many modes), making Langevin dynamics/reverse SDE simulation difficult.
+If $\sigma$ is too small, the noised distribution $p\_\sigma$ is nearly identical to $p$ -- the score is accurate but the landscape is complex (many modes), making Langevin dynamics/reverse SDE simulation difficult.
 
-If $\sigma$ is too large, $p_\sigma$ is nearly Gaussian -- the landscape is simple but the score tells us little about $p$.
+If $\sigma$ is too large, $p\_\sigma$ is nearly Gaussian -- the landscape is simple but the score tells us little about $p$.
 
 ### 5.2 The Multi-Scale Solution
 
-The solution: train a **single network** $s_\theta(\tilde{x}, \sigma)$ that takes the noise level $\sigma$ as an additional input and estimates the score at that noise level.
+The solution: train a **single network** $s\_\theta(\tilde{x}, \sigma)$ that takes the noise level $\sigma$ as an additional input and estimates the score at that noise level.
 
 This is a **noise-conditional score network** (NCSN), introduced by Song and Ermon (2019). The network learns to denoise at all scales simultaneously.
 
 ### 5.3 Multi-Scale Denoising Loss
 
-Choose a set of noise levels $\sigma_1 < \sigma_2 < \cdots < \sigma_L$ (or sample them continuously from some distribution). The multi-scale denoising score matching loss is:
+Choose a set of noise levels $\sigma\_1 < \sigma\_2 < \cdots < \sigma\_L$ (or sample them continuously from some distribution). The multi-scale denoising score matching loss is:
 
-$$\boxed{\mathcal{L}(\theta) = \sum_{\ell=1}^{L} \lambda(\sigma_\ell) \, \mathbb{E}_{x \sim p, \, \epsilon \sim \mathcal{N}(0,I)}\left[\left\|s_\theta(x + \sigma_\ell \epsilon, \sigma_\ell) + \frac{\epsilon}{\sigma_\ell}\right\|^2\right]}$$
+$$
+\boxed{\mathcal{L}(\theta) = \sum_{\ell=1}^{L} \lambda(\sigma_\ell) \, \mathbb{E}_{x \sim p, \, \epsilon \sim \mathcal{N}(0,I)}\left[\left\|s_\theta(x + \sigma_\ell \epsilon, \sigma_\ell) + \frac{\epsilon}{\sigma_\ell}\right\|^2\right]}
+$$
 
-where $\lambda(\sigma_\ell)$ are **loss weights** that balance the contributions from different noise levels.
+where $\lambda(\sigma\_\ell)$ are **loss weights** that balance the contributions from different noise levels.
 
 In the continuous-time formulation (Song et al. 2021), the sum over $\ell$ becomes an integral over $t$, and the noise level $\sigma(t)$ is determined by the forward SDE:
 
-$$\mathcal{L}(\theta) = \mathbb{E}_{t \sim \mathcal{U}[0,T]} \left[\lambda(t) \, \mathbb{E}_{x_0, x_t}\left[\|s_\theta(x_t, t) - \nabla_{x_t} \log p(x_t | x_0)\|^2\right]\right]$$
+$$
+\mathcal{L}(\theta) = \mathbb{E}_{t \sim \mathcal{U}[0,T]} \left[\lambda(t) \, \mathbb{E}_{x_0, x_t}\left[\|s_\theta(x_t, t) - \nabla_{x_t} \log p(x_t | x_0)\|^2\right]\right]
+$$
 
 ### 5.4 Choosing the Loss Weights
 
 The choice of $\lambda(\sigma)$ significantly affects training. Several schemes have been proposed:
 
-**Uniform weighting:** $\lambda(\sigma) = 1$. Simple but problematic -- large $\sigma$ terms dominate because $\|\epsilon/\sigma\|^2 \sim d/\sigma^2$ is small for large $\sigma$, so the loss is dominated by the small-$\sigma$ terms where the score is large.
+**Uniform weighting:** $\lambda(\sigma) = 1$. Simple but problematic -- large $\sigma$ terms dominate because $\Vert \epsilon/\sigma\Vert ^2 \sim d/\sigma^2$ is small for large $\sigma$, so the loss is dominated by the small-$\sigma$ terms where the score is large.
 
 **$\sigma^2$ weighting:** $\lambda(\sigma) = \sigma^2$. This gives:
 
-$$\lambda(\sigma) \cdot \|s_\theta + \epsilon/\sigma\|^2 = \|\sigma s_\theta + \epsilon\|^2 = \|\epsilon_\theta - \epsilon\|^2$$
+$$
+\lambda(\sigma) \cdot \|s_\theta + \epsilon/\sigma\|^2 = \|\sigma s_\theta + \epsilon\|^2 = \|\epsilon_\theta - \epsilon\|^2
+$$
 
 which is the noise prediction loss without any $\sigma$-dependent weighting. This is the DDPM weighting (Ho et al. 2020), and it works surprisingly well in practice.
 
@@ -348,9 +434,11 @@ How does the network "know" what noise level it is operating at? Common approach
 
 **Sinusoidal embeddings:** Encode $\sigma$ (or $t$, or $\log \sigma$) using sinusoidal position embeddings (borrowed from the Transformer):
 
-$$\gamma(\sigma) = \left[\sin(\omega_1 \sigma), \cos(\omega_1 \sigma), \sin(\omega_2 \sigma), \cos(\omega_2 \sigma), \ldots\right]$$
+$$
+\gamma(\sigma) = \left[\sin(\omega_1 \sigma), \cos(\omega_1 \sigma), \sin(\omega_2 \sigma), \cos(\omega_2 \sigma), \ldots\right]
+$$
 
-with geometrically spaced frequencies $\omega_k$. This embedding is then injected into the network (e.g., via FiLM conditioning: scale and shift the activations of each layer).
+with geometrically spaced frequencies $\omega\_k$. This embedding is then injected into the network (e.g., via FiLM conditioning: scale and shift the activations of each layer).
 
 **Log-SNR conditioning:** Instead of $\sigma$, condition on $\log(\text{SNR}) = \log(\alpha^2/\sigma^2)$ where $\alpha$ and $\sigma$ parameterize the noise schedule. This is more natural because the network's task changes most rapidly in log-SNR space.
 
@@ -362,35 +450,47 @@ with geometrically spaced frequencies $\omega_k$. This embedding is then injecte
 
 Recall from Week 3 the VP forward SDE:
 
-$$dX_t = -\frac{1}{2}\beta(t) X_t \, dt + \sqrt{\beta(t)} \, dW_t$$
+$$
+dX_t = -\frac{1}{2}\beta(t) X_t \, dt + \sqrt{\beta(t)} \, dW_t
+$$
 
-The transition kernel (conditional distribution of $X_t$ given $X_0$) is:
+The transition kernel (conditional distribution of $X\_t$ given $X\_0$) is:
 
-$$X_t \mid X_0 \sim \mathcal{N}\left(\alpha_t X_0, \; (1 - \alpha_t^2) I\right)$$
+$$
+X_t \mid X_0 \sim \mathcal{N}\left(\alpha_t X_0, \; (1 - \alpha_t^2) I\right)
+$$
 
-where $\alpha_t = \exp\left(-\frac{1}{2}\int_0^t \beta(s) \, ds\right)$.
+where $\alpha\_t = \exp\left(-\frac{1}{2}\int\_0^t \beta(s) \, ds\right)$.
 
 We can write this as:
 
-$$X_t = \alpha_t X_0 + \sqrt{1 - \alpha_t^2} \, \epsilon, \qquad \epsilon \sim \mathcal{N}(0, I)$$
+$$
+X_t = \alpha_t X_0 + \sqrt{1 - \alpha_t^2} \, \epsilon, \qquad \epsilon \sim \mathcal{N}(0, I)
+$$
 
-This is a noising operation with signal coefficient $\alpha_t$ and noise standard deviation $\sigma_t = \sqrt{1 - \alpha_t^2}$.
+This is a noising operation with signal coefficient $\alpha\_t$ and noise standard deviation $\sigma\_t = \sqrt{1 - \alpha\_t^2}$.
 
 ### 6.2 The Score of the Forward Process
 
 The conditional score is:
 
-$$\nabla_{X_t} \log p(X_t \mid X_0) = -\frac{X_t - \alpha_t X_0}{1 - \alpha_t^2} = -\frac{\epsilon}{\sigma_t}$$
+$$
+\nabla_{X_t} \log p(X_t \mid X_0) = -\frac{X_t - \alpha_t X_0}{1 - \alpha_t^2} = -\frac{\epsilon}{\sigma_t}
+$$
 
-where we used $X_t - \alpha_t X_0 = \sigma_t \epsilon$.
+where we used $X\_t - \alpha\_t X\_0 = \sigma\_t \epsilon$.
 
 The denoising score matching loss for the forward process is therefore:
 
-$$\mathcal{L}(\theta) = \mathbb{E}_{t, x_0, \epsilon}\left[\lambda(t) \left\|s_\theta(\alpha_t x_0 + \sigma_t \epsilon, \; t) + \frac{\epsilon}{\sigma_t}\right\|^2\right]$$
+$$
+\mathcal{L}(\theta) = \mathbb{E}_{t, x_0, \epsilon}\left[\lambda(t) \left\|s_\theta(\alpha_t x_0 + \sigma_t \epsilon, \; t) + \frac{\epsilon}{\sigma_t}\right\|^2\right]
+$$
 
-With $\lambda(t) = \sigma_t^2$, this simplifies to:
+With $\lambda(t) = \sigma\_t^2$, this simplifies to:
 
-$$\mathcal{L}(\theta) = \mathbb{E}_{t, x_0, \epsilon}\left[\|\epsilon_\theta(\alpha_t x_0 + \sigma_t \epsilon, \; t) - \epsilon\|^2\right]$$
+$$
+\mathcal{L}(\theta) = \mathbb{E}_{t, x_0, \epsilon}\left[\|\epsilon_\theta(\alpha_t x_0 + \sigma_t \epsilon, \; t) - \epsilon\|^2\right]
+$$
 
 This is the DDPM training objective. The training algorithm is:
 
@@ -409,9 +509,11 @@ Five lines. That is the entire training procedure for a diffusion model.
 
 Once trained, the score network is plugged into Anderson's reverse SDE:
 
-$$dX_t = \left[-\frac{1}{2}\beta(t) X_t - \beta(t) s_\theta(X_t, t)\right] dt + \sqrt{\beta(t)} \, d\bar{W}_t$$
+$$
+dX_t = \left[-\frac{1}{2}\beta(t) X_t - \beta(t) s_\theta(X_t, t)\right] dt + \sqrt{\beta(t)} \, d\bar{W}_t
+$$
 
-Starting from $X_T \sim \mathcal{N}(0, I)$ and integrating backward produces samples from (approximately) $p_{\text{data}}$.
+Starting from $X\_T \sim \mathcal{N}(0, I)$ and integrating backward produces samples from (approximately) $p\_{\text{data}}$.
 
 ---
 
@@ -425,7 +527,7 @@ The reverse process starts from pure noise and progressively reduces the noise l
 
 ### 7.2 The Score Field Interpretation
 
-The score $\nabla_x \log p_t(x)$ is a vector field that points "uphill" in the density landscape. At high noise levels, the density is nearly Gaussian and the score field is simple (pointing toward the origin). At low noise levels, the density has complex structure (multiple modes, sharp features) and the score field is correspondingly complex.
+The score $\nabla\_x \log p\_t(x)$ is a vector field that points "uphill" in the density landscape. At high noise levels, the density is nearly Gaussian and the score field is simple (pointing toward the origin). At low noise levels, the density has complex structure (multiple modes, sharp features) and the score field is correspondingly complex.
 
 The reverse SDE follows this score field, guided from the simple structure at high noise through the complex structure at low noise.
 
@@ -454,7 +556,7 @@ In practice, the hardest noise levels to model are the intermediate ones where t
 
 ### 8.3 Weighting and Loss Design
 
-The choice of loss weighting $\lambda(t)$ affects which noise levels the network focuses on. Ho et al. (2020) found that the simple "noise prediction" weighting $\lambda(t) = \sigma_t^2$ (which drops the $1/\sigma^2$ factor) works better than the theoretically motivated likelihood weighting for sample quality.
+The choice of loss weighting $\lambda(t)$ affects which noise levels the network focuses on. Ho et al. (2020) found that the simple "noise prediction" weighting $\lambda(t) = \sigma\_t^2$ (which drops the $1/\sigma^2$ factor) works better than the theoretically motivated likelihood weighting for sample quality.
 
 Karras et al. (2022) conducted a thorough empirical study and proposed a preconditioning scheme that makes training more stable across noise levels. We will revisit this in Week 9.
 
@@ -464,15 +566,15 @@ Karras et al. (2022) conducted a thorough empirical study and proposed a precond
 
 1. **The denoising problem:** Given $\tilde{x} = x + \sigma\epsilon$, the optimal denoiser is the posterior mean $\mathbb{E}[x|\tilde{x}]$.
 
-2. **Tweedie's formula:** $\mathbb{E}[x|\tilde{x}] = \tilde{x} + \sigma^2 \nabla_{\tilde{x}} \log p_\sigma(\tilde{x})$. The optimal denoiser is the identity plus $\sigma^2$ times the score. **Denoising and score estimation are the same problem.**
+2. **Tweedie's formula:** $\mathbb{E}[x|\tilde{x}] = \tilde{x} + \sigma^2 \nabla\_{\tilde{x}} \log p\_\sigma(\tilde{x})$. The optimal denoiser is the identity plus $\sigma^2$ times the score. **Denoising and score estimation are the same problem.**
 
-3. **Denoising score matching (Vincent 2011):** Training a network to predict the noise $\epsilon$ that was added is equivalent to training it to estimate the score $\nabla \log p_\sigma$. The loss $\|s_\theta(\tilde{x}) + \epsilon/\sigma\|^2$ is a tractable proxy for the true score matching loss.
+3. **Denoising score matching (Vincent 2011):** Training a network to predict the noise $\epsilon$ that was added is equivalent to training it to estimate the score $\nabla \log p\_\sigma$. The loss $\Vert s\_\theta(\tilde{x}) + \epsilon/\sigma\Vert ^2$ is a tractable proxy for the true score matching loss.
 
-4. **Noise-conditional score networks:** A single network $s_\theta(x, \sigma)$ estimates the score at all noise levels simultaneously. Multi-scale training uses a weighted sum of denoising losses across noise levels.
+4. **Noise-conditional score networks:** A single network $s\_\theta(x, \sigma)$ estimates the score at all noise levels simultaneously. Multi-scale training uses a weighted sum of denoising losses across noise levels.
 
 5. **The DDPM training objective** reduces to: sample data, add noise at a random level, predict the noise. Five lines of pseudocode.
 
-6. **Three equivalent parameterizations:** Predicting the clean signal $x$, the noise $\epsilon$, or the score $\nabla \log p_\sigma$ are all equivalent formulations of the same problem.
+6. **Three equivalent parameterizations:** Predicting the clean signal $x$, the noise $\epsilon$, or the score $\nabla \log p\_\sigma$ are all equivalent formulations of the same problem.
 
 ---
 
@@ -480,13 +582,13 @@ Karras et al. (2022) conducted a thorough empirical study and proposed a precond
 
 | Concept | Equation |
 |---------|----------|
-| Tweedie's formula | $\mathbb{E}[x\|\tilde{x}] = \tilde{x} + \sigma^2 \nabla_{\tilde{x}} \log p_\sigma(\tilde{x})$ |
-| Score from noise | $\nabla_{\tilde{x}} \log p_\sigma(\tilde{x}) = -\mathbb{E}[\epsilon\|\tilde{x}]/\sigma$ |
-| DSM loss (score) | $\mathcal{L} = \mathbb{E}\[\|s_\theta(x+\sigma\epsilon) + \epsilon/\sigma\|^2\]$ |
-| DSM loss (noise) | $\mathcal{L} = \mathbb{E}\[\|\epsilon_\theta(x+\sigma\epsilon) - \epsilon\|^2\]$ |
-| Forward process | $x_t = \alpha_t x_0 + \sigma_t \epsilon$ |
-| Parameterization | $s_\theta = -\epsilon_\theta/\sigma = (D_\theta - \tilde{x})/\sigma^2$ |
-| DDPM training | Sample $x_0, t, \epsilon$; minimize $\|\epsilon_\theta(\alpha_t x_0 + \sigma_t\epsilon, t) - \epsilon\|^2$ |
+| Tweedie's formula | $\mathbb{E}[x\Vert \tilde{x}] = \tilde{x} + \sigma^2 \nabla\_{\tilde{x}} \log p\_\sigma(\tilde{x})$ |
+| Score from noise | $\nabla\_{\tilde{x}} \log p\_\sigma(\tilde{x}) = -\mathbb{E}[\epsilon\Vert \tilde{x}]/\sigma$ |
+| DSM loss (score) | $\mathcal{L} = \mathbb{E}\[\Vert s\_\theta(x+\sigma\epsilon) + \epsilon/\sigma\Vert ^2\]$ |
+| DSM loss (noise) | $\mathcal{L} = \mathbb{E}\[\Vert \epsilon\_\theta(x+\sigma\epsilon) - \epsilon\Vert ^2\]$ |
+| Forward process | $x\_t = \alpha\_t x\_0 + \sigma\_t \epsilon$ |
+| Parameterization | $s\_\theta = -\epsilon\_\theta/\sigma = (D\_\theta - \tilde{x})/\sigma^2$ |
+| DDPM training | Sample $x\_0, t, \epsilon$; minimize $\Vert \epsilon\_\theta(\alpha\_t x\_0 + \sigma\_t\epsilon, t) - \epsilon\Vert ^2$ |
 
 ---
 

@@ -15,24 +15,32 @@ This final week examines the frontier of sparse autoencoder research. We begin b
 
 Recall the standard SAE from Week 10. Given an input activation $\mathbf{x} \in \mathbb{R}^n$, the encoder produces a hidden representation $\mathbf{z} \in \mathbb{R}^m$ (with $m \gg n$) and the decoder reconstructs $\hat{\mathbf{x}}$:
 
-$$\mathbf{z} = \text{ReLU}(\mathbf{W}_e \mathbf{x} + \mathbf{b}_e)$$
-$$\hat{\mathbf{x}} = \mathbf{W}_d \mathbf{z} + \mathbf{b}_d$$
+$$
+\mathbf{z} = \text{ReLU}(\mathbf{W}_e \mathbf{x} + \mathbf{b}_e)
+$$
+$$
+\hat{\mathbf{x}} = \mathbf{W}_d \mathbf{z} + \mathbf{b}_d
+$$
 
 The training objective is:
 
-$$\mathcal{L} = \| \mathbf{x} - \hat{\mathbf{x}} \|_2^2 + \lambda \| \mathbf{z} \|_1$$
+$$
+\mathcal{L} = \| \mathbf{x} - \hat{\mathbf{x}} \|_2^2 + \lambda \| \mathbf{z} \|_1
+$$
 
 This formulation has served us well, but it harbors three interrelated problems.
 
 ### 1.1 Shrinkage Bias
 
-The L1 penalty $\lambda \| \mathbf{z} \|_1$ penalizes the *magnitude* of every active feature. This means gradient descent pushes active feature activations toward zero, not just inactive ones. If a feature genuinely has a large activation (it should be "strongly on"), the L1 penalty fights against this, biasing the magnitude downward.
+The L1 penalty $\lambda \Vert  \mathbf{z} \Vert \_1$ penalizes the *magnitude* of every active feature. This means gradient descent pushes active feature activations toward zero, not just inactive ones. If a feature genuinely has a large activation (it should be "strongly on"), the L1 penalty fights against this, biasing the magnitude downward.
 
-Formally, consider the gradient contribution from the sparsity term for a single feature $z_i > 0$:
+Formally, consider the gradient contribution from the sparsity term for a single feature $z\_i > 0$:
 
-$$\frac{\partial}{\partial z_i} \lambda |z_i| = \lambda \cdot \text{sign}(z_i) = \lambda$$
+$$
+\frac{\partial}{\partial z_i} \lambda |z_i| = \lambda \cdot \text{sign}(z_i) = \lambda
+$$
 
-This constant gradient toward zero is applied regardless of whether $z_i$ is large or small. The result: the SAE systematically underestimates the magnitude of active features. This is the same shrinkage bias known from LASSO regression (Week 9), now appearing in the autoencoder context.
+This constant gradient toward zero is applied regardless of whether $z\_i$ is large or small. The result: the SAE systematically underestimates the magnitude of active features. This is the same shrinkage bias known from LASSO regression (Week 9), now appearing in the autoencoder context.
 
 **Practical consequence:** To compensate for suppressed feature magnitudes, the decoder must learn larger weights, distorting the geometry of the learned dictionary. Reconstruction quality degrades, especially for inputs where the "true" features are strongly active.
 
@@ -70,17 +78,23 @@ Various heuristics exist (resampling dead neurons, auxiliary losses), but they a
 
 The encoder computes pre-activations as usual:
 
-$$\mathbf{h} = \mathbf{W}_e \mathbf{x} + \mathbf{b}_e$$
+$$
+\mathbf{h} = \mathbf{W}_e \mathbf{x} + \mathbf{b}_e
+$$
 
 Then, instead of applying ReLU + L1, we apply a TopK operation:
 
-$$z_i = \begin{cases} h_i & \text{if } h_i \text{ is among the top } K \text{ values of } \mathbf{h} \\ 0 & \text{otherwise} \end{cases}$$
+$$
+z_i = \begin{cases} h_i & \text{if } h_i \text{ is among the top } K \text{ values of } \mathbf{h} \\ 0 & \text{otherwise} \end{cases}
+$$
 
-The decoder is unchanged: $\hat{\mathbf{x}} = \mathbf{W}_d \mathbf{z} + \mathbf{b}_d$.
+The decoder is unchanged: $\hat{\mathbf{x}} = \mathbf{W}\_d \mathbf{z} + \mathbf{b}\_d$.
 
 The loss function is simply reconstruction:
 
-$$\mathcal{L} = \| \mathbf{x} - \hat{\mathbf{x}} \|_2^2$$
+$$
+\mathcal{L} = \| \mathbf{x} - \hat{\mathbf{x}} \|_2^2
+$$
 
 No sparsity penalty is needed — sparsity is baked into the architecture.
 
@@ -97,10 +111,14 @@ The TopK operation is not differentiable — it involves a hard selection step. 
 We use a **straight-through estimator (STE)**. In the forward pass, we apply the hard TopK mask. In the backward pass, we pass gradients through to all top-K selected elements as if the mask were the identity:
 
 **Forward:**
-$$z_i = h_i \cdot \mathbb{1}[h_i \in \text{top-K}(\mathbf{h})]$$
+$$
+z_i = h_i \cdot \mathbb{1}[h_i \in \text{top-K}(\mathbf{h})]
+$$
 
 **Backward:**
-$$\frac{\partial \mathcal{L}}{\partial h_i} = \frac{\partial \mathcal{L}}{\partial z_i} \cdot \mathbb{1}[h_i \in \text{top-K}(\mathbf{h})]$$
+$$
+\frac{\partial \mathcal{L}}{\partial h_i} = \frac{\partial \mathcal{L}}{\partial z_i} \cdot \mathbb{1}[h_i \in \text{top-K}(\mathbf{h})]
+$$
 
 The gradient flows through unchanged for selected features and is zero for unselected features. This is the same principle as the straight-through estimator for binary quantization — we approximate the non-differentiable operation by ignoring its non-differentiability during the backward pass.
 
@@ -114,7 +132,9 @@ Gao et al. find that $K$ should scale with the dictionary size $m$. A useful rul
 
 TopK SAEs can still suffer from dead features. Gao et al. propose an auxiliary loss that encourages all features to be used. Let $\mathbf{h}^{(\text{dead})}$ denote the pre-activations of features that have not been in the top-K for many batches. The auxiliary loss reconstructs a residual using only dead features:
 
-$$\mathcal{L}_{\text{aux}} = \| (\mathbf{x} - \hat{\mathbf{x}}) - \mathbf{W}_d^{(\text{dead})} \text{TopK}_{\text{aux}}(\mathbf{h}^{(\text{dead})}) \|_2^2$$
+$$
+\mathcal{L}_{\text{aux}} = \| (\mathbf{x} - \hat{\mathbf{x}}) - \mathbf{W}_d^{(\text{dead})} \text{TopK}_{\text{aux}}(\mathbf{h}^{(\text{dead})}) \|_2^2
+$$
 
 This gives dead features a gradient signal without interfering with the main reconstruction.
 
@@ -128,9 +148,9 @@ This gives dead features a gradient signal without interfering with the main rec
 
 ### 3.1 Motivation
 
-In a vanilla SAE, a single set of pre-activations $\mathbf{h} = \mathbf{W}_e \mathbf{x} + \mathbf{b}_e$ serves two roles:
-1. **Selection:** Whether $h_i > 0$ determines if feature $i$ is active.
-2. **Magnitude:** The value $h_i$ determines the strength of feature $i$.
+In a vanilla SAE, a single set of pre-activations $\mathbf{h} = \mathbf{W}\_e \mathbf{x} + \mathbf{b}\_e$ serves two roles:
+1. **Selection:** Whether $h\_i > 0$ determines if feature $i$ is active.
+2. **Magnitude:** The value $h\_i$ determines the strength of feature $i$.
 
 The L1 penalty creates a tension between these roles: the penalty discourages large magnitudes, but the selection threshold (zero, for ReLU) is fixed. The result is that features are simultaneously pushed to be small (by L1) and need to be positive (to survive ReLU). This coupling is the root cause of shrinkage bias.
 
@@ -139,39 +159,53 @@ The L1 penalty creates a tension between these roles: the penalty discourages la
 The Gated SAE uses two parallel linear projections from the input:
 
 **Gating path** (determines which features are active):
-$$\boldsymbol{\pi}_{\text{gate}} = \mathbf{W}_{\text{gate}} \mathbf{x} + \mathbf{b}_{\text{gate}}$$
-$$\mathbf{g} = \mathbb{1}[\boldsymbol{\pi}_{\text{gate}} > 0]$$
+$$
+\boldsymbol{\pi}_{\text{gate}} = \mathbf{W}_{\text{gate}} \mathbf{x} + \mathbf{b}_{\text{gate}}
+$$
+$$
+\mathbf{g} = \mathbb{1}[\boldsymbol{\pi}_{\text{gate}} > 0]
+$$
 
 **Magnitude path** (determines feature strengths):
-$$\boldsymbol{\pi}_{\text{mag}} = \mathbf{W}_{\text{mag}} \mathbf{x} + \mathbf{b}_{\text{mag}}$$
-$$\tilde{\mathbf{z}} = \text{ReLU}(\boldsymbol{\pi}_{\text{mag}})$$
+$$
+\boldsymbol{\pi}_{\text{mag}} = \mathbf{W}_{\text{mag}} \mathbf{x} + \mathbf{b}_{\text{mag}}
+$$
+$$
+\tilde{\mathbf{z}} = \text{ReLU}(\boldsymbol{\pi}_{\text{mag}})
+$$
 
 **Combined activation:**
-$$\mathbf{z} = \mathbf{g} \odot \tilde{\mathbf{z}}$$
+$$
+\mathbf{z} = \mathbf{g} \odot \tilde{\mathbf{z}}
+$$
 
-The decoder is standard: $\hat{\mathbf{x}} = \mathbf{W}_d \mathbf{z} + \mathbf{b}_d$.
+The decoder is standard: $\hat{\mathbf{x}} = \mathbf{W}\_d \mathbf{z} + \mathbf{b}\_d$.
 
 ### 3.3 Training Objective
 
 The loss has two components:
 
-$$\mathcal{L} = \| \mathbf{x} - \hat{\mathbf{x}} \|_2^2 + \lambda \| \boldsymbol{\pi}_{\text{gate}} \|_1$$
+$$
+\mathcal{L} = \| \mathbf{x} - \hat{\mathbf{x}} \|_2^2 + \lambda \| \boldsymbol{\pi}_{\text{gate}} \|_1
+$$
 
 Note that the L1 penalty is applied to the *gate pre-activations*, not the feature magnitudes. This is the key insight: sparsity pressure affects the gate (which features fire), while the magnitude path is free from shrinkage.
 
 ### 3.4 Why the Gate Separates Selection from Magnitude
 
 With the gating architecture:
-- The L1 penalty on $\boldsymbol{\pi}_{\text{gate}}$ encourages most gates to be off (most features inactive). This controls sparsity.
-- For features where the gate is on ($g_i = 1$), the magnitude $\tilde{z}_i$ is determined entirely by the magnitude path, which has no L1 penalty. No shrinkage.
+- The L1 penalty on $\boldsymbol{\pi}\_{\text{gate}}$ encourages most gates to be off (most features inactive). This controls sparsity.
+- For features where the gate is on ($g\_i = 1$), the magnitude $\tilde{z}\_i$ is determined entirely by the magnitude path, which has no L1 penalty. No shrinkage.
 
-The gate path uses a Heaviside step function ($\mathbb{1}[\cdot > 0]$), which is non-differentiable. As with TopK, a straight-through estimator is used during backpropagation. In practice, Rajamanoharan et al. use the sigmoid function $\sigma(\boldsymbol{\pi}_{\text{gate}})$ as a smooth approximation during the backward pass.
+The gate path uses a Heaviside step function ($\mathbb{1}[\cdot > 0]$), which is non-differentiable. As with TopK, a straight-through estimator is used during backpropagation. In practice, Rajamanoharan et al. use the sigmoid function $\sigma(\boldsymbol{\pi}\_{\text{gate}})$ as a smooth approximation during the backward pass.
 
 ### 3.5 Weight Sharing
 
-In practice, $\mathbf{W}_{\text{gate}}$ and $\mathbf{W}_{\text{mag}}$ can share weights (same linear projection, different biases). This halves the parameter count of the encoder and works well empirically. The gating and magnitude computations then differ only in their bias terms:
+In practice, $\mathbf{W}\_{\text{gate}}$ and $\mathbf{W}\_{\text{mag}}$ can share weights (same linear projection, different biases). This halves the parameter count of the encoder and works well empirically. The gating and magnitude computations then differ only in their bias terms:
 
-$$\boldsymbol{\pi}_{\text{gate}} = \mathbf{W}_e \mathbf{x} + \mathbf{b}_{\text{gate}}, \qquad \boldsymbol{\pi}_{\text{mag}} = \mathbf{W}_e \mathbf{x} + \mathbf{b}_{\text{mag}}$$
+$$
+\boldsymbol{\pi}_{\text{gate}} = \mathbf{W}_e \mathbf{x} + \mathbf{b}_{\text{gate}}, \qquad \boldsymbol{\pi}_{\text{mag}} = \mathbf{W}_e \mathbf{x} + \mathbf{b}_{\text{mag}}
+$$
 
 This makes intuitive sense: the same projection detects features, but the threshold for "is this feature present?" (gate bias) may differ from the offset for "how strong is it?" (magnitude bias).
 
@@ -187,17 +221,25 @@ This makes intuitive sense: the same projection detects features, but the thresh
 
 The JumpReLU function is defined as:
 
-$$\text{JumpReLU}_\theta(x) = \begin{cases} x & \text{if } x > \theta \\ 0 & \text{if } x \leq \theta \end{cases}$$
+$$
+\text{JumpReLU}_\theta(x) = \begin{cases} x & \text{if } x > \theta \\ 0 & \text{if } x \leq \theta \end{cases}
+$$
 
 where $\theta > 0$ is a threshold parameter. Unlike standard ReLU (where $\theta = 0$), the threshold is:
 1. **Positive**, creating a "dead zone" between 0 and $\theta$ where the function is zero.
-2. **Learnable**, so each feature $i$ has its own threshold $\theta_i$ that adapts during training.
+2. **Learnable**, so each feature $i$ has its own threshold $\theta\_i$ that adapts during training.
 
 The SAE architecture becomes:
 
-$$\mathbf{h} = \mathbf{W}_e \mathbf{x} + \mathbf{b}_e$$
-$$z_i = \text{JumpReLU}_{\theta_i}(h_i) = h_i \cdot \mathbb{1}[h_i > \theta_i]$$
-$$\hat{\mathbf{x}} = \mathbf{W}_d \mathbf{z} + \mathbf{b}_d$$
+$$
+\mathbf{h} = \mathbf{W}_e \mathbf{x} + \mathbf{b}_e
+$$
+$$
+z_i = \text{JumpReLU}_{\theta_i}(h_i) = h_i \cdot \mathbb{1}[h_i > \theta_i]
+$$
+$$
+\hat{\mathbf{x}} = \mathbf{W}_d \mathbf{z} + \mathbf{b}_d
+$$
 
 ### 4.2 Why Learned Thresholds Help
 
@@ -205,33 +247,39 @@ Different features naturally have different baseline activation levels. A featur
 
 **Advantages:**
 - **Adaptive sparsity per feature.** Rare features can have low thresholds (easy to activate); common features can have high thresholds (only fire when strongly indicated).
-- **No shrinkage for active features.** When $h_i > \theta_i$, the output is $h_i$ — the full magnitude, undistorted.
+- **No shrinkage for active features.** When $h\_i > \theta\_i$, the output is $h\_i$ — the full magnitude, undistorted.
 - **No explicit sparsity penalty needed.** The thresholds themselves control sparsity. No $\lambda$ to tune (though in practice a light L0-targeting loss is often used).
 
 ### 4.3 Training with Non-Differentiable Thresholds
 
-The JumpReLU has a discontinuity at $x = \theta$. The derivative $\frac{\partial z_i}{\partial \theta_i}$ does not exist in the classical sense — the function jumps from some positive value to zero.
+The JumpReLU has a discontinuity at $x = \theta$. The derivative $\frac{\partial z\_i}{\partial \theta\_i}$ does not exist in the classical sense — the function jumps from some positive value to zero.
 
 Rajamanoharan et al. handle this by using a **straight-through estimator** for the indicator function. The key gradient approximations:
 
-**Gradient w.r.t. the pre-activation $h_i$:**
-$$\frac{\partial z_i}{\partial h_i} \approx \mathbb{1}[h_i > \theta_i]$$
+**Gradient w.r.t. the pre-activation $h\_i$:**
+$$
+\frac{\partial z_i}{\partial h_i} \approx \mathbb{1}[h_i > \theta_i]
+$$
 
-This is just the ReLU gradient, shifted to the threshold $\theta_i$.
+This is just the ReLU gradient, shifted to the threshold $\theta\_i$.
 
-**Gradient w.r.t. the threshold $\theta_i$:**
+**Gradient w.r.t. the threshold $\theta\_i$:**
 
-This is trickier. The true derivative involves a Dirac delta at $h_i = \theta_i$. Rajamanoharan et al. use a smoothed approximation:
+This is trickier. The true derivative involves a Dirac delta at $h\_i = \theta\_i$. Rajamanoharan et al. use a smoothed approximation:
 
-$$\frac{\partial z_i}{\partial \theta_i} \approx -h_i \cdot \sigma'(h_i - \theta_i) \cdot \frac{1}{\epsilon}$$
+$$
+\frac{\partial z_i}{\partial \theta_i} \approx -h_i \cdot \sigma'(h_i - \theta_i) \cdot \frac{1}{\epsilon}
+$$
 
 where $\sigma'$ is the derivative of the sigmoid function and $\epsilon$ controls the smoothing bandwidth. Alternatively, one can use the sparsity loss gradient: if the model is too sparse, thresholds should decrease; if too dense, thresholds should increase.
 
 In practice, the threshold gradient is derived from an **L0-targeting loss**:
 
-$$\mathcal{L}_{\text{sparsity}} = \left( \frac{1}{B} \sum_{b=1}^{B} \| \mathbf{z}^{(b)} \|_0 - K_{\text{target}} \right)^2$$
+$$
+\mathcal{L}_{\text{sparsity}} = \left( \frac{1}{B} \sum_{b=1}^{B} \| \mathbf{z}^{(b)} \|_0 - K_{\text{target}} \right)^2
+$$
 
-where $B$ is the batch size and $K_{\text{target}}$ is the desired average number of active features. The gradient of this loss w.r.t. $\theta_i$ is computed using the smoothed step function.
+where $B$ is the batch size and $K\_{\text{target}}$ is the desired average number of active features. The gradient of this loss w.r.t. $\theta\_i$ is computed using the smoothed step function.
 
 ### 4.4 Comparison of the Three Architectures
 
@@ -267,7 +315,9 @@ There are three axes along which we can scale SAEs:
 
 **Diminishing returns.** The relationship between $m$ and the number of interpretable features is sub-linear. Doubling the dictionary size does not double the number of useful features. Empirically, Gao et al. find that the loss improvement follows a power law:
 
-$$\mathcal{L}(m) \approx \mathcal{L}_\infty + C \cdot m^{-\alpha}$$
+$$
+\mathcal{L}(m) \approx \mathcal{L}_\infty + C \cdot m^{-\alpha}
+$$
 
 where $\alpha$ is typically between 0.5 and 1.0, depending on the model and layer.
 
@@ -291,11 +341,15 @@ Evaluation is one of the hardest problems in SAE research. How do we know an SAE
 
 The most basic metric: how well does the SAE reconstruct activations?
 
-$$\text{MSE} = \mathbb{E}\left[ \| \mathbf{x} - \hat{\mathbf{x}} \|_2^2 \right]$$
+$$
+\text{MSE} = \mathbb{E}\left[ \| \mathbf{x} - \hat{\mathbf{x}} \|_2^2 \right]
+$$
 
 Often normalized as the **fraction of variance explained**:
 
-$$R^2 = 1 - \frac{\mathbb{E}[\| \mathbf{x} - \hat{\mathbf{x}} \|_2^2]}{\text{Var}(\mathbf{x})}$$
+$$
+R^2 = 1 - \frac{\mathbb{E}[\| \mathbf{x} - \hat{\mathbf{x}} \|_2^2]}{\text{Var}(\mathbf{x})}
+$$
 
 But reconstruction alone is insufficient — a dense, non-sparse autoencoder would score perfectly.
 
@@ -304,13 +358,15 @@ But reconstruction alone is insufficient — a dense, non-sparse autoencoder wou
 A more meaningful metric: how much does the *model's behavior* change when we replace real activations with SAE reconstructions?
 
 Given a language model $M$ and an SAE applied at layer $\ell$, we compute:
-- $\mathcal{L}_{\text{orig}}$: the cross-entropy loss of the original model.
-- $\mathcal{L}_{\text{SAE}}$: the cross-entropy loss when layer $\ell$'s activations are replaced by SAE reconstructions.
-- $\mathcal{L}_{\text{zero}}$: the cross-entropy loss when layer $\ell$'s activations are zeroed out.
+- $\mathcal{L}\_{\text{orig}}$: the cross-entropy loss of the original model.
+- $\mathcal{L}\_{\text{SAE}}$: the cross-entropy loss when layer $\ell$'s activations are replaced by SAE reconstructions.
+- $\mathcal{L}\_{\text{zero}}$: the cross-entropy loss when layer $\ell$'s activations are zeroed out.
 
 The **CE loss recovered** is:
 
-$$\text{CE recovered} = \frac{\mathcal{L}_{\text{zero}} - \mathcal{L}_{\text{SAE}}}{\mathcal{L}_{\text{zero}} - \mathcal{L}_{\text{orig}}}$$
+$$
+\text{CE recovered} = \frac{\mathcal{L}_{\text{zero}} - \mathcal{L}_{\text{SAE}}}{\mathcal{L}_{\text{zero}} - \mathcal{L}_{\text{orig}}}
+$$
 
 A value of 1.0 means the SAE reconstruction is as good as the original activations; 0.0 means the SAE reconstruction is no better than zeroing out the layer entirely.
 
@@ -324,8 +380,8 @@ Are the features the SAE finds actually interpretable?
 
 **Automated interpretability scores:** Use a language model to generate descriptions of features (based on top-activating examples), then test whether those descriptions predict which new examples will activate the feature. This is the approach used in Bricken et al. (2023):
 
-1. Show an LM the top activating examples for feature $i$ and ask it to generate a description $d_i$.
-2. Show the LM new examples and, using only $d_i$, ask it to predict whether feature $i$ will activate.
+1. Show an LM the top activating examples for feature $i$ and ask it to generate a description $d\_i$.
+2. Show the LM new examples and, using only $d\_i$, ask it to predict whether feature $i$ will activate.
 3. The **interpretability score** is the correlation between the LM's predictions and actual activations.
 
 ### 6.4 Feature Absorption
@@ -454,7 +510,9 @@ This week (Week 13), we studied the **frontier**: advanced architectures (TopK, 
 
 The through-line of this course:
 
-$$\text{PCA} \to \text{Autoencoders} \to \text{Sparse Coding} \to \text{Sparse Autoencoders} \to \text{Interpretability}$$
+$$
+\text{PCA} \to \text{Autoencoders} \to \text{Sparse Coding} \to \text{Sparse Autoencoders} \to \text{Interpretability}
+$$
 
 Each step adds something:
 - PCA finds principal directions. Limited to linear, orthogonal features.

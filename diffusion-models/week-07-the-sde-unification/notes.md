@@ -28,15 +28,21 @@ In DDPM, we have $T$ discrete timesteps. The forward process applies a small per
 
 Consider a generic forward step:
 
-$$x_{t+1} = \sqrt{1 - \beta_t}\, x_t + \sqrt{\beta_t}\, \varepsilon_t$$
+$$
+x_{t+1} = \sqrt{1 - \beta_t}\, x_t + \sqrt{\beta_t}\, \varepsilon_t
+$$
 
-For small $\beta_t$, $\sqrt{1-\beta_t} \approx 1 - \beta_t/2$, so:
+For small $\beta\_t$, $\sqrt{1-\beta\_t} \approx 1 - \beta\_t/2$, so:
 
-$$x_{t+1} - x_t \approx -\frac{\beta_t}{2}\, x_t + \sqrt{\beta_t}\, \varepsilon_t$$
+$$
+x_{t+1} - x_t \approx -\frac{\beta_t}{2}\, x_t + \sqrt{\beta_t}\, \varepsilon_t
+$$
 
-If we think of the index $t$ as continuous time and $\beta_t$ as a rate $\beta(t)\,dt$:
+If we think of the index $t$ as continuous time and $\beta\_t$ as a rate $\beta(t)\,dt$:
 
-$$dx = -\frac{1}{2}\beta(t)\, x\, dt + \sqrt{\beta(t)}\, dW$$
+$$
+dx = -\frac{1}{2}\beta(t)\, x\, dt + \sqrt{\beta(t)}\, dW
+$$
 
 where $dW$ is a Wiener process increment ($dW \sim \mathcal{N}(0, dt\, I)$). This is a linear SDE -- specifically, an Ornstein-Uhlenbeck process.
 
@@ -44,14 +50,16 @@ where $dW$ is a Wiener process increment ($dW \sim \mathcal{N}(0, dt\, I)$). Thi
 
 Song et al. (2021) formalize this by defining the forward process as a general SDE on $t \in [0, T]$:
 
-$$\boxed{dx = f(x, t)\, dt + g(t)\, dW}$$
+$$
+\boxed{dx = f(x, t)\, dt + g(t)\, dW}
+$$
 
 where:
 - $f(x, t)$ is the **drift coefficient** -- the deterministic force acting on $x$
 - $g(t)$ is the **diffusion coefficient** -- the noise intensity
 - $W$ is a standard Wiener process (Brownian motion) in $\mathbb{R}^d$
 
-The solution $x(t)$ is a stochastic process whose marginal distribution at time $t$ we denote $p_t(x)$. At $t = 0$, $p_0 = p_{\text{data}}$. At $t = T$, $p_T \approx \pi$ for some known prior distribution $\pi$ (typically $\mathcal{N}(0, \sigma_T^2 I)$).
+The solution $x(t)$ is a stochastic process whose marginal distribution at time $t$ we denote $p\_t(x)$. At $t = 0$, $p\_0 = p\_{\text{data}}$. At $t = T$, $p\_T \approx \pi$ for some known prior distribution $\pi$ (typically $\mathcal{N}(0, \sigma\_T^2 I)$).
 
 The drift and diffusion coefficients define the forward process. Different choices give different diffusion models.
 
@@ -63,27 +71,35 @@ The drift and diffusion coefficients define the forward process. Different choic
 
 The **Variance Preserving SDE** is the continuous-time limit of DDPM:
 
-$$\boxed{dx = -\frac{1}{2}\beta(t)\, x\, dt + \sqrt{\beta(t)}\, dW}$$
+$$
+\boxed{dx = -\frac{1}{2}\beta(t)\, x\, dt + \sqrt{\beta(t)}\, dW}
+$$
 
-where $\beta(t)$ is a continuous noise schedule (e.g., linearly increasing from $\beta_{\min}$ to $\beta_{\max}$).
+where $\beta(t)$ is a continuous noise schedule (e.g., linearly increasing from $\beta\_{\min}$ to $\beta\_{\max}$).
 
 **Why "variance preserving"?** The drift $-\frac{1}{2}\beta(t)x$ shrinks the signal, while the noise $\sqrt{\beta(t)}\, dW$ adds variance. These are balanced so that if $x(0) \sim \mathcal{N}(0, I)$, then $x(t) \sim \mathcal{N}(0, I)$ for all $t$ -- the variance is preserved at 1 for unit-variance data. (For data that does not have unit variance, the process converges to a known Gaussian.)
 
 **Transition kernel.** Because the VP-SDE is linear, the transition from $x(0)$ to $x(t)$ is Gaussian:
 
-$$q(x(t) \mid x(0)) = \mathcal{N}\!\left(x(t);\; e^{-\frac{1}{2}\int_0^t \beta(s)\,ds}\, x(0),\; \left(1 - e^{-\int_0^t \beta(s)\,ds}\right) I\right)$$
+$$
+q(x(t) \mid x(0)) = \mathcal{N}\!\left(x(t);\; e^{-\frac{1}{2}\int_0^t \beta(s)\,ds}\, x(0),\; \left(1 - e^{-\int_0^t \beta(s)\,ds}\right) I\right)
+$$
 
-Define $\bar{\alpha}(t) = e^{-\int_0^t \beta(s)\,ds}$. Then:
+Define $\bar{\alpha}(t) = e^{-\int\_0^t \beta(s)\,ds}$. Then:
 
-$$q(x(t) \mid x(0)) = \mathcal{N}\!\left(\sqrt{\bar{\alpha}(t)}\, x(0),\; (1 - \bar{\alpha}(t))\, I\right)$$
+$$
+q(x(t) \mid x(0)) = \mathcal{N}\!\left(\sqrt{\bar{\alpha}(t)}\, x(0),\; (1 - \bar{\alpha}(t))\, I\right)
+$$
 
-This is exactly the DDPM closed-form formula from Week 5, now in continuous time. The discrete $\bar{\alpha}_t = \prod_{s=1}^t (1-\beta_s)$ becomes $\bar{\alpha}(t) = e^{-\int_0^t \beta(s)\,ds}$, and the product becomes an integral in the exponent (since $\log\prod(1-\beta_s) = \sum\log(1-\beta_s) \approx -\sum \beta_s \to -\int \beta(s)\,ds$ for small $\beta_s$).
+This is exactly the DDPM closed-form formula from Week 5, now in continuous time. The discrete $\bar{\alpha}\_t = \prod\_{s=1}^t (1-\beta\_s)$ becomes $\bar{\alpha}(t) = e^{-\int\_0^t \beta(s)\,ds}$, and the product becomes an integral in the exponent (since $\log\prod(1-\beta\_s) = \sum\log(1-\beta\_s) \approx -\sum \beta\_s \to -\int \beta(s)\,ds$ for small $\beta\_s$).
 
 ### 2.2 VE-SDE (Variance Exploding)
 
 The **Variance Exploding SDE** is the continuous-time limit of NCSN:
 
-$$\boxed{dx = \sqrt{\frac{d[\sigma^2(t)]}{dt}}\; dW}$$
+$$
+\boxed{dx = \sqrt{\frac{d[\sigma^2(t)]}{dt}}\; dW}
+$$
 
 There is no drift -- only diffusion. The noise intensity is chosen so that the marginal variance at time $t$ equals $\sigma^2(t)$.
 
@@ -91,7 +107,9 @@ There is no drift -- only diffusion. The noise intensity is chosen so that the m
 
 **Transition kernel.** The VE-SDE is also linear, so:
 
-$$q(x(t) \mid x(0)) = \mathcal{N}\!\left(x(0),\; \sigma^2(t)\, I\right)$$
+$$
+q(x(t) \mid x(0)) = \mathcal{N}\!\left(x(0),\; \sigma^2(t)\, I\right)
+$$
 
 The data is not rescaled -- just noise is added. This matches the NCSN convention from Week 6.
 
@@ -108,9 +126,11 @@ The discrete models are Euler-Maruyama discretizations of their respective SDEs.
 
 Song et al. also define a **sub-VP SDE**, which interpolates between VP and VE:
 
-$$dx = -\frac{1}{2}\beta(t)\, x\, dt + \sqrt{\beta(t)(1 - e^{-2\int_0^t \beta(s)\,ds})}\; dW$$
+$$
+dx = -\frac{1}{2}\beta(t)\, x\, dt + \sqrt{\beta(t)(1 - e^{-2\int_0^t \beta(s)\,ds})}\; dW
+$$
 
-This preserves the mean-shrinkage of VP-SDE but uses a smaller diffusion coefficient, resulting in tighter variational bounds. The marginal variance at time $t$ is $(1 - e^{-\int_0^t \beta(s)\,ds})^2$ instead of $1 - e^{-\int_0^t \beta(s)\,ds}$.
+This preserves the mean-shrinkage of VP-SDE but uses a smaller diffusion coefficient, resulting in tighter variational bounds. The marginal variance at time $t$ is $(1 - e^{-\int\_0^t \beta(s)\,ds})^2$ instead of $1 - e^{-\int\_0^t \beta(s)\,ds}$.
 
 ---
 
@@ -120,37 +140,47 @@ This preserves the mean-shrinkage of VP-SDE but uses a smaller diffusion coeffic
 
 The remarkable fact that makes all of this work: any SDE has a corresponding reverse-time SDE. Anderson (1982) showed that if the forward SDE is:
 
-$$dx = f(x, t)\, dt + g(t)\, dW$$
+$$
+dx = f(x, t)\, dt + g(t)\, dW
+$$
 
 then the reverse-time SDE (running backward from $t = T$ to $t = 0$) is:
 
-$$\boxed{dx = \left[f(x, t) - g(t)^2 \nabla_x \log p_t(x)\right] dt + g(t)\, d\bar{W}}$$
+$$
+\boxed{dx = \left[f(x, t) - g(t)^2 \nabla_x \log p_t(x)\right] dt + g(t)\, d\bar{W}}
+$$
 
-where $d\bar{W}$ is a reverse-time Wiener process and $\nabla_x \log p_t(x)$ is the score of the marginal distribution at time $t$.
+where $d\bar{W}$ is a reverse-time Wiener process and $\nabla\_x \log p\_t(x)$ is the score of the marginal distribution at time $t$.
 
 Note the structure: the reverse drift has two terms:
 1. $f(x,t)$: the same drift as the forward process
-2. $-g(t)^2 \nabla_x \log p_t(x)$: a correction that depends on the **score function**
+2. $-g(t)^2 \nabla\_x \log p\_t(x)$: a correction that depends on the **score function**
 
-The reverse SDE is fully determined by the forward SDE coefficients $f, g$ and the time-dependent score $\nabla_x \log p_t(x)$. If we can estimate the score at all times, we can reverse the diffusion and generate data.
+The reverse SDE is fully determined by the forward SDE coefficients $f, g$ and the time-dependent score $\nabla\_x \log p\_t(x)$. If we can estimate the score at all times, we can reverse the diffusion and generate data.
 
 ### 3.2 Reverse VP-SDE
 
 For the VP-SDE ($f = -\frac{1}{2}\beta(t)x$, $g = \sqrt{\beta(t)}$):
 
-$$dx = \left[-\frac{1}{2}\beta(t)\, x - \beta(t)\, \nabla_x \log p_t(x)\right] dt + \sqrt{\beta(t)}\, d\bar{W}$$
+$$
+dx = \left[-\frac{1}{2}\beta(t)\, x - \beta(t)\, \nabla_x \log p_t(x)\right] dt + \sqrt{\beta(t)}\, d\bar{W}
+$$
 
 ### 3.3 Reverse VE-SDE
 
 For the VE-SDE ($f = 0$, $g = \sqrt{d\sigma^2/dt}$):
 
-$$dx = -\frac{d[\sigma^2(t)]}{dt}\, \nabla_x \log p_t(x)\, dt + \sqrt{\frac{d[\sigma^2(t)]}{dt}}\; d\bar{W}$$
+$$
+dx = -\frac{d[\sigma^2(t)]}{dt}\, \nabla_x \log p_t(x)\, dt + \sqrt{\frac{d[\sigma^2(t)]}{dt}}\; d\bar{W}
+$$
 
 ### 3.4 Score Approximation
 
-In practice, we replace $\nabla_x \log p_t(x)$ with a learned score network $s_\theta(x, t)$, giving the approximate reverse SDE:
+In practice, we replace $\nabla\_x \log p\_t(x)$ with a learned score network $s\_\theta(x, t)$, giving the approximate reverse SDE:
 
-$$dx = \left[f(x, t) - g(t)^2\, s_\theta(x, t)\right] dt + g(t)\, d\bar{W}$$
+$$
+dx = \left[f(x, t) - g(t)^2\, s_\theta(x, t)\right] dt + g(t)\, d\bar{W}
+$$
 
 This can be solved numerically using any SDE solver (Euler-Maruyama, Milstein, adaptive methods). The choice of solver trades off speed and accuracy.
 
@@ -160,13 +190,17 @@ This can be solved numerically using any SDE solver (Euler-Maruyama, Milstein, a
 
 ### 4.1 The Deterministic Counterpart
 
-Here is one of the most beautiful results in the paper. For any SDE of the form $dx = f(x,t)\,dt + g(t)\,dW$, there exists a deterministic ODE whose solution has the *same marginal distributions* $p_t(x)$ at all times:
+Here is one of the most beautiful results in the paper. For any SDE of the form $dx = f(x,t)\,dt + g(t)\,dW$, there exists a deterministic ODE whose solution has the *same marginal distributions* $p\_t(x)$ at all times:
 
-$$\boxed{dx = \left[f(x, t) - \frac{1}{2}g(t)^2 \nabla_x \log p_t(x)\right] dt}$$
+$$
+\boxed{dx = \left[f(x, t) - \frac{1}{2}g(t)^2 \nabla_x \log p_t(x)\right] dt}
+$$
 
 This is the **probability flow ODE**. Compare to the reverse SDE:
 
-$$dx = \left[f(x, t) - g(t)^2 \nabla_x \log p_t(x)\right] dt + g(t)\, d\bar{W}$$
+$$
+dx = \left[f(x, t) - g(t)^2 \nabla_x \log p_t(x)\right] dt + g(t)\, d\bar{W}
+$$
 
 The ODE is obtained by removing the noise term $g(t)\,d\bar{W}$ and halving the score coefficient from $g(t)^2$ to $\frac{1}{2}g(t)^2$. The two processes have identical marginal distributions but different path-wise behavior:
 
@@ -175,17 +209,23 @@ The ODE is obtained by removing the noise term $g(t)\,d\bar{W}$ and halving the 
 
 ### 4.2 Why This Holds: The Fokker-Planck Connection
 
-The marginal distributions $p_t(x)$ of the SDE evolve according to the **Fokker-Planck equation** (from Week 3):
+The marginal distributions $p\_t(x)$ of the SDE evolve according to the **Fokker-Planck equation** (from Week 3):
 
-$$\frac{\partial p_t}{\partial t} = -\nabla \cdot \left[f(x,t)\, p_t\right] + \frac{1}{2}g(t)^2 \Delta p_t$$
+$$
+\frac{\partial p_t}{\partial t} = -\nabla \cdot \left[f(x,t)\, p_t\right] + \frac{1}{2}g(t)^2 \Delta p_t
+$$
 
 where $\Delta$ is the Laplacian. The probability flow ODE is derived by finding a deterministic velocity field $\tilde{f}(x, t)$ that produces the same Fokker-Planck equation. For the ODE $dx = \tilde{f}(x,t)\,dt$, the Fokker-Planck equation (which reduces to the continuity equation since there is no diffusion term) is:
 
-$$\frac{\partial p_t}{\partial t} = -\nabla \cdot \left[\tilde{f}(x,t)\, p_t\right]$$
+$$
+\frac{\partial p_t}{\partial t} = -\nabla \cdot \left[\tilde{f}(x,t)\, p_t\right]
+$$
 
-Setting the two equal and using the identity $\frac{1}{2}g^2 \Delta p_t = -\nabla \cdot \left[-\frac{1}{2}g^2 \nabla_x \log p_t \cdot p_t\right]$ (which follows from $\nabla p_t = p_t \nabla \log p_t$), we get:
+Setting the two equal and using the identity $\frac{1}{2}g^2 \Delta p\_t = -\nabla \cdot \left[-\frac{1}{2}g^2 \nabla\_x \log p\_t \cdot p\_t\right]$ (which follows from $\nabla p\_t = p\_t \nabla \log p\_t$), we get:
 
-$$\tilde{f}(x,t) = f(x,t) - \frac{1}{2}g(t)^2 \nabla_x \log p_t(x)$$
+$$
+\tilde{f}(x,t) = f(x,t) - \frac{1}{2}g(t)^2 \nabla_x \log p_t(x)
+$$
 
 This is exactly the probability flow ODE drift. $\square$
 
@@ -193,13 +233,19 @@ This is exactly the probability flow ODE drift. $\square$
 
 Substituting $f = -\frac{1}{2}\beta(t)x$ and $g = \sqrt{\beta(t)}$:
 
-$$dx = \left[-\frac{1}{2}\beta(t)\, x - \frac{1}{2}\beta(t)\, \nabla_x \log p_t(x)\right] dt$$
+$$
+dx = \left[-\frac{1}{2}\beta(t)\, x - \frac{1}{2}\beta(t)\, \nabla_x \log p_t(x)\right] dt
+$$
 
-$$= -\frac{1}{2}\beta(t)\left[x + \nabla_x \log p_t(x)\right] dt$$
+$$
+= -\frac{1}{2}\beta(t)\left[x + \nabla_x \log p_t(x)\right] dt
+$$
 
 With a learned score:
 
-$$dx = -\frac{1}{2}\beta(t)\left[x + s_\theta(x, t)\right] dt$$
+$$
+dx = -\frac{1}{2}\beta(t)\left[x + s_\theta(x, t)\right] dt
+$$
 
 This is a neural ODE that can be solved with standard ODE solvers (Euler, RK45, Dormand-Prince, etc.).
 
@@ -207,7 +253,9 @@ This is a neural ODE that can be solved with standard ODE solvers (Euler, RK45, 
 
 Substituting $f = 0$ and $g = \sqrt{d\sigma^2/dt}$:
 
-$$dx = -\frac{1}{2}\frac{d[\sigma^2(t)]}{dt}\, \nabla_x \log p_t(x)\, dt$$
+$$
+dx = -\frac{1}{2}\frac{d[\sigma^2(t)]}{dt}\, \nabla_x \log p_t(x)\, dt
+$$
 
 The ODE simply follows the score, scaled by the rate of noise change.
 
@@ -219,13 +267,17 @@ The ODE simply follows the score, scaled by the rate of noise change.
 
 The probability flow ODE is a **continuous normalizing flow** (CNF). It defines a smooth, invertible mapping between the data space ($t = 0$) and the latent space ($t = T$). By the instantaneous change of variables formula (Chen et al., 2018):
 
-$$\log p_0(x(0)) = \log p_T(x(T)) + \int_0^T \nabla \cdot \tilde{f}(x(t), t)\, dt$$
+$$
+\log p_0(x(0)) = \log p_T(x(T)) + \int_0^T \nabla \cdot \tilde{f}(x(t), t)\, dt
+$$
 
-where $\tilde{f}(x, t) = f(x,t) - \frac{1}{2}g(t)^2 s_\theta(x, t)$ is the ODE velocity field and $\nabla \cdot \tilde{f}$ is its divergence.
+where $\tilde{f}(x, t) = f(x,t) - \frac{1}{2}g(t)^2 s\_\theta(x, t)$ is the ODE velocity field and $\nabla \cdot \tilde{f}$ is its divergence.
 
 This gives us **exact log-likelihoods** for diffusion models -- something the ELBO only bounds. Computing the integral requires solving the ODE forward (from $t=0$ to $t=T$) while accumulating the divergence, using the Hutchinson trace estimator for efficiency:
 
-$$\nabla \cdot \tilde{f}(x, t) = \mathbb{E}_{v \sim \mathcal{N}(0,I)}\!\left[v^\top \frac{\partial \tilde{f}}{\partial x} v\right]$$
+$$
+\nabla \cdot \tilde{f}(x, t) = \mathbb{E}_{v \sim \mathcal{N}(0,I)}\!\left[v^\top \frac{\partial \tilde{f}}{\partial x} v\right]
+$$
 
 Song et al. (2021) achieved state-of-the-art log-likelihoods on CIFAR-10 using the probability flow ODE, surpassing even autoregressive models.
 
@@ -233,21 +285,23 @@ Song et al. (2021) achieved state-of-the-art log-likelihoods on CIFAR-10 using t
 
 Running the ODE forward ($t: 0 \to T$) maps data to latent space deterministically:
 
-$$x_0 \mapsto x_T = \text{ODESolve}(x_0, 0 \to T)$$
+$$
+x_0 \mapsto x_T = \text{ODESolve}(x_0, 0 \to T)
+$$
 
 This is a learned encoder with no stochasticity. Two useful properties:
 
 **Uniqueness.** Each data point maps to exactly one latent code, and vice versa. This is unlike the SDE, where the same data point maps to different latent codes depending on the noise realization.
 
-**Invertibility.** The encoding is exactly invertible: running the ODE backward recovers $x_0$ from $x_T$ (up to numerical precision).
+**Invertibility.** The encoding is exactly invertible: running the ODE backward recovers $x\_0$ from $x\_T$ (up to numerical precision).
 
 ### 5.3 Latent Space Interpolation
 
 Because the ODE defines a smooth, bijective map between data and latent space, we can interpolate in latent space:
 
-1. Encode two images: $z_1 = \text{encode}(x_1)$, $z_2 = \text{encode}(x_2)$
-2. Interpolate: $z_\alpha = (1-\alpha)\, z_1 + \alpha\, z_2$ for $\alpha \in [0, 1]$
-3. Decode: $\hat{x}_\alpha = \text{decode}(z_\alpha)$
+1. Encode two images: $z\_1 = \text{encode}(x\_1)$, $z\_2 = \text{encode}(x\_2)$
+2. Interpolate: $z\_\alpha = (1-\alpha)\, z\_1 + \alpha\, z\_2$ for $\alpha \in [0, 1]$
+3. Decode: $\hat{x}\_\alpha = \text{decode}(z\_\alpha)$
 
 Because the latent space is approximately Gaussian, linear interpolation produces plausible intermediate images -- smooth transitions between faces, between digits, between scenes.
 
@@ -263,13 +317,17 @@ ODE solvers can use adaptive step sizes, taking large steps when the dynamics ar
 
 The training objective generalizes naturally to continuous time:
 
-$$\mathcal{L}(\theta) = \mathbb{E}_{t \sim \mathcal{U}(0,T)}\, \mathbb{E}_{x(0) \sim p_0}\, \mathbb{E}_{x(t) \sim q(x(t) \mid x(0))}\!\left[\lambda(t)\, \left\|s_\theta(x(t), t) - \nabla_{x(t)} \log q(x(t) \mid x(0))\right\|^2\right]$$
+$$
+\mathcal{L}(\theta) = \mathbb{E}_{t \sim \mathcal{U}(0,T)}\, \mathbb{E}_{x(0) \sim p_0}\, \mathbb{E}_{x(t) \sim q(x(t) \mid x(0))}\!\left[\lambda(t)\, \left\|s_\theta(x(t), t) - \nabla_{x(t)} \log q(x(t) \mid x(0))\right\|^2\right]
+$$
 
 where $\lambda(t)$ is a positive weighting function and $q(x(t) \mid x(0))$ is the transition kernel of the forward SDE (which is Gaussian for both VP and VE).
 
 For the VP-SDE:
 
-$$\nabla_{x(t)} \log q(x(t) \mid x(0)) = -\frac{x(t) - \sqrt{\bar{\alpha}(t)}\, x(0)}{1 - \bar{\alpha}(t)} = -\frac{\varepsilon}{\sqrt{1 - \bar{\alpha}(t)}}$$
+$$
+\nabla_{x(t)} \log q(x(t) \mid x(0)) = -\frac{x(t) - \sqrt{\bar{\alpha}(t)}\, x(0)}{1 - \bar{\alpha}(t)} = -\frac{\varepsilon}{\sqrt{1 - \bar{\alpha}(t)}}
+$$
 
 This is continuous-time denoising score matching. The discrete-time DDPM and NCSN losses are obtained by discretizing the integral over $t$.
 
@@ -313,7 +371,7 @@ The SDE framework contains both DDPM and NCSN as special cases. But it also enab
 
 ### 7.2 Reverse Process Options
 
-Given a trained score network $s_\theta(x, t)$, you have multiple ways to generate samples:
+Given a trained score network $s\_\theta(x, t)$, you have multiple ways to generate samples:
 
 1. **Reverse SDE** (Euler-Maruyama): discretize the reverse SDE with fixed step sizes. This is what DDPM and NCSN do.
 
@@ -335,7 +393,9 @@ The predictor-corrector framework combines the best of both worlds:
 
 **Corrector step**: Run $M$ steps of Langevin dynamics at the new noise level $t - \Delta t$ to refine the sample:
 
-$$x \leftarrow x + \frac{\eta}{2}\, s_\theta(x, t - \Delta t) + \sqrt{\eta}\, z$$
+$$
+x \leftarrow x + \frac{\eta}{2}\, s_\theta(x, t - \Delta t) + \sqrt{\eta}\, z
+$$
 
 The predictor moves through noise levels; the corrector improves the sample quality at each level. This is a principled generalization of annealed Langevin dynamics that can be combined with any SDE or ODE solver.
 
@@ -353,7 +413,7 @@ The predictor moves through noise levels; the corrector improves the sample qual
 
 **VE-SDE (NCSN-style):**
 - The forward process only adds noise (no rescaling)
-- The prior has very large variance ($\sigma_T^2 \gg 1$)
+- The prior has very large variance ($\sigma\_T^2 \gg 1$)
 - Conceptually simpler
 - Can have numerical issues due to large variance range
 
@@ -373,7 +433,7 @@ We will cover these in detail in Week 8.
 
 The SDE framework makes it easy to modify the generation process for conditional generation, inpainting, and other controlled tasks. The key idea: modify the score function during sampling without retraining. For example:
 
-- **Classifier guidance**: $\tilde{s}(x, t) = s_\theta(x, t) + w\, \nabla_x \log p_\phi(y \mid x)$
+- **Classifier guidance**: $\tilde{s}(x, t) = s\_\theta(x, t) + w\, \nabla\_x \log p\_\phi(y \mid x)$
 - **Inpainting**: replace known pixels at each step and denoise only the unknown region
 - **Inverse problems**: add a likelihood term to the score
 
@@ -387,13 +447,17 @@ These all operate at the level of the score function within the SDE/ODE framewor
 
 Song et al. (2021) show that the continuous-time ELBO for the VP-SDE is:
 
-$$\log p_0(x) \geq \mathbb{E}\!\left[-\frac{1}{2}\int_0^T \beta(t)\left[\|s_\theta(x(t), t)\|^2 + 2\,\nabla \cdot s_\theta(x(t), t) + \|\nabla_{x(t)} \log q(x(t) \mid x(0))\|^2\right] dt\right] + C$$
+$$
+\log p_0(x) \geq \mathbb{E}\!\left[-\frac{1}{2}\int_0^T \beta(t)\left[\|s_\theta(x(t), t)\|^2 + 2\,\nabla \cdot s_\theta(x(t), t) + \|\nabla_{x(t)} \log q(x(t) \mid x(0))\|^2\right] dt\right] + C
+$$
 
 where $C$ depends on the prior and entropy terms.
 
 This simplifies (after applying denoising score matching and dropping constants) to:
 
-$$-\text{ELBO} \propto \int_0^T g(t)^2\, \mathbb{E}\!\left[\|s_\theta(x(t), t) - \nabla_{x(t)} \log q(x(t) \mid x(0))\|^2\right] dt$$
+$$
+-\text{ELBO} \propto \int_0^T g(t)^2\, \mathbb{E}\!\left[\|s_\theta(x(t), t) - \nabla_{x(t)} \log q(x(t) \mid x(0))\|^2\right] dt
+$$
 
 This is exactly the continuous-time score matching loss with $\lambda(t) = g(t)^2$. Thus, the likelihood-weighted score matching objective *is* the continuous-time ELBO.
 
@@ -403,9 +467,9 @@ This is exactly the continuous-time score matching loss with $\lambda(t) = g(t)^
 
 1. **The SDE framework** describes the forward noising process as $dx = f(x,t)\,dt + g(t)\,dW$ on $t \in [0, T]$. DDPM corresponds to VP-SDE ($f = -\frac{1}{2}\beta(t)x$, $g = \sqrt{\beta(t)}$). NCSN corresponds to VE-SDE ($f = 0$, $g = \sqrt{d\sigma^2/dt}$).
 
-2. **The reverse-time SDE** is $dx = [f(x,t) - g(t)^2\nabla_x \log p_t(x)]\,dt + g(t)\,d\bar{W}$. It depends on the score function $\nabla_x \log p_t(x)$, which we approximate with a neural network.
+2. **The reverse-time SDE** is $dx = [f(x,t) - g(t)^2\nabla\_x \log p\_t(x)]\,dt + g(t)\,d\bar{W}$. It depends on the score function $\nabla\_x \log p\_t(x)$, which we approximate with a neural network.
 
-3. **The probability flow ODE** is the deterministic counterpart: $dx = [f(x,t) - \frac{1}{2}g(t)^2\nabla_x \log p_t(x)]\,dt$. It has the same marginal distributions as the SDE but enables exact likelihoods, deterministic encoding, and fast adaptive-step sampling.
+3. **The probability flow ODE** is the deterministic counterpart: $dx = [f(x,t) - \frac{1}{2}g(t)^2\nabla\_x \log p\_t(x)]\,dt$. It has the same marginal distributions as the SDE but enables exact likelihoods, deterministic encoding, and fast adaptive-step sampling.
 
 4. **The continuous-time score matching objective** unifies the DDPM and NCSN losses. With likelihood weighting ($\lambda = g^2$), it equals the continuous-time ELBO.
 
@@ -420,10 +484,10 @@ This is exactly the continuous-time score matching loss with $\lambda(t) = g(t)^
 | General forward SDE | $dx = f(x,t)\,dt + g(t)\,dW$ |
 | VP-SDE | $dx = -\frac{1}{2}\beta(t)x\,dt + \sqrt{\beta(t)}\,dW$ |
 | VE-SDE | $dx = \sqrt{d\sigma^2(t)/dt}\;dW$ |
-| Reverse SDE | $dx = [f - g^2\nabla_x\log p_t]\,dt + g\,d\bar{W}$ |
-| Probability flow ODE | $dx = [f - \frac{1}{2}g^2\nabla_x\log p_t]\,dt$ |
-| Instantaneous change of variables | $\log p_0(x_0) = \log p_T(x_T) + \int_0^T \nabla\cdot\tilde{f}\,dt$ |
-| Score matching loss | $\mathcal{L} = \mathbb{E}_{t,x_0,x_t}[\lambda(t)\|s_\theta - \nabla_{x_t}\log q(x_t\mid x_0)\|^2]$ |
+| Reverse SDE | $dx = [f - g^2\nabla\_x\log p\_t]\,dt + g\,d\bar{W}$ |
+| Probability flow ODE | $dx = [f - \frac{1}{2}g^2\nabla\_x\log p\_t]\,dt$ |
+| Instantaneous change of variables | $\log p\_0(x\_0) = \log p\_T(x\_T) + \int\_0^T \nabla\cdot\tilde{f}\,dt$ |
+| Score matching loss | $\mathcal{L} = \mathbb{E}\_{t,x\_0,x\_t}[\lambda(t)\Vert s\_\theta - \nabla\_{x\_t}\log q(x\_t\mid x\_0)\Vert ^2]$ |
 
 ---
 

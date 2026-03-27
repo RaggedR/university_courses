@@ -40,7 +40,7 @@ For each prompt, extract the residual stream activations at layers 0, 4, 8, and 
 ### 1b. Dimensionality and Magnitude
 
 For the extracted activations:
-1. Report the dimension of the residual stream ($d_{\text{model}}$).
+1. Report the dimension of the residual stream ($d\_{\text{model}}$).
 2. Compute the L2 norm of the activation vector at each layer for each prompt. How does the magnitude change across layers?
 3. Compute the cosine similarity between the layer 8 activations of all pairs of prompts. Which prompts are most similar in representation space? Does this make intuitive sense?
 
@@ -69,7 +69,7 @@ Using SAELens (or by downloading weights from Neuronpedia), load a pre-trained S
 Verify the SAE works by:
 1. Running a prompt through GPT-2 and extracting layer 8 residual stream activations.
 2. Passing these activations through the SAE encoder to get sparse feature activations $\mathbf{z}$.
-3. Reconstructing using the decoder: $\hat{\mathbf{h}} = \mathbf{W}_d \mathbf{z} + \mathbf{b}_d$.
+3. Reconstructing using the decoder: $\hat{\mathbf{h}} = \mathbf{W}\_d \mathbf{z} + \mathbf{b}\_d$.
 4. Computing the reconstruction error (MSE and cosine similarity between $\mathbf{h}$ and $\hat{\mathbf{h}}$).
 
 ### 2b. Feature Exploration: Max-Activating Examples
@@ -123,8 +123,8 @@ For each input in the positive set:
 2. Run the model with the selected feature's activation zeroed out:
    - Extract the residual stream at layer 8.
    - Pass through the SAE encoder to get $\mathbf{z}$.
-   - Set the selected feature's activation to zero: $z_j \leftarrow 0$.
-   - Reconstruct: $\hat{\mathbf{h}} = \mathbf{W}_d \mathbf{z} + \mathbf{b}_d$.
+   - Set the selected feature's activation to zero: $z\_j \leftarrow 0$.
+   - Reconstruct: $\hat{\mathbf{h}} = \mathbf{W}\_d \mathbf{z} + \mathbf{b}\_d$.
    - Replace the original activation with $\hat{\mathbf{h}}$ and continue the forward pass.
 3. Record the new top-5 predicted tokens and their probabilities.
 
@@ -134,9 +134,11 @@ Compare the results. Does zeroing out the feature change the predictions in a wa
 
 Compute the KL divergence between the original and ablated output distributions:
 
-$$D_{\text{KL}}(p_{\text{orig}} \| p_{\text{ablated}})$$
+$$
+D_{\text{KL}}(p_{\text{orig}} \| p_{\text{ablated}})
+$$
 
-where $p_{\text{orig}}$ and $p_{\text{ablated}}$ are the full next-token probability distributions.
+where $p\_{\text{orig}}$ and $p\_{\text{ablated}}$ are the full next-token probability distributions.
 
 Report the mean KL divergence across your positive set and your negative set. If the feature is causally relevant for the positive set, KL divergence should be higher for positive examples than negative examples.
 
@@ -154,8 +156,10 @@ Select a feature (the same one from Problem 3, or a different one if you find on
 
 Implement feature steering:
 1. During model inference, at layer 8, modify the residual stream:
-   $$\mathbf{h}_{\text{steered}} = \mathbf{h} + \alpha \cdot \mathbf{d}_j$$
-   where $\mathbf{d}_j = \mathbf{W}_d[:, j]$ is the decoder column for feature $j$, and $\alpha$ is the steering strength.
+   $$
+   \mathbf{h}_{\text{steered}} = \mathbf{h} + \alpha \cdot \mathbf{d}_j
+   $$
+   where $\mathbf{d}\_j = \mathbf{W}\_d[:, j]$ is the decoder column for feature $j$, and $\alpha$ is the steering strength.
 2. Continue the forward pass with the modified activations.
 
 ### 4c. Steering Experiment

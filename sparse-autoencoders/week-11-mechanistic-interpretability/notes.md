@@ -64,7 +64,7 @@ A foundational claim in mechanistic interpretability:
 
 > **The Linear Representation Hypothesis:** Features in neural networks are represented as directions in activation space.
 
-What does this mean concretely? Suppose we are looking at the residual stream of a transformer at some layer, which produces a vector $\mathbf{h} \in \mathbb{R}^d$ for each token. The hypothesis says that there exists a direction $\mathbf{v}_{\text{cat}} \in \mathbb{R}^d$ such that the dot product $\mathbf{h} \cdot \mathbf{v}_{\text{cat}}$ measures "how much the model thinks this token is about cats."
+What does this mean concretely? Suppose we are looking at the residual stream of a transformer at some layer, which produces a vector $\mathbf{h} \in \mathbb{R}^d$ for each token. The hypothesis says that there exists a direction $\mathbf{v}\_{\text{cat}} \in \mathbb{R}^d$ such that the dot product $\mathbf{h} \cdot \mathbf{v}\_{\text{cat}}$ measures "how much the model thinks this token is about cats."
 
 More precisely: the activation of a feature is a linear function of the representation vector. This is a strong and testable claim. There is mounting evidence for it:
 
@@ -116,13 +116,17 @@ Having nearly-orthogonal directions is not enough on its own. If *all* features 
 
 But if features are **sparse** -- only a small fraction are active for any given input -- then the interference is manageable. Here is the key insight:
 
-Consider two features $\mathbf{v}_A$ and $\mathbf{v}_B$ stored as nearly-orthogonal directions with inner product $\epsilon = \mathbf{v}_A \cdot \mathbf{v}_B \approx 0.03$. If feature A is active with magnitude $a$ and feature B is active with magnitude $b$, the total activation vector is:
+Consider two features $\mathbf{v}\_A$ and $\mathbf{v}\_B$ stored as nearly-orthogonal directions with inner product $\epsilon = \mathbf{v}\_A \cdot \mathbf{v}\_B \approx 0.03$. If feature A is active with magnitude $a$ and feature B is active with magnitude $b$, the total activation vector is:
 
-$$\mathbf{h} = a \mathbf{v}_A + b \mathbf{v}_B$$
+$$
+\mathbf{h} = a \mathbf{v}_A + b \mathbf{v}_B
+$$
 
 When we try to read out feature A's activation, we get:
 
-$$\mathbf{h} \cdot \mathbf{v}_A = a \|\mathbf{v}_A\|^2 + b (\mathbf{v}_B \cdot \mathbf{v}_A) = a + b\epsilon$$
+$$
+\mathbf{h} \cdot \mathbf{v}_A = a \|\mathbf{v}_A\|^2 + b (\mathbf{v}_B \cdot \mathbf{v}_A) = a + b\epsilon
+$$
 
 The term $b\epsilon$ is interference from feature B. If features A and B are rarely active simultaneously (sparse), this interference is usually zero (because $b = 0$ most of the time). When it does occur, it is small (because $\epsilon$ is small).
 
@@ -151,18 +155,22 @@ To study superposition rigorously, Elhage et al. designed a toy model with the f
 **Task:** Given an input $\mathbf{x} \in \mathbb{R}^n$ consisting of $n$ independent features, compress it through a bottleneck of dimension $m < n$, then decompress it to recover $\mathbf{x}$.
 
 **Model:** A linear model with a bottleneck:
-$$\hat{\mathbf{x}} = \mathbf{W}^T \mathbf{W} \mathbf{x} + \mathbf{b}$$
+$$
+\hat{\mathbf{x}} = \mathbf{W}^T \mathbf{W} \mathbf{x} + \mathbf{b}
+$$
 
 where $\mathbf{W} \in \mathbb{R}^{m \times n}$ (compress $n$ dimensions to $m$), and $\mathbf{W}^T$ (expand back to $n$). This is essentially a linear autoencoder.
 
 Note: the same weight matrix $\mathbf{W}$ is used for both encoding and decoding (tied weights, transposed). This is not essential but simplifies analysis.
 
 **Feature structure:**
-- Each feature $x_i$ has an **importance** $I_i$ (how much the model should care about reconstructing it). Features are ordered by decreasing importance: $I_1 > I_2 > \cdots > I_n$.
-- Each feature has a **sparsity** $S$ (probability of being zero). A feature $x_i$ is independently zero with probability $1 - S$, and drawn from $U[0, 1]$ with probability $S$.
+- Each feature $x\_i$ has an **importance** $I\_i$ (how much the model should care about reconstructing it). Features are ordered by decreasing importance: $I\_1 > I\_2 > \cdots > I\_n$.
+- Each feature has a **sparsity** $S$ (probability of being zero). A feature $x\_i$ is independently zero with probability $1 - S$, and drawn from $U[0, 1]$ with probability $S$.
 
 **Loss function:**
-$$\mathcal{L} = \sum_{i=1}^{n} I_i \cdot \mathbb{E}\left[(x_i - \hat{x}_i)^2\right]$$
+$$
+\mathcal{L} = \sum_{i=1}^{n} I_i \cdot \mathbb{E}\left[(x_i - \hat{x}_i)^2\right]
+$$
 
 This is weighted MSE: features with higher importance contribute more to the loss.
 
@@ -195,7 +203,7 @@ Features represented
 
 **Result 2: Geometric structure.** In superposition, the learned feature directions arrange themselves in specific geometric patterns that minimize interference:
 
-- **Antipodal pairs:** Two features sharing one dimension by pointing in opposite directions. Feature A is encoded as $+\mathbf{e}_1$ and feature B as $-\mathbf{e}_1$. Since ReLU can distinguish positive from negative, both features can be recovered.
+- **Antipodal pairs:** Two features sharing one dimension by pointing in opposite directions. Feature A is encoded as $+\mathbf{e}\_1$ and feature B as $-\mathbf{e}\_1$. Since ReLU can distinguish positive from negative, both features can be recovered.
 
 - **Triangular configurations:** In 2D, three features can be arranged at 120-degree angles (vertices of an equilateral triangle), each pair having inner product $-0.5$.
 
@@ -229,9 +237,11 @@ At first glance, polysemanticity seems like a failure of the network -- why woul
 
 If the "cat" feature and the "car" feature are both represented as directions in activation space, and these directions are *not aligned with any single neuron's axis*, then each neuron's activation will be a linear combination of multiple feature activations.
 
-Concretely, suppose the "cat" feature direction is $\mathbf{v}_{\text{cat}} = (0.7, 0.5, 0.3, \ldots)$ and the "car" feature direction is $\mathbf{v}_{\text{car}} = (0.6, -0.4, 0.5, \ldots)$. Then neuron 1's activation is:
+Concretely, suppose the "cat" feature direction is $\mathbf{v}\_{\text{cat}} = (0.7, 0.5, 0.3, \ldots)$ and the "car" feature direction is $\mathbf{v}\_{\text{car}} = (0.6, -0.4, 0.5, \ldots)$. Then neuron 1's activation is:
 
-$$h_1 = 0.7 \cdot a_{\text{cat}} + 0.6 \cdot a_{\text{car}} + \cdots$$
+$$
+h_1 = 0.7 \cdot a_{\text{cat}} + 0.6 \cdot a_{\text{car}} + \cdots
+$$
 
 Neuron 1 responds to *both* cats and cars because both feature directions have a positive component along neuron 1's axis. This neuron is polysemantic not because the network is confused, but because it is efficiently packing multiple features into a limited-dimensional space.
 
@@ -262,7 +272,7 @@ Given everything we have discussed, the logic for using SAEs in interpretability
 In practice, applying SAEs to a neural network works as follows:
 
 1. **Choose a location** in the network to analyze (e.g., the residual stream at layer 6, or the MLP output at layer 3).
-2. **Collect activations** by running many inputs through the network and saving the activation vectors at the chosen location. If the activation dimension is $d$, you collect a dataset of vectors $\{\mathbf{h}_i \in \mathbb{R}^d\}$.
+2. **Collect activations** by running many inputs through the network and saving the activation vectors at the chosen location. If the activation dimension is $d$, you collect a dataset of vectors $\lbrace \mathbf{h}\_i \in \mathbb{R}^d\rbrace $.
 3. **Train an SAE** on these activation vectors: $\mathbf{h} \to \mathbf{z} \to \hat{\mathbf{h}}$. The hidden dimension $d'$ is typically $4d$ to $32d$.
 4. **Analyze the SAE's features:** each hidden neuron in the SAE should (ideally) correspond to an interpretable concept that the original network represents.
 
@@ -311,10 +321,14 @@ To establish causal relevance, we need intervention experiments.
 The simplest causal test: **remove** a feature and observe what changes.
 
 **Zero ablation:** Set feature $j$'s activation to zero:
-$$\mathbf{z}_{\text{ablated}} = \mathbf{z} \odot (\mathbf{1} - \mathbf{e}_j)$$
+$$
+\mathbf{z}_{\text{ablated}} = \mathbf{z} \odot (\mathbf{1} - \mathbf{e}_j)
+$$
 
-where $\mathbf{e}_j$ is the one-hot vector for feature $j$. Then reconstruct with the ablated code:
-$$\hat{\mathbf{h}}_{\text{ablated}} = \mathbf{W}_d \mathbf{z}_{\text{ablated}} + \mathbf{b}_d$$
+where $\mathbf{e}\_j$ is the one-hot vector for feature $j$. Then reconstruct with the ablated code:
+$$
+\hat{\mathbf{h}}_{\text{ablated}} = \mathbf{W}_d \mathbf{z}_{\text{ablated}} + \mathbf{b}_d
+$$
 
 Feed this modified activation back into the network and observe the change in output. If the model's prediction changes specifically in ways related to the feature's hypothesized meaning, that is evidence of causal relevance.
 

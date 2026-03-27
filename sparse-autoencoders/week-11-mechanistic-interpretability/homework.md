@@ -18,7 +18,9 @@ Implement the toy model from Elhage et al. (2022) and reproduce the key result: 
 
 Implement a linear autoencoder with tied weights:
 
-$$\hat{\mathbf{x}} = \mathbf{W}^T \mathbf{W} \mathbf{x} + \mathbf{b}$$
+$$
+\hat{\mathbf{x}} = \mathbf{W}^T \mathbf{W} \mathbf{x} + \mathbf{b}
+$$
 
 where $\mathbf{W} \in \mathbb{R}^{m \times n}$. Use $n = 20$ input features and $m = 5$ bottleneck dimensions. The bias $\mathbf{b} \in \mathbb{R}^n$ is optional but recommended.
 
@@ -27,18 +29,22 @@ Apply ReLU to the output: $\hat{\mathbf{x}} = \text{ReLU}(\mathbf{W}^T \mathbf{W
 ### 1b. Data Generation
 
 Generate synthetic data where each input $\mathbf{x} \in \mathbb{R}^n$ has:
-- Each feature $x_i$ is independently zero with probability $(1 - S)$ and drawn from $U[0, 1]$ with probability $S$, where $S$ is the sparsity parameter (probability of being active).
-- Feature importances decay geometrically: $I_i = 0.9^i$ for $i = 0, 1, \ldots, n-1$.
+- Each feature $x\_i$ is independently zero with probability $(1 - S)$ and drawn from $U[0, 1]$ with probability $S$, where $S$ is the sparsity parameter (probability of being active).
+- Feature importances decay geometrically: $I\_i = 0.9^i$ for $i = 0, 1, \ldots, n-1$.
 
 ### 1c. Loss Function
 
 Use importance-weighted MSE:
 
-$$\mathcal{L} = \sum_{i=1}^{n} I_i \cdot \mathbb{E}\left[(x_i - \hat{x}_i)^2\right]$$
+$$
+\mathcal{L} = \sum_{i=1}^{n} I_i \cdot \mathbb{E}\left[(x_i - \hat{x}_i)^2\right]
+$$
 
 In practice, compute this as a batch average:
 
-$$\mathcal{L} = \frac{1}{B} \sum_{b=1}^{B} \sum_{i=1}^{n} I_i (x_i^{(b)} - \hat{x}_i^{(b)})^2$$
+$$
+\mathcal{L} = \frac{1}{B} \sum_{b=1}^{B} \sum_{i=1}^{n} I_i (x_i^{(b)} - \hat{x}_i^{(b)})^2
+$$
 
 ### 1d. Training
 
@@ -46,15 +52,17 @@ Train the model with Adam (lr $= 10^{-3}$) for 10,000 steps with batch size 256.
 
 Train **separate models** for each of the following sparsity levels:
 
-$$S \in \{1.0, 0.5, 0.1, 0.05, 0.01, 0.003\}$$
+$$
+S \in \{1.0, 0.5, 0.1, 0.05, 0.01, 0.003\}
+$$
 
 ### 1e. Visualization: The W Matrix
 
 For each trained model, visualize the $m \times n$ weight matrix $\mathbf{W}$ as a heatmap.
 
-Then create the key visualization from the paper: for each feature $i$, compute $\|\mathbf{W}_{:,i}\|^2$ (the squared norm of its column in $\mathbf{W}$). This measures how much of the bottleneck capacity is devoted to feature $i$.
+Then create the key visualization from the paper: for each feature $i$, compute $\Vert \mathbf{W}\_{:,i}\Vert ^2$ (the squared norm of its column in $\mathbf{W}$). This measures how much of the bottleneck capacity is devoted to feature $i$.
 
-Plot $\|\mathbf{W}_{:,i}\|^2$ vs. feature index $i$ for each sparsity level, all on the same plot. You should observe:
+Plot $\Vert \mathbf{W}\_{:,i}\Vert ^2$ vs. feature index $i$ for each sparsity level, all on the same plot. You should observe:
 - At $S = 1.0$ (dense): only the top $m = 5$ features have significant weight (PCA-like).
 - At $S = 0.01$ (sparse): many more than $m = 5$ features have significant weight (superposition).
 
@@ -66,17 +74,19 @@ Plot $\|\mathbf{W}_{:,i}\|^2$ vs. feature index $i$ for each sparsity level, all
 
 For each trained model from Problem 1, compute the **number of features represented**, defined as:
 
-$$N_{\text{rep}} = \sum_{i=1}^{n} \|\mathbf{W}_{:,i}\|^2$$
+$$
+N_{\text{rep}} = \sum_{i=1}^{n} \|\mathbf{W}_{:,i}\|^2
+$$
 
 This quantity equals $m$ when each bottleneck dimension is "used up" by exactly one feature (no superposition), and exceeds $m$ when features share dimensions (superposition).
 
-An alternative metric: count the number of features $i$ for which $\|\mathbf{W}_{:,i}\|^2 > 0.1$ (a threshold indicating "meaningfully represented").
+An alternative metric: count the number of features $i$ for which $\Vert \mathbf{W}\_{:,i}\Vert ^2 > 0.1$ (a threshold indicating "meaningfully represented").
 
 ### 2b. Phase Transition Plot
 
-Create a plot of $N_{\text{rep}}$ (y-axis) vs. sparsity $S$ (x-axis, log scale). Use more sparsity levels than Problem 1 if needed (e.g., 15-20 values logarithmically spaced between 0.003 and 1.0).
+Create a plot of $N\_{\text{rep}}$ (y-axis) vs. sparsity $S$ (x-axis, log scale). Use more sparsity levels than Problem 1 if needed (e.g., 15-20 values logarithmically spaced between 0.003 and 1.0).
 
-You should observe a transition: at high density (large $S$), $N_{\text{rep}} \approx m = 5$; at high sparsity (small $S$), $N_{\text{rep}}$ is significantly larger, approaching $n = 20$.
+You should observe a transition: at high density (large $S$), $N\_{\text{rep}} \approx m = 5$; at high sparsity (small $S$), $N\_{\text{rep}}$ is significantly larger, approaching $n = 20$.
 
 Mark the approximate location of the phase transition on your plot.
 
@@ -95,13 +105,13 @@ This is the central problem of the set: demonstrate that an SAE can recover indi
 
 ### 3a. Generate Superimposed Representations
 
-Use the toy model trained with $S = 0.01$ from Problem 1. For a dataset of 10,000 inputs $\{\mathbf{x}_i\}$:
-1. Compute the bottleneck representations: $\mathbf{h}_i = \mathbf{W} \mathbf{x}_i \in \mathbb{R}^m$.
+Use the toy model trained with $S = 0.01$ from Problem 1. For a dataset of 10,000 inputs $\lbrace \mathbf{x}\_i\rbrace $:
+1. Compute the bottleneck representations: $\mathbf{h}\_i = \mathbf{W} \mathbf{x}\_i \in \mathbb{R}^m$.
 2. These are the "activations" that live in superposition -- $m = 5$ dimensions encoding information about $n = 20$ features.
 
 ### 3b. Train an SAE
 
-Train a sparse autoencoder on the bottleneck representations $\{\mathbf{h}_i\}$:
+Train a sparse autoencoder on the bottleneck representations $\lbrace \mathbf{h}\_i\rbrace $:
 - **Input dimension:** $m = 5$
 - **Hidden dimension:** $d = 40$ (expansion factor of 8; we expect around 20 true features)
 - **Loss:** MSE + L1 penalty with $\lambda = 0.01$ (tune this if needed)
@@ -112,7 +122,7 @@ Train a sparse autoencoder on the bottleneck representations $\{\mathbf{h}_i\}$:
 
 After training the SAE:
 
-1. **Decoder column analysis:** Each column of the SAE's decoder $\mathbf{W}_d[:, j] \in \mathbb{R}^m$ represents a learned feature direction in the bottleneck space. Each column of the toy model's $\mathbf{W}$ matrix, $\mathbf{W}[:, i] \in \mathbb{R}^m$, represents where a ground-truth feature is stored in the bottleneck.
+1. **Decoder column analysis:** Each column of the SAE's decoder $\mathbf{W}\_d[:, j] \in \mathbb{R}^m$ represents a learned feature direction in the bottleneck space. Each column of the toy model's $\mathbf{W}$ matrix, $\mathbf{W}[:, i] \in \mathbb{R}^m$, represents where a ground-truth feature is stored in the bottleneck.
 
    Compute the cosine similarity matrix between all SAE decoder columns and all ground-truth feature directions. This is a $40 \times 20$ matrix.
 
@@ -134,13 +144,13 @@ Write a paragraph explaining why the sparsity coefficient matters for feature re
 
 Using the toy model from Problem 1 (with $S = 0.01$), examine the weight matrix $\mathbf{W}$ and find a bottleneck neuron (row of $\mathbf{W}$) that has significant weight on multiple input features.
 
-Specifically, find neuron $k$ such that $|W_{k,i}| > 0.3$ for at least two different features $i$.
+Specifically, find neuron $k$ such that $|W\_{k,i}| > 0.3$ for at least two different features $i$.
 
 ### 4b. Demonstrate Polysemanticity
 
 For your chosen neuron $k$:
 1. Generate 1000 random inputs.
-2. For each input, record neuron $k$'s activation: $h_k = (\mathbf{W} \mathbf{x})_k$.
+2. For each input, record neuron $k$'s activation: $h\_k = (\mathbf{W} \mathbf{x})\_k$.
 3. Also record which input features are active.
 
 Show that neuron $k$ activates when *any* of its multiple contributing features are active. Create a scatter plot or histogram that makes the polysemanticity visually clear.
@@ -164,7 +174,9 @@ Consider two random unit vectors $\mathbf{u}, \mathbf{v}$ drawn uniformly from t
 
 Using the fact that random projections of high-dimensional vectors are approximately Gaussian (by the central limit theorem), argue that:
 
-$$\mathbb{E}[\mathbf{u} \cdot \mathbf{v}] = 0, \qquad \text{Var}(\mathbf{u} \cdot \mathbf{v}) \approx \frac{1}{d}$$
+$$
+\mathbb{E}[\mathbf{u} \cdot \mathbf{v}] = 0, \qquad \text{Var}(\mathbf{u} \cdot \mathbf{v}) \approx \frac{1}{d}
+$$
 
 Conclude that for large $d$, the inner product $\mathbf{u} \cdot \mathbf{v}$ is concentrated near zero with standard deviation $\approx 1/\sqrt{d}$.
 

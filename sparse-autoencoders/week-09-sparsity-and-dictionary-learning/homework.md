@@ -9,9 +9,9 @@
 
 ### Part (a): The Diamond Argument
 
-Consider a simple 2D problem: minimize $f(\beta_1, \beta_2) = (\beta_1 - 3)^2 + (\beta_2 - 4)^2$ subject to:
-- **L1 constraint:** $|\beta_1| + |\beta_2| \leq t$
-- **L2 constraint:** $\beta_1^2 + \beta_2^2 \leq t$
+Consider a simple 2D problem: minimize $f(\beta\_1, \beta\_2) = (\beta\_1 - 3)^2 + (\beta\_2 - 4)^2$ subject to:
+- **L1 constraint:** $|\beta\_1| + |\beta\_2| \leq t$
+- **L2 constraint:** $\beta\_1^2 + \beta\_2^2 \leq t$
 
 The unconstrained minimum is at $\hat{\beta} = (3, 4)$.
 
@@ -19,7 +19,7 @@ The unconstrained minimum is at $\hat{\beta} = (3, 4)$.
    - The L1 constraint set (a diamond) for $t = 4$
    - The L2 constraint set (a circle) for $t = 4$
 
-2. For each constraint, identify where the smallest level curve touches the constraint set. For L1, show that the contact point has $\beta_1 = 0$ (i.e., the solution is sparse). For L2, show that neither coordinate is zero.
+2. For each constraint, identify where the smallest level curve touches the constraint set. For L1, show that the contact point has $\beta\_1 = 0$ (i.e., the solution is sparse). For L2, show that neither coordinate is zero.
 
 3. Explain in 2-3 sentences why this happens geometrically. What property of the diamond makes it likely that level curves first touch at a vertex?
 
@@ -29,11 +29,13 @@ Now consider $\beta \in \mathbb{R}^{10}$ with the unconstrained minimum at $\hat
 
 Solve the LASSO problem:
 
-$$\min_\beta \frac{1}{2}\|\hat{\beta} - \beta\|^2 + \lambda \|\beta\|_1$$
+$$
+\min_\beta \frac{1}{2}\|\hat{\beta} - \beta\|^2 + \lambda \|\beta\|_1
+$$
 
-for $\lambda \in \{0.01, 0.1, 0.5, 1.0, 2.0, 5.0\}$.
+for $\lambda \in \lbrace 0.01, 0.1, 0.5, 1.0, 2.0, 5.0\rbrace $.
 
-*Hint: The solution to this simplified problem (identity design matrix) is given by soft-thresholding: $\beta^*_j = S_\lambda(\hat{\beta}_j)$.*
+*Hint: The solution to this simplified problem (identity design matrix) is given by soft-thresholding: $\beta^*\_j = S\_\lambda(\hat{\beta}\_j)$.*
 
 For each $\lambda$, report:
 1. The solution $\beta^*$
@@ -50,7 +52,9 @@ Plot the number of nonzero entries vs. $\lambda$. How does sparsity increase wit
 
 The proximal operator for $h(z) = \lambda |z|$ (scalar case) is defined as:
 
-$$\text{prox}_h(v) = \arg\min_z \left\{\frac{1}{2}(z - v)^2 + \lambda |z|\right\}$$
+$$
+\text{prox}_h(v) = \arg\min_z \left\{\frac{1}{2}(z - v)^2 + \lambda |z|\right\}
+$$
 
 Derive the solution by considering three cases: $z > 0$, $z < 0$, and $z = 0$.
 
@@ -61,15 +65,19 @@ For each case:
 
 Combine the cases to show:
 
-$$\text{prox}_h(v) = S_\lambda(v) = \text{sign}(v) \max(|v| - \lambda, 0)$$
+$$
+\text{prox}_h(v) = S_\lambda(v) = \text{sign}(v) \max(|v| - \lambda, 0)
+$$
 
 ### Part (b): Subdifferential Approach
 
 The function $h(z) = \lambda|z|$ is not differentiable at $z = 0$. Its subdifferential at $z = 0$ is the interval $[-\lambda, \lambda]$.
 
-The optimality condition for $\min_z g(z) + h(z)$ (where $g(z) = \frac{1}{2}(z-v)^2$) is:
+The optimality condition for $\min\_z g(z) + h(z)$ (where $g(z) = \frac{1}{2}(z-v)^2$) is:
 
-$$0 \in \nabla g(z) + \partial h(z)$$
+$$
+0 \in \nabla g(z) + \partial h(z)
+$$
 
 Use this condition to re-derive the soft-thresholding operator. Show that when $|v| \leq \lambda$, the optimality condition is satisfied at $z = 0$.
 
@@ -83,7 +91,9 @@ Implement the Iterative Shrinkage-Thresholding Algorithm from scratch in PyTorch
 
 Write a function `ista(x, D, lambda_, alpha, num_iters)` that solves:
 
-$$\min_z \frac{1}{2}\|x - Dz\|^2 + \lambda \|z\|_1$$
+$$
+\min_z \frac{1}{2}\|x - Dz\|^2 + \lambda \|z\|_1
+$$
 
 Your implementation should:
 1. Initialize $z = 0$
@@ -93,7 +103,7 @@ Your implementation should:
 ### Part (b): Verify Convergence
 
 Create a synthetic test problem:
-- $d_x = 50$, $d_z = 100$ (overcomplete)
+- $d\_x = 50$, $d\_z = 100$ (overcomplete)
 - Generate a random dictionary $D$ with normalized columns
 - Generate a ground truth sparse code $z^*$ with only 5 nonzero entries
 - Create the signal $x = Dz^* + \epsilon$ where $\epsilon \sim \mathcal{N}(0, 0.01 \cdot I)$
@@ -101,13 +111,15 @@ Create a synthetic test problem:
 Run ISTA for 500 iterations. Plot:
 1. The objective value vs. iteration number (should decrease monotonically)
 2. The recovered $z$ vs. the true $z^*$ (scatter plot). How well does ISTA recover the sparse code?
-3. The reconstruction error $\|x - Dz^{(t)}\|^2$ vs. iteration
+3. The reconstruction error $\Vert x - Dz^{(t)}\Vert ^2$ vs. iteration
 
 ### Part (c): FISTA
 
 Implement FISTA (the accelerated version) by adding the momentum step:
 
-$$y^{(t+1)} = z^{(t)} + \frac{t-1}{t+2}(z^{(t)} - z^{(t-1)})$$
+$$
+y^{(t+1)} = z^{(t)} + \frac{t-1}{t+2}(z^{(t)} - z^{(t-1)})
+$$
 
 Run FISTA on the same problem from Part (b). Plot the objective value of ISTA and FISTA on the same graph. How many iterations does each need to reach objective value within 1% of the final ISTA value?
 
@@ -122,7 +134,7 @@ This problem reproduces (in miniature) the famous result of Olshausen and Field 
 1. Load 5-10 natural images (use any convenient source: images from the internet, `torchvision.datasets` that contain natural photos, or the scikit-image sample images like `skimage.data.astronaut()`).
 2. Convert to grayscale and normalize to $[0, 1]$.
 3. Extract 10000 random patches of size 8x8 (or 12x12 if computationally feasible).
-4. Flatten each patch into a vector ($d_x = 64$ for 8x8 patches).
+4. Flatten each patch into a vector ($d\_x = 64$ for 8x8 patches).
 5. Subtract the mean from each patch (mean-centering).
 
 ### Part (b): Dictionary Learning
@@ -138,7 +150,7 @@ For each epoch:
         3. Normalize: d_j = d_j / max(1, ||d_j||)
 ```
 
-Use $d_z = 256$ (4x overcomplete for 8x8 patches).
+Use $d\_z = 256$ (4x overcomplete for 8x8 patches).
 
 Train for 50-100 epochs. Experiment with $\lambda$ to get 5-15% nonzero entries in $z$.
 
@@ -150,7 +162,7 @@ Do the atoms look like Gabor-like filters (oriented edges and bars at various po
 
 ### Part (d): Analysis
 
-1. For 10 random test patches, display: (i) the original patch, (ii) the reconstruction $Dz^*$, (iii) the active dictionary atoms (i.e., the atoms $d_j$ for which $z_j \neq 0$). How many atoms are typically active?
+1. For 10 random test patches, display: (i) the original patch, (ii) the reconstruction $Dz^*$, (iii) the active dictionary atoms (i.e., the atoms $d\_j$ for which $z\_j \neq 0$). How many atoms are typically active?
 
 2. Compute the average sparsity (fraction of nonzero entries in $z$) across 1000 test patches.
 
@@ -184,23 +196,27 @@ y = X @ beta_true + 0.5 * np.random.randn(n)
 
 Solve the regularized regression problem for a range of $\lambda$ values:
 
-$$\hat{\beta}_{\text{L1}} = \arg\min_\beta \frac{1}{2n}\|y - X\beta\|^2 + \lambda \|\beta\|_1$$
+$$
+\hat{\beta}_{\text{L1}} = \arg\min_\beta \frac{1}{2n}\|y - X\beta\|^2 + \lambda \|\beta\|_1
+$$
 
-$$\hat{\beta}_{\text{L2}} = \arg\min_\beta \frac{1}{2n}\|y - X\beta\|^2 + \lambda \|\beta\|_2^2$$
+$$
+\hat{\beta}_{\text{L2}} = \arg\min_\beta \frac{1}{2n}\|y - X\beta\|^2 + \lambda \|\beta\|_2^2
+$$
 
-For the L1 problem, use your ISTA implementation (with appropriate modifications for the regression setting). For the L2 problem, use the closed-form solution $\hat{\beta}_{\text{L2}} = (X^\top X + 2n\lambda I)^{-1} X^\top y$.
+For the L1 problem, use your ISTA implementation (with appropriate modifications for the regression setting). For the L2 problem, use the closed-form solution $\hat{\beta}\_{\text{L2}} = (X^\top X + 2n\lambda I)^{-1} X^\top y$.
 
-Use $\lambda \in \{0.001, 0.01, 0.05, 0.1, 0.5, 1.0\}$.
+Use $\lambda \in \lbrace 0.001, 0.01, 0.05, 0.1, 0.5, 1.0\rbrace $.
 
 ### Part (c): Compare
 
 For each $\lambda$, report:
-1. Number of coefficients with $|\hat{\beta}_j| > 0.01$ (approximately nonzero)
+1. Number of coefficients with $|\hat{\beta}\_j| > 0.01$ (approximately nonzero)
 2. Test MSE on a held-out test set (generate 50 test samples from the same model)
-3. $\|\hat{\beta} - \beta_{\text{true}}\|_2$ (parameter estimation error)
+3. $\Vert \hat{\beta} - \beta\_{\text{true}}\Vert \_2$ (parameter estimation error)
 
 Create two plots:
-1. **Regularization paths:** Plot $\hat{\beta}_j$ vs. $\lambda$ for all 50 coefficients (one line per coefficient). Do this for both L1 and L2. The L1 plot should show coefficients "entering" the model one by one as $\lambda$ decreases.
+1. **Regularization paths:** Plot $\hat{\beta}\_j$ vs. $\lambda$ for all 50 coefficients (one line per coefficient). Do this for both L1 and L2. The L1 plot should show coefficients "entering" the model one by one as $\lambda$ decreases.
 2. **Sparsity:** Plot number of nonzero coefficients vs. $\lambda$ for both L1 and L2.
 
 ---
@@ -214,14 +230,14 @@ Implement a complete dictionary learning pipeline and apply it to MNIST.
 Write a `DictionaryLearning` class with:
 - `__init__(self, d_x, d_z, lambda_)`: Initialize the dictionary randomly with normalized columns.
 - `sparse_code(self, X)`: Given a batch of inputs $X$, return the sparse codes $Z$ using ISTA.
-- `update_dictionary(self, X, Z, lr)`: Update the dictionary using the gradient: $\nabla_D = -(X - DZ)Z^\top$.
+- `update_dictionary(self, X, Z, lr)`: Update the dictionary using the gradient: $\nabla\_D = -(X - DZ)Z^\top$.
 - `fit(self, X, num_epochs, lr)`: Full training loop with alternating optimization.
 
 ### Part (b): MNIST Dictionary
 
 Apply your dictionary learning to MNIST:
 1. Take the first 10000 training images (flattened to 784-dim vectors, normalized to $[0,1]$)
-2. Learn a dictionary with $d_z = 512$ (overcomplete)
+2. Learn a dictionary with $d\_z = 512$ (overcomplete)
 3. Use $\lambda$ chosen so that each image uses roughly 20-50 active dictionary atoms
 
 Visualize:
@@ -231,7 +247,7 @@ Visualize:
 ### Part (c): Comparison
 
 Compare the dictionary atoms to:
-1. The decoder weights of a vanilla autoencoder (from Week 6) with $d_z = 512$
+1. The decoder weights of a vanilla autoencoder (from Week 6) with $d\_z = 512$
 2. PCA components (from Week 5)
 
 Which representation looks most interpretable? Which produces the sparsest codes?
@@ -246,8 +262,8 @@ This problem is mostly theoretical and asks you to connect the ideas of this wee
 
 Using the dictionary learned in Problem 6:
 1. Time how long it takes to sparse-code 1000 MNIST images using ISTA (100 iterations each).
-2. Now train a simple encoder network: $f_\phi(x) = \text{ReLU}(Wx + b)$ with $W \in \mathbb{R}^{512 \times 784}$.
-   - Train $f_\phi$ to minimize $\sum_n \|z_n^{\text{ISTA}} - f_\phi(x_n)\|^2$ where $z_n^{\text{ISTA}}$ are the ISTA codes.
+2. Now train a simple encoder network: $f\_\phi(x) = \text{ReLU}(Wx + b)$ with $W \in \mathbb{R}^{512 \times 784}$.
+   - Train $f\_\phi$ to minimize $\sum\_n \Vert z\_n^{\text{ISTA}} - f\_\phi(x\_n)\Vert ^2$ where $z\_n^{\text{ISTA}}$ are the ISTA codes.
 3. Time how long it takes to encode the same 1000 images using the trained encoder (single forward pass).
 
 Report the speedup factor.
@@ -255,8 +271,8 @@ Report the speedup factor.
 ### Part (b): Amortization Gap
 
 For the 1000 test images, compare:
-1. The sparse coding objective $\frac{1}{2}\|x - Dz^{\text{ISTA}}\|^2 + \lambda\|z^{\text{ISTA}}\|_1$ (using ISTA codes)
-2. The same objective using the amortized encoder's codes: $\frac{1}{2}\|x - Df_\phi(x)\|^2 + \lambda\|f_\phi(x)\|_1$
+1. The sparse coding objective $\frac{1}{2}\Vert x - Dz^{\text{ISTA}}\Vert ^2 + \lambda\Vert z^{\text{ISTA}}\Vert \_1$ (using ISTA codes)
+2. The same objective using the amortized encoder's codes: $\frac{1}{2}\Vert x - Df\_\phi(x)\Vert ^2 + \lambda\Vert f\_\phi(x)\Vert \_1$
 
 The gap between these two values is the **amortization gap** -- the price we pay for speed. How large is it?
 
@@ -268,7 +284,7 @@ Answer the following questions (2-3 sentences each):
 
 2. A sparse autoencoder jointly trains the encoder and decoder (dictionary). In Problem 6, we trained the dictionary first and the encoder second. What advantage does joint training have?
 
-3. In the mechanistic interpretability setting (Weeks 11-12), we will apply sparse autoencoders to the internal activations of a language model. The "signal" $x$ will be a residual stream vector of dimension $d_x = 768$ (for GPT-2 small), and the dictionary will have $d_z = 768 \times 16 = 12288$ atoms. Why is amortization especially important in this setting?
+3. In the mechanistic interpretability setting (Weeks 11-12), we will apply sparse autoencoders to the internal activations of a language model. The "signal" $x$ will be a residual stream vector of dimension $d\_x = 768$ (for GPT-2 small), and the dictionary will have $d\_z = 768 \times 16 = 12288$ atoms. Why is amortization especially important in this setting?
 
 4. ISTA uses soft-thresholding, which is like a ReLU shifted by $\lambda$. Many sparse autoencoders use ReLU as their encoder activation. Is this a coincidence? Explain the connection.
 

@@ -14,23 +14,31 @@ Now we fuse these ideas. A **sparse autoencoder** (SAE) is an overcomplete autoe
 
 Let $\mathbf{x} \in \mathbb{R}^n$ be an input vector. A sparse autoencoder maps:
 
-$$\mathbf{x} \xrightarrow{\text{encode}} \mathbf{z} \xrightarrow{\text{decode}} \hat{\mathbf{x}}$$
+$$
+\mathbf{x} \xrightarrow{\text{encode}} \mathbf{z} \xrightarrow{\text{decode}} \hat{\mathbf{x}}
+$$
 
 where the hidden representation $\mathbf{z} \in \mathbb{R}^d$ has $d > n$ (overcomplete), but most entries of $\mathbf{z}$ are zero for any given input.
 
 **Encoder:**
-$$\mathbf{z} = \sigma(\mathbf{W}_e \mathbf{x} + \mathbf{b}_e)$$
+$$
+\mathbf{z} = \sigma(\mathbf{W}_e \mathbf{x} + \mathbf{b}_e)
+$$
 
-where $\mathbf{W}_e \in \mathbb{R}^{d \times n}$ is the encoder weight matrix, $\mathbf{b}_e \in \mathbb{R}^d$ is the encoder bias, and $\sigma$ is an activation function (typically ReLU).
+where $\mathbf{W}\_e \in \mathbb{R}^{d \times n}$ is the encoder weight matrix, $\mathbf{b}\_e \in \mathbb{R}^d$ is the encoder bias, and $\sigma$ is an activation function (typically ReLU).
 
 **Decoder:**
-$$\hat{\mathbf{x}} = \mathbf{W}_d \mathbf{z} + \mathbf{b}_d$$
+$$
+\hat{\mathbf{x}} = \mathbf{W}_d \mathbf{z} + \mathbf{b}_d
+$$
 
-where $\mathbf{W}_d \in \mathbb{R}^{n \times d}$ is the decoder weight matrix and $\mathbf{b}_d \in \mathbb{R}^n$ is the decoder bias.
+where $\mathbf{W}\_d \in \mathbb{R}^{n \times d}$ is the decoder weight matrix and $\mathbf{b}\_d \in \mathbb{R}^n$ is the decoder bias.
 
 Note: some formulations use a pre-encoder bias (subtracting the mean of the data before encoding and adding it back after decoding). This is especially common when training SAEs on neural network activations, where a "geometric median" centering can improve training stability:
 
-$$\mathbf{z} = \sigma(\mathbf{W}_e (\mathbf{x} - \mathbf{b}_{\text{pre}}) + \mathbf{b}_e), \qquad \hat{\mathbf{x}} = \mathbf{W}_d \mathbf{z} + \mathbf{b}_{\text{pre}}$$
+$$
+\mathbf{z} = \sigma(\mathbf{W}_e (\mathbf{x} - \mathbf{b}_{\text{pre}}) + \mathbf{b}_e), \qquad \hat{\mathbf{x}} = \mathbf{W}_d \mathbf{z} + \mathbf{b}_{\text{pre}}
+$$
 
 ### 1.2 Architecture Diagram
 
@@ -61,7 +69,9 @@ The key visual: the hidden layer is *wider* than the input, but *sparser*. Only 
 
 ### 1.3 The Loss Function (General Form)
 
-$$\mathcal{L} = \underbrace{\|\mathbf{x} - \hat{\mathbf{x}}\|_2^2}_{\text{reconstruction}} + \underbrace{\lambda \cdot \Omega(\mathbf{z})}_{\text{sparsity penalty}}$$
+$$
+\mathcal{L} = \underbrace{\|\mathbf{x} - \hat{\mathbf{x}}\|_2^2}_{\text{reconstruction}} + \underbrace{\lambda \cdot \Omega(\mathbf{z})}_{\text{sparsity penalty}}
+$$
 
 where $\Omega(\mathbf{z})$ is some function that penalizes non-sparse activations, and $\lambda > 0$ controls the trade-off between faithful reconstruction and sparsity.
 
@@ -107,7 +117,9 @@ This also connects to what we learned in Week 9 about neural coding in the brain
 
 The simplest way to encourage sparsity is to add an L1 penalty on the hidden activations:
 
-$$\mathcal{L}_{\text{L1}} = \|\mathbf{x} - \hat{\mathbf{x}}\|_2^2 + \lambda \|\mathbf{z}\|_1 = \|\mathbf{x} - \hat{\mathbf{x}}\|_2^2 + \lambda \sum_{j=1}^{d} |z_j|$$
+$$
+\mathcal{L}_{\text{L1}} = \|\mathbf{x} - \hat{\mathbf{x}}\|_2^2 + \lambda \|\mathbf{z}\|_1 = \|\mathbf{x} - \hat{\mathbf{x}}\|_2^2 + \lambda \sum_{j=1}^{d} |z_j|
+$$
 
 We studied L1 regularization extensively in Week 1 (LASSO) and Week 9 (sparse coding). The key property is that L1 drives values exactly to zero, unlike L2 which merely shrinks them. The non-differentiability of the absolute value at zero creates a "dead zone" where the gradient of the penalty can overpower the gradient of the reconstruction loss, forcing the activation to stay at exactly zero.
 
@@ -115,19 +127,25 @@ We studied L1 regularization extensively in Week 1 (LASSO) and Week 9 (sparse co
 
 ### 3.2 Gradient Derivation
 
-Since $\mathbf{z} = \text{ReLU}(\mathbf{W}_e \mathbf{x} + \mathbf{b}_e)$, we have $z_j \geq 0$ for all $j$. This simplifies the L1 penalty:
+Since $\mathbf{z} = \text{ReLU}(\mathbf{W}\_e \mathbf{x} + \mathbf{b}\_e)$, we have $z\_j \geq 0$ for all $j$. This simplifies the L1 penalty:
 
-$$\|\mathbf{z}\|_1 = \sum_j |z_j| = \sum_j z_j \qquad \text{(since } z_j \geq 0 \text{ after ReLU)}$$
+$$
+\|\mathbf{z}\|_1 = \sum_j |z_j| = \sum_j z_j \qquad \text{(since } z_j \geq 0 \text{ after ReLU)}
+$$
 
-The gradient of the sparsity penalty with respect to the pre-activation $\mathbf{a} = \mathbf{W}_e \mathbf{x} + \mathbf{b}_e$ is:
+The gradient of the sparsity penalty with respect to the pre-activation $\mathbf{a} = \mathbf{W}\_e \mathbf{x} + \mathbf{b}\_e$ is:
 
-$$\frac{\partial (\lambda \|\mathbf{z}\|_1)}{\partial a_j} = \lambda \cdot \frac{\partial z_j}{\partial a_j} = \lambda \cdot \mathbb{1}[a_j > 0]$$
+$$
+\frac{\partial (\lambda \|\mathbf{z}\|_1)}{\partial a_j} = \lambda \cdot \frac{\partial z_j}{\partial a_j} = \lambda \cdot \mathbb{1}[a_j > 0]
+$$
 
-That is, for every active neuron ($a_j > 0$), there is a constant penalty gradient of $\lambda$ pushing the activation toward zero. For inactive neurons ($a_j \leq 0$), the gradient is zero (they are already "sparse").
+That is, for every active neuron ($a\_j > 0$), there is a constant penalty gradient of $\lambda$ pushing the activation toward zero. For inactive neurons ($a\_j \leq 0$), the gradient is zero (they are already "sparse").
 
-For the full loss, the gradient with respect to $a_j$ combines the reconstruction gradient and the sparsity gradient:
+For the full loss, the gradient with respect to $a\_j$ combines the reconstruction gradient and the sparsity gradient:
 
-$$\frac{\partial \mathcal{L}}{\partial a_j} = \frac{\partial \|\mathbf{x} - \hat{\mathbf{x}}\|_2^2}{\partial a_j} + \lambda \cdot \mathbb{1}[a_j > 0]$$
+$$
+\frac{\partial \mathcal{L}}{\partial a_j} = \frac{\partial \|\mathbf{x} - \hat{\mathbf{x}}\|_2^2}{\partial a_j} + \lambda \cdot \mathbb{1}[a_j > 0]
+$$
 
 The reconstruction gradient tries to keep neurons active (to reconstruct well); the sparsity gradient tries to turn them off. The balance between these forces, governed by $\lambda$, determines the final sparsity level.
 
@@ -160,34 +178,42 @@ An alternative to L1 is the **KL divergence penalty**, popularized by Andrew Ng 
 
 **Define the average activation** of hidden neuron $j$:
 
-$$\hat{\rho}_j = \frac{1}{m} \sum_{i=1}^{m} z_j(\mathbf{x}_i)$$
+$$
+\hat{\rho}_j = \frac{1}{m} \sum_{i=1}^{m} z_j(\mathbf{x}_i)
+$$
 
 where the sum is over $m$ training examples (or a minibatch). This measures how often neuron $j$ is active on average.
 
-**Set a target sparsity** $\rho$ (e.g., $\rho = 0.05$). We want $\hat{\rho}_j \approx \rho$ for all $j$ -- each neuron should be active about 5% of the time.
+**Set a target sparsity** $\rho$ (e.g., $\rho = 0.05$). We want $\hat{\rho}\_j \approx \rho$ for all $j$ -- each neuron should be active about 5% of the time.
 
 **Penalize deviations** using KL divergence between Bernoulli distributions:
 
-$$\Omega_{\text{KL}} = \sum_{j=1}^{d} \text{KL}(\text{Bernoulli}(\rho) \| \text{Bernoulli}(\hat{\rho}_j))$$
+$$
+\Omega_{\text{KL}} = \sum_{j=1}^{d} \text{KL}(\text{Bernoulli}(\rho) \| \text{Bernoulli}(\hat{\rho}_j))
+$$
 
 ### 4.2 Deriving the KL Term
 
 The KL divergence between two Bernoulli distributions with parameters $\rho$ and $\hat{\rho}$ is:
 
-$$\text{KL}(\rho \| \hat{\rho}) = \rho \log \frac{\rho}{\hat{\rho}} + (1 - \rho) \log \frac{1 - \rho}{1 - \hat{\rho}}$$
+$$
+\text{KL}(\rho \| \hat{\rho}) = \rho \log \frac{\rho}{\hat{\rho}} + (1 - \rho) \log \frac{1 - \rho}{1 - \hat{\rho}}
+$$
 
 Let us verify the key properties:
 
 1. **Minimum at $\hat{\rho} = \rho$:** Taking the derivative and setting it to zero:
-   $$\frac{\partial \text{KL}}{\partial \hat{\rho}} = -\frac{\rho}{\hat{\rho}} + \frac{1-\rho}{1-\hat{\rho}} = 0 \implies \hat{\rho} = \rho$$
+   $$
+   \frac{\partial \text{KL}}{\partial \hat{\rho}} = -\frac{\rho}{\hat{\rho}} + \frac{1-\rho}{1-\hat{\rho}} = 0 \implies \hat{\rho} = \rho
+   $$
 
-2. **Always non-negative:** By Gibbs' inequality, $\text{KL}(\rho \| \hat{\rho}) \geq 0$ with equality iff $\hat{\rho} = \rho$.
+2. **Always non-negative:** By Gibbs' inequality, $\text{KL}(\rho \Vert  \hat{\rho}) \geq 0$ with equality iff $\hat{\rho} = \rho$.
 
 3. **Blows up at boundaries:** As $\hat{\rho} \to 0$ or $\hat{\rho} \to 1$ (when $\rho$ is neither 0 nor 1), the KL divergence goes to infinity. This prevents neurons from being permanently dead or permanently active.
 
 **Numerical example** with $\rho = 0.05$:
 
-| $\hat{\rho}_j$ | $\text{KL}(\rho \| \hat{\rho}_j)$ | Interpretation |
+| $\hat{\rho}\_j$ | $\text{KL}(\rho \Vert  \hat{\rho}\_j)$ | Interpretation |
 |---|---|---|
 | 0.01 | 0.0770 | Too inactive |
 | 0.05 | 0.0000 | Just right |
@@ -198,32 +224,38 @@ Let us verify the key properties:
 
 The full loss becomes:
 
-$$\mathcal{L}_{\text{KL}} = \|\mathbf{x} - \hat{\mathbf{x}}\|_2^2 + \beta \sum_{j=1}^{d} \text{KL}(\rho \| \hat{\rho}_j)$$
+$$
+\mathcal{L}_{\text{KL}} = \|\mathbf{x} - \hat{\mathbf{x}}\|_2^2 + \beta \sum_{j=1}^{d} \text{KL}(\rho \| \hat{\rho}_j)
+$$
 
 where $\beta > 0$ is the sparsity weight (analogous to $\lambda$ in the L1 case).
 
 ### 4.3 Gradient of the KL Penalty
 
-The gradient with respect to $\hat{\rho}_j$ is:
+The gradient with respect to $\hat{\rho}\_j$ is:
 
-$$\frac{\partial \text{KL}(\rho \| \hat{\rho}_j)}{\partial \hat{\rho}_j} = -\frac{\rho}{\hat{\rho}_j} + \frac{1 - \rho}{1 - \hat{\rho}_j}$$
+$$
+\frac{\partial \text{KL}(\rho \| \hat{\rho}_j)}{\partial \hat{\rho}_j} = -\frac{\rho}{\hat{\rho}_j} + \frac{1 - \rho}{1 - \hat{\rho}_j}
+$$
 
-And since $\hat{\rho}_j = \frac{1}{m} \sum_i z_j(\mathbf{x}_i)$, the gradient with respect to $z_j(\mathbf{x}_i)$ is:
+And since $\hat{\rho}\_j = \frac{1}{m} \sum\_i z\_j(\mathbf{x}\_i)$, the gradient with respect to $z\_j(\mathbf{x}\_i)$ is:
 
-$$\frac{\partial \text{KL}(\rho \| \hat{\rho}_j)}{\partial z_j(\mathbf{x}_i)} = \frac{1}{m}\left(-\frac{\rho}{\hat{\rho}_j} + \frac{1 - \rho}{1 - \hat{\rho}_j}\right)$$
+$$
+\frac{\partial \text{KL}(\rho \| \hat{\rho}_j)}{\partial z_j(\mathbf{x}_i)} = \frac{1}{m}\left(-\frac{\rho}{\hat{\rho}_j} + \frac{1 - \rho}{1 - \hat{\rho}_j}\right)
+$$
 
-This gradient is negative when $\hat{\rho}_j < \rho$ (pushing the neuron to be more active) and positive when $\hat{\rho}_j > \rho$ (pushing it to be less active). The penalty acts like a thermostat, maintaining each neuron's average activation near the target.
+This gradient is negative when $\hat{\rho}\_j < \rho$ (pushing the neuron to be more active) and positive when $\hat{\rho}\_j > \rho$ (pushing it to be less active). The penalty acts like a thermostat, maintaining each neuron's average activation near the target.
 
 ### 4.4 L1 vs. KL: A Comparison
 
 | Aspect | L1 Penalty | KL Divergence Penalty |
 |--------|------------|----------------------|
 | What it penalizes | Individual activation magnitude | Average activation level |
-| Effect per input | Pushes each $z_j$ toward 0 | Indirectly encourages sparsity through averages |
-| Gradient for active neurons | Constant ($\lambda$) | Depends on current $\hat{\rho}_j$ relative to target |
-| Dead neurons | Can happen (gradient is zero for $z_j = 0$) | Explicitly prevented ($\text{KL} \to \infty$ as $\hat{\rho}_j \to 0$) |
+| Effect per input | Pushes each $z\_j$ toward 0 | Indirectly encourages sparsity through averages |
+| Gradient for active neurons | Constant ($\lambda$) | Depends on current $\hat{\rho}\_j$ relative to target |
+| Dead neurons | Can happen (gradient is zero for $z\_j = 0$) | Explicitly prevented ($\text{KL} \to \infty$ as $\hat{\rho}\_j \to 0$) |
 | Hyperparameters | $\lambda$ | $\rho$ (target), $\beta$ (weight) |
-| Batch dependence | No (per-example) | Yes (needs batch to estimate $\hat{\rho}_j$) |
+| Batch dependence | No (per-example) | Yes (needs batch to estimate $\hat{\rho}\_j$) |
 | In practice | More common in modern SAE work | Historical significance (Ng's notes); less common now |
 
 **The modern consensus** tends to favor L1 for its simplicity and per-example nature, but the KL approach offers a valuable insight: sparsity is about *resource allocation across the population of neurons*, not just about shrinking individual values.
@@ -240,9 +272,9 @@ Building an SAE that works on paper is straightforward. Building one that works 
 
 **The problem:** After some training, a significant fraction of hidden neurons may have activations that are *always zero* for every input in the dataset. These "dead neurons" contribute nothing to reconstruction and waste capacity.
 
-**Why it happens:** Consider a ReLU neuron with pre-activation $a_j = \mathbf{w}_j^\top \mathbf{x} + b_j$. If, due to some unlucky gradient updates early in training, $a_j < 0$ for all inputs $\mathbf{x}$ in the training set, then:
-- $z_j = \text{ReLU}(a_j) = 0$ for all inputs
-- The gradient of the reconstruction loss with respect to $\mathbf{w}_j$ is $\frac{\partial \mathcal{L}}{\partial z_j} \cdot \frac{\partial z_j}{\partial a_j} = \frac{\partial \mathcal{L}}{\partial z_j} \cdot 0 = 0$
+**Why it happens:** Consider a ReLU neuron with pre-activation $a\_j = \mathbf{w}\_j^\top \mathbf{x} + b\_j$. If, due to some unlucky gradient updates early in training, $a\_j < 0$ for all inputs $\mathbf{x}$ in the training set, then:
+- $z\_j = \text{ReLU}(a\_j) = 0$ for all inputs
+- The gradient of the reconstruction loss with respect to $\mathbf{w}\_j$ is $\frac{\partial \mathcal{L}}{\partial z\_j} \cdot \frac{\partial z\_j}{\partial a\_j} = \frac{\partial \mathcal{L}}{\partial z\_j} \cdot 0 = 0$
 - The neuron receives no learning signal. It is stuck dead.
 
 This is the "dying ReLU" problem we encountered in Week 3, but it is much worse in SAEs because the L1 penalty *actively pushes neurons toward death*. The sparsity penalty wants neurons to be off; once off, they stay off.
@@ -255,8 +287,8 @@ This is the "dying ReLU" problem we encountered in Week 3, but it is much worse 
 
 A typical resampling strategy:
 1. Every $T$ steps (e.g., $T = 25000$), identify neurons that have not activated in the last $T$ steps.
-2. Sample data points $\mathbf{x}_i$ with probability proportional to their reconstruction error $\|\mathbf{x}_i - \hat{\mathbf{x}}_i\|^2$.
-3. Set the dead neuron's encoder weights to $\mathbf{w}_j \leftarrow \frac{\mathbf{x}_i - \hat{\mathbf{x}}_i}{\|\mathbf{x}_i - \hat{\mathbf{x}}_i\|}$ (pointing toward the residual).
+2. Sample data points $\mathbf{x}\_i$ with probability proportional to their reconstruction error $\Vert \mathbf{x}\_i - \hat{\mathbf{x}}\_i\Vert ^2$.
+3. Set the dead neuron's encoder weights to $\mathbf{w}\_j \leftarrow \frac{\mathbf{x}\_i - \hat{\mathbf{x}}\_i}{\Vert \mathbf{x}\_i - \hat{\mathbf{x}}\_i\Vert }$ (pointing toward the residual).
 4. Set the corresponding decoder column to the same direction, scaled down.
 5. Reset the encoder bias to a small negative value.
 
@@ -270,7 +302,7 @@ A typical resampling strategy:
 
 **Why it happens:** When the hidden dimension $d$ is large relative to the true number of features, the SAE has more capacity than it needs. Multiple neurons may "share" the same feature, each capturing a slightly different aspect. This is especially common when $\lambda$ is too small (weak sparsity pressure).
 
-**How to detect it:** Compute the cosine similarity between decoder columns $\mathbf{d}_j = \mathbf{W}_d[:, j]$. If two decoder columns have high cosine similarity (e.g., $> 0.9$), their corresponding features are likely splits of the same underlying concept.
+**How to detect it:** Compute the cosine similarity between decoder columns $\mathbf{d}\_j = \mathbf{W}\_d[:, j]$. If two decoder columns have high cosine similarity (e.g., $> 0.9$), their corresponding features are likely splits of the same underlying concept.
 
 **Mitigation:** Increase $\lambda$ (stronger sparsity pressure makes it costly to maintain redundant features). Use decoder column orthogonality regularization. Or accept some degree of splitting and post-process by clustering similar features.
 
@@ -281,12 +313,12 @@ The key hyperparameters for an SAE are:
 **Hidden dimension $d$:** Usually expressed as an "expansion factor" $r = d/n$. Common choices: $r = 4, 8, 16, 32$. Larger $r$ allows more features to be discovered but increases training cost and the risk of feature splitting. A useful principle: start with $r = 4$ and increase if your features look coarse-grained.
 
 **Sparsity coefficient $\lambda$:** Controls the sparsity-reconstruction trade-off. This is the most important hyperparameter to tune. A practical approach:
-1. Train several SAEs with different $\lambda$ values (e.g., $\lambda \in \{0.0001, 0.001, 0.01, 0.1\}$).
+1. Train several SAEs with different $\lambda$ values (e.g., $\lambda \in \lbrace 0.0001, 0.001, 0.01, 0.1\rbrace $).
 2. For each, measure the average L0 (number of non-zero activations per input).
 3. Plot reconstruction error vs. L0.
 4. Choose the $\lambda$ that gives the desired L0 (often 10-50 active features per input for interpretability).
 
-**The L0 metric:** The L0 "norm" counts the number of non-zero entries: $\|\mathbf{z}\|_0 = |\{j : z_j \neq 0\}|$. This is not differentiable (and is not actually a norm), but it is the most natural measure of sparsity. Report it alongside reconstruction quality when evaluating SAEs.
+**The L0 metric:** The L0 "norm" counts the number of non-zero entries: $\Vert \mathbf{z}\Vert \_0 = |\lbrace j : z\_j \neq 0\rbrace |$. This is not differentiable (and is not actually a norm), but it is the most natural measure of sparsity. Report it alongside reconstruction quality when evaluating SAEs.
 
 **Learning rate:** SAEs can be sensitive to learning rate. Too high and neurons die rapidly; too low and training is slow. Adam with $\text{lr} \in [10^{-4}, 10^{-3}]$ is a reasonable starting point. Some practitioners use learning rate warmup to reduce early neuron death.
 
@@ -295,26 +327,34 @@ The key hyperparameters for an SAE are:
 **The problem:** Without constraints on the decoder, the SAE can "cheat" the sparsity penalty. Here is how:
 
 Consider the L1-penalized loss:
-$$\mathcal{L} = \|\mathbf{x} - \mathbf{W}_d \mathbf{z}\|_2^2 + \lambda \|\mathbf{z}\|_1$$
+$$
+\mathcal{L} = \|\mathbf{x} - \mathbf{W}_d \mathbf{z}\|_2^2 + \lambda \|\mathbf{z}\|_1
+$$
 
 Suppose the network scales its decoder by a factor $\alpha > 1$ and its encoder by $1/\alpha$:
-$$\mathbf{z}' = \mathbf{z}/\alpha, \quad \mathbf{W}_d' = \alpha \mathbf{W}_d$$
+$$
+\mathbf{z}' = \mathbf{z}/\alpha, \quad \mathbf{W}_d' = \alpha \mathbf{W}_d
+$$
 
 Then:
-- Reconstruction is unchanged: $\mathbf{W}_d' \mathbf{z}' = \alpha \mathbf{W}_d \cdot \mathbf{z}/\alpha = \mathbf{W}_d \mathbf{z}$
-- But L1 penalty *decreases*: $\lambda \|\mathbf{z}'\|_1 = \lambda \|\mathbf{z}\|_1 / \alpha < \lambda \|\mathbf{z}\|_1$
+- Reconstruction is unchanged: $\mathbf{W}\_d' \mathbf{z}' = \alpha \mathbf{W}\_d \cdot \mathbf{z}/\alpha = \mathbf{W}\_d \mathbf{z}$
+- But L1 penalty *decreases*: $\lambda \Vert \mathbf{z}'\Vert \_1 = \lambda \Vert \mathbf{z}\Vert \_1 / \alpha < \lambda \Vert \mathbf{z}\Vert \_1$
 
 By making $\alpha$ arbitrarily large, the network can make the L1 penalty arbitrarily small without any cost to reconstruction! The "sparsity" is fake -- the activations are small numbers, not zeros.
 
 **The solution:** Constrain each column of the decoder to have unit norm:
 
-$$\|\mathbf{W}_d[:, j]\|_2 = 1 \quad \text{for all } j$$
+$$
+\|\mathbf{W}_d[:, j]\|_2 = 1 \quad \text{for all } j
+$$
 
 With this constraint, scaling the decoder by $\alpha$ would violate the norm constraint, so the cheating strategy does not work. The L1 penalty on activations then truly measures the "importance" of each feature.
 
 **Implementation:** After each gradient step, project each decoder column to unit norm:
 
-$$\mathbf{W}_d[:, j] \leftarrow \frac{\mathbf{W}_d[:, j]}{\|\mathbf{W}_d[:, j]\|_2}$$
+$$
+\mathbf{W}_d[:, j] \leftarrow \frac{\mathbf{W}_d[:, j]}{\|\mathbf{W}_d[:, j]\|_2}
+$$
 
 This is a simple post-gradient-step projection, not a reparameterization. It is cheap and effective.
 
@@ -328,7 +368,9 @@ An alternative (used in some implementations) is to include the decoder norms in
 
 Recall from Week 9 that sparse coding solves, for each input $\mathbf{x}$:
 
-$$\mathbf{z}^* = \arg\min_{\mathbf{z}} \|\mathbf{x} - \mathbf{D}\mathbf{z}\|_2^2 + \lambda \|\mathbf{z}\|_1$$
+$$
+\mathbf{z}^* = \arg\min_{\mathbf{z}} \|\mathbf{x} - \mathbf{D}\mathbf{z}\|_2^2 + \lambda \|\mathbf{z}\|_1
+$$
 
 where $\mathbf{D} \in \mathbb{R}^{n \times d}$ is a dictionary. This is solved iteratively (e.g., by ISTA) for *each input* -- an inner optimization loop nested inside the outer loop that learns $\mathbf{D}$.
 
@@ -336,7 +378,9 @@ where $\mathbf{D} \in \mathbb{R}^{n \times d}$ is a dictionary. This is solved i
 
 A sparse autoencoder replaces the inner optimization with a feedforward pass:
 
-$$\mathbf{z} = f_{\text{enc}}(\mathbf{x}) = \text{ReLU}(\mathbf{W}_e \mathbf{x} + \mathbf{b}_e)$$
+$$
+\mathbf{z} = f_{\text{enc}}(\mathbf{x}) = \text{ReLU}(\mathbf{W}_e \mathbf{x} + \mathbf{b}_e)
+$$
 
 The encoder *learns to approximate* the iterative solver. Instead of running ISTA for 100 iterations to find $\mathbf{z}^*$, we train a neural network that produces an approximate $\mathbf{z}$ in a single forward pass.
 
@@ -346,13 +390,13 @@ This is called **amortized inference** -- we pay a one-time training cost so tha
 
 | Sparse Coding | Sparse Autoencoder |
 |---|---|
-| Dictionary $\mathbf{D}$ | Decoder weights $\mathbf{W}_d$ |
-| Sparse code $\mathbf{z}^* = \arg\min$ | Hidden activations $\mathbf{z} = f_{\text{enc}}(\mathbf{x})$ |
+| Dictionary $\mathbf{D}$ | Decoder weights $\mathbf{W}\_d$ |
+| Sparse code $\mathbf{z}^* = \arg\min$ | Hidden activations $\mathbf{z} = f\_{\text{enc}}(\mathbf{x})$ |
 | ISTA / FISTA (iterative) | Encoder (feedforward) |
-| $\|\mathbf{x} - \mathbf{D}\mathbf{z}\|^2 + \lambda\|\mathbf{z}\|_1$ | $\|\mathbf{x} - \hat{\mathbf{x}}\|^2 + \lambda\|\mathbf{z}\|_1$ |
-| Learn $\mathbf{D}$ only | Learn $\mathbf{W}_e, \mathbf{b}_e, \mathbf{W}_d, \mathbf{b}_d$ jointly |
+| $\Vert \mathbf{x} - \mathbf{D}\mathbf{z}\Vert ^2 + \lambda\Vert \mathbf{z}\Vert \_1$ | $\Vert \mathbf{x} - \hat{\mathbf{x}}\Vert ^2 + \lambda\Vert \mathbf{z}\Vert \_1$ |
+| Learn $\mathbf{D}$ only | Learn $\mathbf{W}\_e, \mathbf{b}\_e, \mathbf{W}\_d, \mathbf{b}\_d$ jointly |
 
-The decoder weights $\mathbf{W}_d$ play the role of the dictionary $\mathbf{D}$. Each column of $\mathbf{W}_d$ is a "dictionary atom" or "feature direction." The reconstruction $\hat{\mathbf{x}} = \mathbf{W}_d \mathbf{z}$ expresses the input as a sparse linear combination of these atoms.
+The decoder weights $\mathbf{W}\_d$ play the role of the dictionary $\mathbf{D}$. Each column of $\mathbf{W}\_d$ is a "dictionary atom" or "feature direction." The reconstruction $\hat{\mathbf{x}} = \mathbf{W}\_d \mathbf{z}$ expresses the input as a sparse linear combination of these atoms.
 
 ### 6.4 When Does Amortization Help?
 
@@ -382,31 +426,41 @@ How do we know if an SAE is any good? There is no single metric -- you need to e
 ### 7.1 Reconstruction Quality
 
 **MSE (Mean Squared Error):**
-$$\text{MSE} = \frac{1}{m} \sum_{i=1}^{m} \|\mathbf{x}_i - \hat{\mathbf{x}}_i\|_2^2$$
+$$
+\text{MSE} = \frac{1}{m} \sum_{i=1}^{m} \|\mathbf{x}_i - \hat{\mathbf{x}}_i\|_2^2
+$$
 
 Lower is better. But MSE alone is not sufficient -- an SAE with no sparsity penalty will have the lowest MSE (possibly zero) but useless features.
 
 **Explained Variance:**
-$$R^2 = 1 - \frac{\sum_i \|\mathbf{x}_i - \hat{\mathbf{x}}_i\|^2}{\sum_i \|\mathbf{x}_i - \bar{\mathbf{x}}\|^2}$$
+$$
+R^2 = 1 - \frac{\sum_i \|\mathbf{x}_i - \hat{\mathbf{x}}_i\|^2}{\sum_i \|\mathbf{x}_i - \bar{\mathbf{x}}\|^2}
+$$
 
 Values close to 1 mean the SAE captures most of the variance. This normalizes for the scale of the data.
 
 **Cross-Entropy Loss Recovered (for language model SAEs):**
-When an SAE is trained on a language model's internal activations, we can measure quality by how well the reconstructed activations preserve the model's behavior. If the original model achieves cross-entropy loss $L_{\text{orig}}$ and the model with SAE-reconstructed activations achieves $L_{\text{SAE}}$, then:
+When an SAE is trained on a language model's internal activations, we can measure quality by how well the reconstructed activations preserve the model's behavior. If the original model achieves cross-entropy loss $L\_{\text{orig}}$ and the model with SAE-reconstructed activations achieves $L\_{\text{SAE}}$, then:
 
-$$\text{CE loss recovered} = 1 - \frac{L_{\text{SAE}} - L_{\text{orig}}}{L_{\text{zero}} - L_{\text{orig}}}$$
+$$
+\text{CE loss recovered} = 1 - \frac{L_{\text{SAE}} - L_{\text{orig}}}{L_{\text{zero}} - L_{\text{orig}}}
+$$
 
-where $L_{\text{zero}}$ is the loss when replacing activations with zeros (the worst case). A value of 1.0 means the SAE introduces no degradation; 0.0 means it is as bad as zeroing out activations entirely. Good SAEs typically achieve 0.95+ on this metric.
+where $L\_{\text{zero}}$ is the loss when replacing activations with zeros (the worst case). A value of 1.0 means the SAE introduces no degradation; 0.0 means it is as bad as zeroing out activations entirely. Good SAEs typically achieve 0.95+ on this metric.
 
 ### 7.2 Sparsity Metrics
 
 **L0 (average number of active features per input):**
-$$\text{L0} = \frac{1}{m} \sum_{i=1}^{m} \|\mathbf{z}_i\|_0$$
+$$
+\text{L0} = \frac{1}{m} \sum_{i=1}^{m} \|\mathbf{z}_i\|_0
+$$
 
 This is the most interpretable sparsity metric. For mechanistic interpretability work, typical targets are L0 in the range of 10-100.
 
 **L1 (average sum of activations):**
-$$\text{L1} = \frac{1}{m} \sum_{i=1}^{m} \|\mathbf{z}_i\|_1$$
+$$
+\text{L1} = \frac{1}{m} \sum_{i=1}^{m} \|\mathbf{z}_i\|_1
+$$
 
 This is what the L1 penalty directly optimizes. It is correlated with L0 but also accounts for activation magnitudes.
 
@@ -438,9 +492,9 @@ A better SAE shifts this frontier down and to the left (less error for the same 
 
 This is the hardest to quantify but often the most important. Methods include:
 
-**Visual inspection (for image data):** Visualize each decoder column $\mathbf{W}_d[:, j]$ reshaped as an image. Do the features look like meaningful patterns (edges, strokes, textures)?
+**Visual inspection (for image data):** Visualize each decoder column $\mathbf{W}\_d[:, j]$ reshaped as an image. Do the features look like meaningful patterns (edges, strokes, textures)?
 
-**Max-activating examples:** For each feature $j$, find the inputs $\mathbf{x}_i$ that produce the highest activation $z_j(\mathbf{x}_i)$. Do these inputs share a coherent property?
+**Max-activating examples:** For each feature $j$, find the inputs $\mathbf{x}\_i$ that produce the highest activation $z\_j(\mathbf{x}\_i)$. Do these inputs share a coherent property?
 
 **Automated interpretability (for language model SAEs):** Feed the max-activating examples to another language model and ask it to describe what they have in common. This scales to thousands of features but has obvious limitations (the describing model might hallucinate patterns).
 
@@ -451,8 +505,8 @@ This is the hardest to quantify but often the most important. Methods include:
 If the goal is representation learning, we can evaluate SAE features by how useful they are for downstream tasks:
 
 1. Train an SAE on the data.
-2. Encode the data: $\mathbf{z}_i = f_{\text{enc}}(\mathbf{x}_i)$ for all inputs.
-3. Train a simple classifier (e.g., logistic regression) on $\mathbf{z}_i$ to predict labels.
+2. Encode the data: $\mathbf{z}\_i = f\_{\text{enc}}(\mathbf{x}\_i)$ for all inputs.
+3. Train a simple classifier (e.g., logistic regression) on $\mathbf{z}\_i$ to predict labels.
 4. Compare accuracy to classifiers trained on: raw inputs, PCA features, features from undercomplete AEs.
 
 If SAE features are more useful than PCA features (for a simple classifier), the SAE has learned something genuinely helpful -- it has not just found a linear projection.
@@ -467,7 +521,7 @@ Let us trace through the entire pipeline concretely.
 
 - **Data:** MNIST, 60,000 images of $28 \times 28 = 784$ pixels, flattened to $\mathbf{x} \in \mathbb{R}^{784}$.
 - **Architecture:** Encoder: $784 \to 2000$ (ReLU). Decoder: $2000 \to 784$ (linear). Expansion factor: $r = 2000/784 \approx 2.6$.
-- **Loss:** $\mathcal{L} = \|\mathbf{x} - \hat{\mathbf{x}}\|_2^2 + 0.005 \cdot \|\mathbf{z}\|_1$
+- **Loss:** $\mathcal{L} = \Vert \mathbf{x} - \hat{\mathbf{x}}\Vert \_2^2 + 0.005 \cdot \Vert \mathbf{z}\Vert \_1$
 - **Optimizer:** Adam, lr $= 3 \times 10^{-4}$
 - **Decoder norm constraint:** Project decoder columns to unit norm after each step.
 
@@ -534,8 +588,8 @@ This week, make sure you deeply understand the mechanics -- architecture, loss f
 | Concept | Key Idea |
 |---------|----------|
 | SAE architecture | Overcomplete hidden layer ($d > n$) + sparsity constraint on activations |
-| L1 penalty | $\lambda \sum_j \|z_j\|$ -- direct, per-example, drives values to zero |
-| KL penalty | $\beta \sum_j \text{KL}(\rho \| \hat{\rho}_j)$ -- targets average activation per neuron |
+| L1 penalty | $\lambda \sum\_j \Vert z\_j\Vert $ -- direct, per-example, drives values to zero |
+| KL penalty | $\beta \sum\_j \text{KL}(\rho \Vert  \hat{\rho}\_j)$ -- targets average activation per neuron |
 | Dead neurons | Neurons stuck at zero activation; fix with resampling, LeakyReLU, or auxiliary loss |
 | Feature splitting | One concept split across multiple neurons; fix with stronger sparsity or clustering |
 | Decoder norm constraint | Prevents trivial "cheat" of shrinking decoder and inflating encoder |

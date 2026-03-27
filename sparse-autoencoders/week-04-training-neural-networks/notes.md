@@ -14,11 +14,13 @@ We will also study the optimizer zoo (SGD, momentum, Adam), regularization techn
 
 ### 1.1 The Problem
 
-Consider a neural network as a function $f(\mathbf{x}; \boldsymbol{\theta})$ parameterized by weights $\boldsymbol{\theta} = \{W^{(1)}, \mathbf{b}^{(1)}, W^{(2)}, \mathbf{b}^{(2)}, \ldots\}$. Given a training example $(\mathbf{x}, y)$, we compute a loss:
+Consider a neural network as a function $f(\mathbf{x}; \boldsymbol{\theta})$ parameterized by weights $\boldsymbol{\theta} = \lbrace W^{(1)}, \mathbf{b}^{(1)}, W^{(2)}, \mathbf{b}^{(2)}, \ldots\rbrace $. Given a training example $(\mathbf{x}, y)$, we compute a loss:
 
-$$\mathcal{L} = \ell(f(\mathbf{x}; \boldsymbol{\theta}), y)$$
+$$
+\mathcal{L} = \ell(f(\mathbf{x}; \boldsymbol{\theta}), y)
+$$
 
-To perform gradient descent, we need $\frac{\partial \mathcal{L}}{\partial \theta_i}$ for every parameter $\theta_i$ in the network. A network with $d$ parameters requires $d$ partial derivatives. How do we compute them efficiently?
+To perform gradient descent, we need $\frac{\partial \mathcal{L}}{\partial \theta\_i}$ for every parameter $\theta\_i$ in the network. A network with $d$ parameters requires $d$ partial derivatives. How do we compute them efficiently?
 
 The naive approach — perturb each parameter by $\epsilon$ and measure the change in loss — requires $d$ forward passes. For a network with $10^6$ parameters, that is $10^6$ forward passes per gradient. Utterly impractical.
 
@@ -29,10 +31,10 @@ The key insight is that any neural network computation can be represented as a *
 - Each edge represents a direct dependency
 
 For example, the computation $\mathcal{L} = (wx + b - y)^2$ can be decomposed into intermediate variables:
-- $z_1 = wx$
-- $z_2 = z_1 + b$
-- $z_3 = z_2 - y$
-- $\mathcal{L} = z_3^2$
+- $z\_1 = wx$
+- $z\_2 = z\_1 + b$
+- $z\_3 = z\_2 - y$
+- $\mathcal{L} = z\_3^2$
 
 ```
     w   x        b       y
@@ -59,13 +61,17 @@ The chain rule lets us propagate derivatives backward through this graph.
 
 Recall from calculus: if $y = f(g(x))$, then $\frac{dy}{dx} = f'(g(x)) \cdot g'(x)$. In Leibniz notation:
 
-$$\frac{dy}{dx} = \frac{dy}{du} \cdot \frac{du}{dx}$$
+$$
+\frac{dy}{dx} = \frac{dy}{du} \cdot \frac{du}{dx}
+$$
 
 where $u = g(x)$.
 
-For the multivariate case, if $\mathcal{L}$ depends on $\theta$ through multiple intermediate variables $z_1, \ldots, z_k$:
+For the multivariate case, if $\mathcal{L}$ depends on $\theta$ through multiple intermediate variables $z\_1, \ldots, z\_k$:
 
-$$\frac{\partial \mathcal{L}}{\partial \theta} = \sum_{i=1}^{k} \frac{\partial \mathcal{L}}{\partial z_i} \cdot \frac{\partial z_i}{\partial \theta}$$
+$$
+\frac{\partial \mathcal{L}}{\partial \theta} = \sum_{i=1}^{k} \frac{\partial \mathcal{L}}{\partial z_i} \cdot \frac{\partial z_i}{\partial \theta}
+$$
 
 This is the **multivariate chain rule**, and it is the entire mathematical content of backpropagation. The algorithm is simply the chain rule applied systematically in the right order.
 
@@ -75,9 +81,9 @@ This is the **multivariate chain rule**, and it is the entire mathematical conte
 
 **Forward pass:** Compute the output of each node in topological order (inputs first, output last). Store all intermediate values — we will need them during the backward pass.
 
-**Backward pass:** Starting from the loss node (where $\frac{\partial \mathcal{L}}{\partial \mathcal{L}} = 1$), compute $\frac{\partial \mathcal{L}}{\partial z_i}$ for each node $z_i$ in reverse topological order. At each node, use the chain rule to propagate gradients backward to its inputs.
+**Backward pass:** Starting from the loss node (where $\frac{\partial \mathcal{L}}{\partial \mathcal{L}} = 1$), compute $\frac{\partial \mathcal{L}}{\partial z\_i}$ for each node $z\_i$ in reverse topological order. At each node, use the chain rule to propagate gradients backward to its inputs.
 
-The quantity $\frac{\partial \mathcal{L}}{\partial z_i}$ is sometimes called the **adjoint** of node $z_i$, or informally, the "gradient flowing back to $z_i$."
+The quantity $\frac{\partial \mathcal{L}}{\partial z\_i}$ is sometimes called the **adjoint** of node $z\_i$, or informally, the "gradient flowing back to $z\_i$."
 
 ### 1.5 Complete Derivation for a 2-Layer Network
 
@@ -85,17 +91,25 @@ Let us derive backpropagation in full for a 2-layer network with one hidden laye
 
 **Architecture:**
 
-- Input: $\mathbf{x} \in \mathbb{R}^{d_0}$
-- Hidden layer: $\mathbf{h} = \sigma(W^{(1)} \mathbf{x} + \mathbf{b}^{(1)})$, where $W^{(1)} \in \mathbb{R}^{d_1 \times d_0}$, $\mathbf{b}^{(1)} \in \mathbb{R}^{d_1}$
-- Output layer: $\hat{\mathbf{y}} = W^{(2)} \mathbf{h} + \mathbf{b}^{(2)}$, where $W^{(2)} \in \mathbb{R}^{d_2 \times d_1}$, $\mathbf{b}^{(2)} \in \mathbb{R}^{d_2}$
-- Loss: $\mathcal{L} = \frac{1}{2} \|\hat{\mathbf{y}} - \mathbf{y}\|^2$ (MSE, with the $\frac{1}{2}$ for convenience)
+- Input: $\mathbf{x} \in \mathbb{R}^{d\_0}$
+- Hidden layer: $\mathbf{h} = \sigma(W^{(1)} \mathbf{x} + \mathbf{b}^{(1)})$, where $W^{(1)} \in \mathbb{R}^{d\_1 \times d\_0}$, $\mathbf{b}^{(1)} \in \mathbb{R}^{d\_1}$
+- Output layer: $\hat{\mathbf{y}} = W^{(2)} \mathbf{h} + \mathbf{b}^{(2)}$, where $W^{(2)} \in \mathbb{R}^{d\_2 \times d\_1}$, $\mathbf{b}^{(2)} \in \mathbb{R}^{d\_2}$
+- Loss: $\mathcal{L} = \frac{1}{2} \Vert \hat{\mathbf{y}} - \mathbf{y}\Vert ^2$ (MSE, with the $\frac{1}{2}$ for convenience)
 
 We use $\sigma$ for the activation function (e.g., ReLU or sigmoid). Let us define intermediate variables:
 
-$$\mathbf{a}^{(1)} = W^{(1)} \mathbf{x} + \mathbf{b}^{(1)} \quad \text{(pre-activation)}$$
-$$\mathbf{h} = \sigma(\mathbf{a}^{(1)}) \quad \text{(post-activation)}$$
-$$\mathbf{a}^{(2)} = W^{(2)} \mathbf{h} + \mathbf{b}^{(2)} \quad \text{(output pre-activation)}$$
-$$\hat{\mathbf{y}} = \mathbf{a}^{(2)} \quad \text{(no activation on output for regression)}$$
+$$
+\mathbf{a}^{(1)} = W^{(1)} \mathbf{x} + \mathbf{b}^{(1)} \quad \text{(pre-activation)}
+$$
+$$
+\mathbf{h} = \sigma(\mathbf{a}^{(1)}) \quad \text{(post-activation)}
+$$
+$$
+\mathbf{a}^{(2)} = W^{(2)} \mathbf{h} + \mathbf{b}^{(2)} \quad \text{(output pre-activation)}
+$$
+$$
+\hat{\mathbf{y}} = \mathbf{a}^{(2)} \quad \text{(no activation on output for regression)}
+$$
 
 **Forward pass:** Compute $\mathbf{a}^{(1)} \to \mathbf{h} \to \mathbf{a}^{(2)} \to \mathcal{L}$ in order, storing each intermediate result.
 
@@ -103,33 +117,43 @@ $$\hat{\mathbf{y}} = \mathbf{a}^{(2)} \quad \text{(no activation on output for r
 
 **Step 1: Gradient of loss w.r.t. output.**
 
-$$\frac{\partial \mathcal{L}}{\partial \hat{\mathbf{y}}} = \hat{\mathbf{y}} - \mathbf{y}$$
+$$
+\frac{\partial \mathcal{L}}{\partial \hat{\mathbf{y}}} = \hat{\mathbf{y}} - \mathbf{y}
+$$
 
-This is a vector in $\mathbb{R}^{d_2}$. Call this $\boldsymbol{\delta}^{(2)}$ — the error signal at the output layer.
+This is a vector in $\mathbb{R}^{d\_2}$. Call this $\boldsymbol{\delta}^{(2)}$ — the error signal at the output layer.
 
 **Step 2: Gradients for the output layer parameters.**
 
 Since $\hat{\mathbf{y}} = W^{(2)} \mathbf{h} + \mathbf{b}^{(2)}$, applying the chain rule:
 
-$$\frac{\partial \mathcal{L}}{\partial W^{(2)}} = \boldsymbol{\delta}^{(2)} \mathbf{h}^\top$$
+$$
+\frac{\partial \mathcal{L}}{\partial W^{(2)}} = \boldsymbol{\delta}^{(2)} \mathbf{h}^\top
+$$
 
-This is an outer product, yielding a $d_2 \times d_1$ matrix — exactly matching the shape of $W^{(2)}$. Each entry $(i, j)$ tells us how much the loss changes if we perturb $W^{(2)}_{ij}$.
+This is an outer product, yielding a $d\_2 \times d\_1$ matrix — exactly matching the shape of $W^{(2)}$. Each entry $(i, j)$ tells us how much the loss changes if we perturb $W^{(2)}\_{ij}$.
 
-$$\frac{\partial \mathcal{L}}{\partial \mathbf{b}^{(2)}} = \boldsymbol{\delta}^{(2)}$$
+$$
+\frac{\partial \mathcal{L}}{\partial \mathbf{b}^{(2)}} = \boldsymbol{\delta}^{(2)}
+$$
 
 **Step 3: Propagate the gradient backward through the output layer.**
 
 The hidden activations $\mathbf{h}$ influenced the loss through the linear transformation $W^{(2)}\mathbf{h}$. By the chain rule:
 
-$$\frac{\partial \mathcal{L}}{\partial \mathbf{h}} = (W^{(2)})^\top \boldsymbol{\delta}^{(2)}$$
+$$
+\frac{\partial \mathcal{L}}{\partial \mathbf{h}} = (W^{(2)})^\top \boldsymbol{\delta}^{(2)}
+$$
 
-This is a vector in $\mathbb{R}^{d_1}$ — the gradient "flowing back" to the hidden layer activations. Note the transpose: forward propagation multiplies by $W^{(2)}$, backward propagation multiplies by $W^{(2)\top}$.
+This is a vector in $\mathbb{R}^{d\_1}$ — the gradient "flowing back" to the hidden layer activations. Note the transpose: forward propagation multiplies by $W^{(2)}$, backward propagation multiplies by $W^{(2)\top}$.
 
 **Step 4: Propagate through the activation function.**
 
 The activation $\sigma$ is applied element-wise, so its Jacobian is diagonal:
 
-$$\frac{\partial \mathcal{L}}{\partial \mathbf{a}^{(1)}} = \frac{\partial \mathcal{L}}{\partial \mathbf{h}} \odot \sigma'(\mathbf{a}^{(1)})$$
+$$
+\frac{\partial \mathcal{L}}{\partial \mathbf{a}^{(1)}} = \frac{\partial \mathcal{L}}{\partial \mathbf{h}} \odot \sigma'(\mathbf{a}^{(1)})
+$$
 
 where $\odot$ denotes element-wise multiplication. Call this $\boldsymbol{\delta}^{(1)}$.
 
@@ -139,9 +163,13 @@ For ReLU, $\sigma'(a) = \mathbf{1}[a > 0]$ (1 if positive, 0 if negative). For s
 
 By the same logic as Step 2, but one layer earlier:
 
-$$\frac{\partial \mathcal{L}}{\partial W^{(1)}} = \boldsymbol{\delta}^{(1)} \mathbf{x}^\top$$
+$$
+\frac{\partial \mathcal{L}}{\partial W^{(1)}} = \boldsymbol{\delta}^{(1)} \mathbf{x}^\top
+$$
 
-$$\frac{\partial \mathcal{L}}{\partial \mathbf{b}^{(1)}} = \boldsymbol{\delta}^{(1)}$$
+$$
+\frac{\partial \mathcal{L}}{\partial \mathbf{b}^{(1)}} = \boldsymbol{\delta}^{(1)}
+$$
 
 **The general pattern** is now clear and extends to any depth. For layer $\ell$:
 
@@ -153,43 +181,71 @@ That is the entire algorithm. The beauty of backpropagation is that it is *just 
 
 ### 1.6 A Concrete Numerical Example
 
-Let us work through a tiny network with actual numbers. Consider a 1-hidden-layer network with $d_0 = 2$, $d_1 = 2$, $d_2 = 1$, using sigmoid activation.
+Let us work through a tiny network with actual numbers. Consider a 1-hidden-layer network with $d\_0 = 2$, $d\_1 = 2$, $d\_2 = 1$, using sigmoid activation.
 
 **Parameters:**
 
-$$W^{(1)} = \begin{pmatrix} 0.1 & 0.2 \\ 0.3 & 0.4 \end{pmatrix}, \quad \mathbf{b}^{(1)} = \begin{pmatrix} 0.1 \\ 0.1 \end{pmatrix}$$
+$$
+W^{(1)} = \begin{pmatrix} 0.1 & 0.2 \\ 0.3 & 0.4 \end{pmatrix}, \quad \mathbf{b}^{(1)} = \begin{pmatrix} 0.1 \\ 0.1 \end{pmatrix}
+$$
 
-$$W^{(2)} = \begin{pmatrix} 0.5 & 0.6 \end{pmatrix}, \quad b^{(2)} = 0.1$$
+$$
+W^{(2)} = \begin{pmatrix} 0.5 & 0.6 \end{pmatrix}, \quad b^{(2)} = 0.1
+$$
 
 Input $\mathbf{x} = (1, 2)^\top$, target $y = 1$.
 
 **Forward pass:**
 
-$$\mathbf{a}^{(1)} = W^{(1)}\mathbf{x} + \mathbf{b}^{(1)} = \begin{pmatrix} 0.1 \cdot 1 + 0.2 \cdot 2 + 0.1 \\ 0.3 \cdot 1 + 0.4 \cdot 2 + 0.1 \end{pmatrix} = \begin{pmatrix} 0.6 \\ 1.2 \end{pmatrix}$$
+$$
+\mathbf{a}^{(1)} = W^{(1)}\mathbf{x} + \mathbf{b}^{(1)} = \begin{pmatrix} 0.1 \cdot 1 + 0.2 \cdot 2 + 0.1 \\ 0.3 \cdot 1 + 0.4 \cdot 2 + 0.1 \end{pmatrix} = \begin{pmatrix} 0.6 \\ 1.2 \end{pmatrix}
+$$
 
-$$\mathbf{h} = \sigma(\mathbf{a}^{(1)}) = \begin{pmatrix} \sigma(0.6) \\ \sigma(1.2) \end{pmatrix} = \begin{pmatrix} 0.6457 \\ 0.7685 \end{pmatrix}$$
+$$
+\mathbf{h} = \sigma(\mathbf{a}^{(1)}) = \begin{pmatrix} \sigma(0.6) \\ \sigma(1.2) \end{pmatrix} = \begin{pmatrix} 0.6457 \\ 0.7685 \end{pmatrix}
+$$
 
-$$a^{(2)} = W^{(2)}\mathbf{h} + b^{(2)} = 0.5 \times 0.6457 + 0.6 \times 0.7685 + 0.1 = 0.884$$
+$$
+a^{(2)} = W^{(2)}\mathbf{h} + b^{(2)} = 0.5 \times 0.6457 + 0.6 \times 0.7685 + 0.1 = 0.884
+$$
 
-$$\mathcal{L} = \frac{1}{2}(0.884 - 1)^2 = \frac{1}{2}(-0.116)^2 \approx 0.00673$$
+$$
+\mathcal{L} = \frac{1}{2}(0.884 - 1)^2 = \frac{1}{2}(-0.116)^2 \approx 0.00673
+$$
 
 **Backward pass:**
 
-$$\delta^{(2)} = \hat{y} - y = 0.884 - 1 = -0.116$$
+$$
+\delta^{(2)} = \hat{y} - y = 0.884 - 1 = -0.116
+$$
 
-$$\frac{\partial \mathcal{L}}{\partial W^{(2)}} = \delta^{(2)} \cdot \mathbf{h}^\top = -0.116 \times \begin{pmatrix} 0.6457 & 0.7685 \end{pmatrix} = \begin{pmatrix} -0.0749 & -0.0891 \end{pmatrix}$$
+$$
+\frac{\partial \mathcal{L}}{\partial W^{(2)}} = \delta^{(2)} \cdot \mathbf{h}^\top = -0.116 \times \begin{pmatrix} 0.6457 & 0.7685 \end{pmatrix} = \begin{pmatrix} -0.0749 & -0.0891 \end{pmatrix}
+$$
 
-$$\frac{\partial \mathcal{L}}{\partial b^{(2)}} = -0.116$$
+$$
+\frac{\partial \mathcal{L}}{\partial b^{(2)}} = -0.116
+$$
 
-$$\frac{\partial \mathcal{L}}{\partial \mathbf{h}} = (W^{(2)})^\top \delta^{(2)} = \begin{pmatrix} 0.5 \\ 0.6 \end{pmatrix} \times (-0.116) = \begin{pmatrix} -0.058 \\ -0.0696 \end{pmatrix}$$
+$$
+\frac{\partial \mathcal{L}}{\partial \mathbf{h}} = (W^{(2)})^\top \delta^{(2)} = \begin{pmatrix} 0.5 \\ 0.6 \end{pmatrix} \times (-0.116) = \begin{pmatrix} -0.058 \\ -0.0696 \end{pmatrix}
+$$
 
-$$\sigma'(\mathbf{a}^{(1)}) = \mathbf{h} \odot (1 - \mathbf{h}) = \begin{pmatrix} 0.6457 \times 0.3543 \\ 0.7685 \times 0.2315 \end{pmatrix} = \begin{pmatrix} 0.2288 \\ 0.1779 \end{pmatrix}$$
+$$
+\sigma'(\mathbf{a}^{(1)}) = \mathbf{h} \odot (1 - \mathbf{h}) = \begin{pmatrix} 0.6457 \times 0.3543 \\ 0.7685 \times 0.2315 \end{pmatrix} = \begin{pmatrix} 0.2288 \\ 0.1779 \end{pmatrix}
+$$
 
-$$\boldsymbol{\delta}^{(1)} = \frac{\partial \mathcal{L}}{\partial \mathbf{h}} \odot \sigma'(\mathbf{a}^{(1)}) = \begin{pmatrix} -0.058 \times 0.2288 \\ -0.0696 \times 0.1779 \end{pmatrix} = \begin{pmatrix} -0.01327 \\ -0.01238 \end{pmatrix}$$
+$$
+\boldsymbol{\delta}^{(1)} = \frac{\partial \mathcal{L}}{\partial \mathbf{h}} \odot \sigma'(\mathbf{a}^{(1)}) = \begin{pmatrix} -0.058 \times 0.2288 \\ -0.0696 \times 0.1779 \end{pmatrix} = \begin{pmatrix} -0.01327 \\ -0.01238 \end{pmatrix}
+$$
 
-$$\frac{\partial \mathcal{L}}{\partial W^{(1)}} = \boldsymbol{\delta}^{(1)} \mathbf{x}^\top = \begin{pmatrix} -0.01327 \\ -0.01238 \end{pmatrix} \begin{pmatrix} 1 & 2 \end{pmatrix} = \begin{pmatrix} -0.01327 & -0.02654 \\ -0.01238 & -0.02476 \end{pmatrix}$$
+$$
+\frac{\partial \mathcal{L}}{\partial W^{(1)}} = \boldsymbol{\delta}^{(1)} \mathbf{x}^\top = \begin{pmatrix} -0.01327 \\ -0.01238 \end{pmatrix} \begin{pmatrix} 1 & 2 \end{pmatrix} = \begin{pmatrix} -0.01327 & -0.02654 \\ -0.01238 & -0.02476 \end{pmatrix}
+$$
 
-$$\frac{\partial \mathcal{L}}{\partial \mathbf{b}^{(1)}} = \begin{pmatrix} -0.01327 \\ -0.01238 \end{pmatrix}$$
+$$
+\frac{\partial \mathcal{L}}{\partial \mathbf{b}^{(1)}} = \begin{pmatrix} -0.01327 \\ -0.01238 \end{pmatrix}
+$$
 
 You now have gradients for every parameter in the network, computed with exactly one forward pass and one backward pass.
 
@@ -199,9 +255,9 @@ You now have gradients for every parameter in the network, computed with exactly
 
 There are two ways to apply the chain rule through a computational graph:
 
-**Forward mode:** Start from the inputs, propagate $\frac{\partial z_i}{\partial \theta}$ forward through the graph. For one specific parameter $\theta_j$, one forward pass gives you $\frac{\partial \mathcal{L}}{\partial \theta_j}$. But for $d$ parameters, you need $d$ forward passes.
+**Forward mode:** Start from the inputs, propagate $\frac{\partial z\_i}{\partial \theta}$ forward through the graph. For one specific parameter $\theta\_j$, one forward pass gives you $\frac{\partial \mathcal{L}}{\partial \theta\_j}$. But for $d$ parameters, you need $d$ forward passes.
 
-**Reverse mode (backpropagation):** Start from the output, propagate $\frac{\partial \mathcal{L}}{\partial z_i}$ backward through the graph. One backward pass computes $\frac{\partial \mathcal{L}}{\partial \theta_j}$ for *all* parameters simultaneously.
+**Reverse mode (backpropagation):** Start from the output, propagate $\frac{\partial \mathcal{L}}{\partial z\_i}$ backward through the graph. One backward pass computes $\frac{\partial \mathcal{L}}{\partial \theta\_j}$ for *all* parameters simultaneously.
 
 **Why reverse mode wins for neural networks:** A typical network has millions of parameters but a single scalar loss. Reverse mode gives all $d$ gradients in one backward pass (cost: roughly 2-3x one forward pass). Forward mode would require $d$ passes. The asymmetry is dramatic: for a network with $10^6$ parameters, reverse mode is $\sim 10^6$ times faster.
 
@@ -213,13 +269,17 @@ This is why PyTorch (and all deep learning frameworks) implement reverse-mode au
 
 In practice, we compute the loss over a mini-batch of $B$ examples:
 
-$$\mathcal{L}_{\text{batch}} = \frac{1}{B} \sum_{i=1}^{B} \ell(f(\mathbf{x}_i; \boldsymbol{\theta}), y_i)$$
+$$
+\mathcal{L}_{\text{batch}} = \frac{1}{B} \sum_{i=1}^{B} \ell(f(\mathbf{x}_i; \boldsymbol{\theta}), y_i)
+$$
 
 Since differentiation is linear, the gradient of the batch loss is the average of the individual gradients:
 
-$$\nabla_{\boldsymbol{\theta}} \mathcal{L}_{\text{batch}} = \frac{1}{B} \sum_{i=1}^{B} \nabla_{\boldsymbol{\theta}} \ell_i$$
+$$
+\nabla_{\boldsymbol{\theta}} \mathcal{L}_{\text{batch}} = \frac{1}{B} \sum_{i=1}^{B} \nabla_{\boldsymbol{\theta}} \ell_i
+$$
 
-In implementation, the forward and backward passes operate on tensors with an extra batch dimension. The matrix multiplication $W\mathbf{x}$ becomes $WX$ where $X \in \mathbb{R}^{d_0 \times B}$, and the outer product $\boldsymbol{\delta}\mathbf{h}^\top$ becomes $\Delta H^\top / B$ where the averaging produces the correct batch gradient. PyTorch handles this automatically.
+In implementation, the forward and backward passes operate on tensors with an extra batch dimension. The matrix multiplication $W\mathbf{x}$ becomes $WX$ where $X \in \mathbb{R}^{d\_0 \times B}$, and the outer product $\boldsymbol{\delta}\mathbf{h}^\top$ becomes $\Delta H^\top / B$ where the averaging produces the correct batch gradient. PyTorch handles this automatically.
 
 ---
 
@@ -229,9 +289,11 @@ In implementation, the forward and backward passes operate on tensors with an ex
 
 The simplest approach: compute the gradient over the *entire* training set, then take one step.
 
-$$\boldsymbol{\theta}_{t+1} = \boldsymbol{\theta}_t - \eta \nabla_{\boldsymbol{\theta}} \mathcal{L}_{\text{full}}$$
+$$
+\boldsymbol{\theta}_{t+1} = \boldsymbol{\theta}_t - \eta \nabla_{\boldsymbol{\theta}} \mathcal{L}_{\text{full}}
+$$
 
-where $\mathcal{L}_{\text{full}} = \frac{1}{N} \sum_{i=1}^{N} \ell_i$.
+where $\mathcal{L}\_{\text{full}} = \frac{1}{N} \sum\_{i=1}^{N} \ell\_i$.
 
 **Pros:** The gradient is exact — no noise, stable convergence toward a minimum.
 
@@ -241,11 +303,15 @@ where $\mathcal{L}_{\text{full}} = \frac{1}{N} \sum_{i=1}^{N} \ell_i$.
 
 Use a single randomly sampled example to estimate the gradient:
 
-$$\boldsymbol{\theta}_{t+1} = \boldsymbol{\theta}_t - \eta \nabla_{\boldsymbol{\theta}} \ell(\mathbf{x}_i, y_i)$$
+$$
+\boldsymbol{\theta}_{t+1} = \boldsymbol{\theta}_t - \eta \nabla_{\boldsymbol{\theta}} \ell(\mathbf{x}_i, y_i)
+$$
 
 The gradient of one example is a noisy but *unbiased* estimate of the full gradient:
 
-$$\mathbb{E}_i\left[\nabla \ell_i\right] = \nabla \mathcal{L}_{\text{full}}$$
+$$
+\mathbb{E}_i\left[\nabla \ell_i\right] = \nabla \mathcal{L}_{\text{full}}
+$$
 
 **Pros:** Very fast updates — each step requires only one example. The noise can help escape local minima and saddle points.
 
@@ -253,9 +319,11 @@ $$\mathbb{E}_i\left[\nabla \ell_i\right] = \nabla \mathcal{L}_{\text{full}}$$
 
 ### 2.3 Mini-Batch SGD
 
-The practical compromise: use a mini-batch of $B$ examples (typically $B \in \{32, 64, 128, 256\}$).
+The practical compromise: use a mini-batch of $B$ examples (typically $B \in \lbrace 32, 64, 128, 256\rbrace $).
 
-$$\boldsymbol{\theta}_{t+1} = \boldsymbol{\theta}_t - \eta \cdot \frac{1}{B} \sum_{i \in \mathcal{B}_t} \nabla \ell_i$$
+$$
+\boldsymbol{\theta}_{t+1} = \boldsymbol{\theta}_t - \eta \cdot \frac{1}{B} \sum_{i \in \mathcal{B}_t} \nabla \ell_i
+$$
 
 The variance of the gradient estimate decreases as $O(1/B)$, but the computational cost per step increases linearly with $B$. The sweet spot balances gradient quality against computation.
 
@@ -271,18 +339,24 @@ Vanilla SGD oscillates in narrow valleys of the loss landscape — making rapid 
 
 **Formulation:**
 
-$$\mathbf{v}_{t+1} = \mu \mathbf{v}_t - \eta \nabla \mathcal{L}(\boldsymbol{\theta}_t)$$
-$$\boldsymbol{\theta}_{t+1} = \boldsymbol{\theta}_t + \mathbf{v}_{t+1}$$
+$$
+\mathbf{v}_{t+1} = \mu \mathbf{v}_t - \eta \nabla \mathcal{L}(\boldsymbol{\theta}_t)
+$$
+$$
+\boldsymbol{\theta}_{t+1} = \boldsymbol{\theta}_t + \mathbf{v}_{t+1}
+$$
 
-where $\mu \in [0, 1)$ is the momentum coefficient (typically $\mu = 0.9$) and $\mathbf{v}_0 = \mathbf{0}$.
+where $\mu \in [0, 1)$ is the momentum coefficient (typically $\mu = 0.9$) and $\mathbf{v}\_0 = \mathbf{0}$.
 
 The velocity vector $\mathbf{v}$ is an exponential moving average of past gradients. Gradients that consistently point in the same direction accumulate, while oscillating components cancel out.
 
-**A concrete example:** Suppose the loss landscape is an elongated bowl — steep in the $x_1$ direction but gentle in $x_2$. Without momentum, SGD takes large steps in $x_1$ (oscillating) and small steps in $x_2$ (slow progress). With momentum, the $x_1$ oscillations cancel in the velocity average, while $x_2$ gradients accumulate. The effective trajectory is smoother and faster.
+**A concrete example:** Suppose the loss landscape is an elongated bowl — steep in the $x\_1$ direction but gentle in $x\_2$. Without momentum, SGD takes large steps in $x\_1$ (oscillating) and small steps in $x\_2$ (slow progress). With momentum, the $x\_1$ oscillations cancel in the velocity average, while $x\_2$ gradients accumulate. The effective trajectory is smoother and faster.
 
 In the steady state (constant gradient), the effective step size is:
 
-$$\frac{\eta}{1 - \mu}$$
+$$
+\frac{\eta}{1 - \mu}
+$$
 
 With $\mu = 0.9$, that is a 10x amplification in consistent-gradient directions.
 
@@ -290,8 +364,12 @@ With $\mu = 0.9$, that is a 10x amplification in consistent-gradient directions.
 
 A clever variant due to Yurii Nesterov: instead of computing the gradient at the current position, compute it at the *anticipated* future position — where momentum would take you if the gradient were zero:
 
-$$\mathbf{v}_{t+1} = \mu \mathbf{v}_t - \eta \nabla \mathcal{L}(\boldsymbol{\theta}_t + \mu \mathbf{v}_t)$$
-$$\boldsymbol{\theta}_{t+1} = \boldsymbol{\theta}_t + \mathbf{v}_{t+1}$$
+$$
+\mathbf{v}_{t+1} = \mu \mathbf{v}_t - \eta \nabla \mathcal{L}(\boldsymbol{\theta}_t + \mu \mathbf{v}_t)
+$$
+$$
+\boldsymbol{\theta}_{t+1} = \boldsymbol{\theta}_t + \mathbf{v}_{t+1}
+$$
 
 **Intuition:** "Look ahead to where momentum is taking you, then correct." If momentum is about to carry you past a minimum, the gradient at the look-ahead point already points back — giving a natural braking effect. Standard momentum only realizes the overshoot after it happens.
 
@@ -319,23 +397,31 @@ The fundamental problem with vanilla SGD: the same learning rate $\eta$ applies 
 
 **Idea:** Accumulate the sum of squared gradients for each parameter, and scale the learning rate inversely by the square root of this sum.
 
-$$G_{t+1,j} = G_{t,j} + g_{t,j}^2$$
-$$\theta_{t+1,j} = \theta_{t,j} - \frac{\eta}{\sqrt{G_{t+1,j}} + \epsilon} \cdot g_{t,j}$$
+$$
+G_{t+1,j} = G_{t,j} + g_{t,j}^2
+$$
+$$
+\theta_{t+1,j} = \theta_{t,j} - \frac{\eta}{\sqrt{G_{t+1,j}} + \epsilon} \cdot g_{t,j}
+$$
 
-where $g_{t,j} = \frac{\partial \mathcal{L}}{\partial \theta_j}\big|_t$ and $\epsilon \approx 10^{-8}$ prevents division by zero.
+where $g\_{t,j} = \frac{\partial \mathcal{L}}{\partial \theta\_j}\big|\_t$ and $\epsilon \approx 10^{-8}$ prevents division by zero.
 
 **Effect:** Parameters with large accumulated gradients get smaller learning rates. Parameters with small accumulated gradients get larger learning rates. This is exactly the per-parameter adaptation we wanted.
 
-**The fatal flaw:** $G_t$ only grows — it never shrinks. Over time, the effective learning rate decays to zero for all parameters, and learning stops completely. This is fine for convex problems (where you want to converge to a fixed point) but catastrophic for non-convex deep learning, where you need to keep exploring.
+**The fatal flaw:** $G\_t$ only grows — it never shrinks. Over time, the effective learning rate decays to zero for all parameters, and learning stops completely. This is fine for convex problems (where you want to converge to a fixed point) but catastrophic for non-convex deep learning, where you need to keep exploring.
 
 ### 3.2 RMSProp
 
 Geoffrey Hinton's fix (proposed in a Coursera lecture slide, never formally published — a charming piece of deep learning folklore): replace the cumulative sum with an exponential moving average.
 
-$$v_{t+1,j} = \beta \, v_{t,j} + (1 - \beta) \, g_{t,j}^2$$
-$$\theta_{t+1,j} = \theta_{t,j} - \frac{\eta}{\sqrt{v_{t+1,j}} + \epsilon} \cdot g_{t,j}$$
+$$
+v_{t+1,j} = \beta \, v_{t,j} + (1 - \beta) \, g_{t,j}^2
+$$
+$$
+\theta_{t+1,j} = \theta_{t,j} - \frac{\eta}{\sqrt{v_{t+1,j}} + \epsilon} \cdot g_{t,j}
+$$
 
-where $\beta \approx 0.9$ or $0.99$. Now $v_t$ is a running estimate of the recent second moment $\mathbb{E}[g^2]$, and it can both grow and shrink as the gradient statistics change. The effective learning rate adapts without collapsing to zero.
+where $\beta \approx 0.9$ or $0.99$. Now $v\_t$ is a running estimate of the recent second moment $\mathbb{E}[g^2]$, and it can both grow and shrink as the gradient statistics change. The effective learning rate adapts without collapsing to zero.
 
 ### 3.3 Adam (Adaptive Moment Estimation)
 
@@ -343,39 +429,51 @@ Adam combines the best of momentum and RMSProp, plus a crucial bias correction t
 
 **Step 1: First moment estimate** (like momentum — track the exponential moving average of gradients):
 
-$$m_{t+1} = \beta_1 m_t + (1 - \beta_1) g_t$$
+$$
+m_{t+1} = \beta_1 m_t + (1 - \beta_1) g_t
+$$
 
-This estimates $\mathbb{E}[g_t]$ — the direction of the gradient.
+This estimates $\mathbb{E}[g\_t]$ — the direction of the gradient.
 
 **Step 2: Second moment estimate** (like RMSProp — track the exponential moving average of squared gradients):
 
-$$v_{t+1} = \beta_2 v_t + (1 - \beta_2) g_t^2$$
+$$
+v_{t+1} = \beta_2 v_t + (1 - \beta_2) g_t^2
+$$
 
-This estimates $\mathbb{E}[g_t^2]$ — the magnitude of the gradient.
+This estimates $\mathbb{E}[g\_t^2]$ — the magnitude of the gradient.
 
 **Step 3: Bias correction.** Both $m$ and $v$ are initialized to zero. In the early steps, they are biased toward zero. To see why, expand the recurrence at $t = 1$:
 
-$$m_1 = (1 - \beta_1) g_1$$
+$$
+m_1 = (1 - \beta_1) g_1
+$$
 
-With $\beta_1 = 0.9$, this is just $0.1 \cdot g_1$ — an order of magnitude too small. More generally, unrolling the recurrence shows:
+With $\beta\_1 = 0.9$, this is just $0.1 \cdot g\_1$ — an order of magnitude too small. More generally, unrolling the recurrence shows:
 
-$$\mathbb{E}[m_t] = \mathbb{E}[g_t] \cdot (1 - \beta_1^t)$$
+$$
+\mathbb{E}[m_t] = \mathbb{E}[g_t] \cdot (1 - \beta_1^t)
+$$
 
 So we divide by the bias factor:
 
-$$\hat{m}_{t+1} = \frac{m_{t+1}}{1 - \beta_1^{t+1}}, \qquad \hat{v}_{t+1} = \frac{v_{t+1}}{1 - \beta_2^{t+1}}$$
+$$
+\hat{m}_{t+1} = \frac{m_{t+1}}{1 - \beta_1^{t+1}}, \qquad \hat{v}_{t+1} = \frac{v_{t+1}}{1 - \beta_2^{t+1}}
+$$
 
 As $t \to \infty$, the correction factors approach 1 and become negligible.
 
 **Step 4: Update.**
 
-$$\theta_{t+1} = \theta_t - \frac{\eta}{\sqrt{\hat{v}_{t+1}} + \epsilon} \cdot \hat{m}_{t+1}$$
+$$
+\theta_{t+1} = \theta_t - \frac{\eta}{\sqrt{\hat{v}_{t+1}} + \epsilon} \cdot \hat{m}_{t+1}
+$$
 
 The numerator $\hat{m}$ provides momentum (direction). The denominator $\sqrt{\hat{v}} + \epsilon$ provides per-parameter learning rate scaling (adapting to gradient magnitudes). The ratio $\hat{m}/\sqrt{\hat{v}}$ is approximately the "signal-to-noise ratio" of the gradient — Adam takes large steps when the gradient is consistent and small steps when it is noisy.
 
 **Default hyperparameters** (from the original paper by Kingma & Ba, 2015):
-- $\beta_1 = 0.9$ (momentum decay)
-- $\beta_2 = 0.999$ (second moment decay)
+- $\beta\_1 = 0.9$ (momentum decay)
+- $\beta\_2 = 0.999$ (second moment decay)
 - $\eta = 0.001$ (learning rate)
 - $\epsilon = 10^{-8}$
 
@@ -385,17 +483,21 @@ These defaults work well for the vast majority of problems. Resist the urge to t
 
 A subtle but important distinction: L2 regularization and weight decay are *not the same thing* when using adaptive optimizers like Adam.
 
-In SGD, adding $\frac{\lambda}{2}\|\boldsymbol{\theta}\|^2$ to the loss produces a gradient contribution of $\lambda\boldsymbol{\theta}$, making the update:
+In SGD, adding $\frac{\lambda}{2}\Vert \boldsymbol{\theta}\Vert ^2$ to the loss produces a gradient contribution of $\lambda\boldsymbol{\theta}$, making the update:
 
-$$\theta_{t+1} = (1 - \eta\lambda)\theta_t - \eta g_t$$
+$$
+\theta_{t+1} = (1 - \eta\lambda)\theta_t - \eta g_t
+$$
 
-The weight decay factor $(1 - \eta\lambda)$ is uniform across all parameters. But in Adam, the gradient $g_t + \lambda\theta_t$ gets divided by $\sqrt{\hat{v}}$ — so the effective weight decay varies per parameter. Parameters with large gradient magnitudes get *less* weight decay, which is not what we want.
+The weight decay factor $(1 - \eta\lambda)$ is uniform across all parameters. But in Adam, the gradient $g\_t + \lambda\theta\_t$ gets divided by $\sqrt{\hat{v}}$ — so the effective weight decay varies per parameter. Parameters with large gradient magnitudes get *less* weight decay, which is not what we want.
 
 **AdamW** (Loshchilov & Hutter, 2019) decouples weight decay from the adaptive gradient step:
 
-$$\theta_{t+1} = \theta_t - \eta \left( \frac{\hat{m}_{t+1}}{\sqrt{\hat{v}_{t+1}} + \epsilon} + \lambda \theta_t \right)$$
+$$
+\theta_{t+1} = \theta_t - \eta \left( \frac{\hat{m}_{t+1}}{\sqrt{\hat{v}_{t+1}} + \epsilon} + \lambda \theta_t \right)
+$$
 
-The weight decay $\lambda\theta_t$ is applied uniformly, independent of the gradient statistics. This is the version of Adam that should be used in practice. In PyTorch: `torch.optim.AdamW`.
+The weight decay $\lambda\theta\_t$ is applied uniformly, independent of the gradient statistics. This is the version of Adam that should be used in practice. In PyTorch: `torch.optim.AdamW`.
 
 ### 3.5 When to Use What
 
@@ -419,11 +521,15 @@ Neural networks have enormous capacity — a typical MNIST classifier has 100x m
 
 Add a penalty on the squared magnitude of the weights:
 
-$$\mathcal{L}_{\text{reg}} = \mathcal{L}_{\text{data}} + \frac{\lambda}{2} \sum_j \theta_j^2$$
+$$
+\mathcal{L}_{\text{reg}} = \mathcal{L}_{\text{data}} + \frac{\lambda}{2} \sum_j \theta_j^2
+$$
 
-The gradient of the regularization term is $\lambda\theta_j$, so the update becomes:
+The gradient of the regularization term is $\lambda\theta\_j$, so the update becomes:
 
-$$\theta_{t+1} = (1 - \eta\lambda)\theta_t - \eta \frac{\partial \mathcal{L}_{\text{data}}}{\partial \theta_t}$$
+$$
+\theta_{t+1} = (1 - \eta\lambda)\theta_t - \eta \frac{\partial \mathcal{L}_{\text{data}}}{\partial \theta_t}
+$$
 
 The factor $(1 - \eta\lambda)$ shrinks the weights toward zero at each step — hence "weight decay." Typical values: $\lambda \in [10^{-4}, 10^{-2}]$.
 
@@ -433,7 +539,9 @@ The factor $(1 - \eta\lambda)$ shrinks the weights toward zero at each step — 
 
 ### 4.2 L1 Regularization
 
-$$\mathcal{L}_{\text{reg}} = \mathcal{L}_{\text{data}} + \lambda \sum_j |\theta_j|$$
+$$
+\mathcal{L}_{\text{reg}} = \mathcal{L}_{\text{data}} + \lambda \sum_j |\theta_j|
+$$
 
 L1 encourages *sparsity* — many weights become exactly zero. As we discussed in Week 1, the L1 ball has corners aligned with the axes, and the constrained optimum tends to land on these corners (exactly zero in some coordinates).
 
@@ -447,7 +555,9 @@ L1 is less common for neural network weights than L2 (it makes optimization hard
 
 During training, for each mini-batch, sample a binary mask $\mathbf{m} \sim \text{Bernoulli}(1 - p)$ and compute:
 
-$$\tilde{\mathbf{h}} = \frac{1}{1-p} \cdot \mathbf{m} \odot \mathbf{h}$$
+$$
+\tilde{\mathbf{h}} = \frac{1}{1-p} \cdot \mathbf{m} \odot \mathbf{h}
+$$
 
 The $\frac{1}{1-p}$ scaling ensures $\mathbb{E}[\tilde{\mathbf{h}}] = \mathbf{h}$, so no adjustment is needed at test time — just use $\mathbf{h}$ directly.
 
@@ -476,15 +586,21 @@ h_dropped = F.dropout(h, p=p, training=self.training)
 
 **Batch normalization** (Ioffe & Szegedy, 2015) normalizes activations within each mini-batch:
 
-Given a mini-batch of pre-activations $\{z_i\}_{i=1}^B$ at some layer:
+Given a mini-batch of pre-activations $\lbrace z\_i\rbrace \_{i=1}^B$ at some layer:
 
-$$\mu_B = \frac{1}{B}\sum_{i=1}^B z_i, \qquad \sigma_B^2 = \frac{1}{B}\sum_{i=1}^B (z_i - \mu_B)^2$$
+$$
+\mu_B = \frac{1}{B}\sum_{i=1}^B z_i, \qquad \sigma_B^2 = \frac{1}{B}\sum_{i=1}^B (z_i - \mu_B)^2
+$$
 
-$$\hat{z}_i = \frac{z_i - \mu_B}{\sqrt{\sigma_B^2 + \epsilon}}$$
+$$
+\hat{z}_i = \frac{z_i - \mu_B}{\sqrt{\sigma_B^2 + \epsilon}}
+$$
 
 Then apply learned scale and shift parameters:
 
-$$\tilde{z}_i = \gamma \hat{z}_i + \beta$$
+$$
+\tilde{z}_i = \gamma \hat{z}_i + \beta
+$$
 
 where $\gamma$ and $\beta$ are learnable. The normalization enforces zero mean and unit variance, but the learned $\gamma$ and $\beta$ allow the network to undo the normalization if that is optimal — so BatchNorm never hurts expressiveness.
 
@@ -494,7 +610,7 @@ where $\gamma$ and $\beta$ are learnable. The normalization enforces zero mean a
 - **Regularization effect.** The batch statistics are noisy estimates of the true mean and variance, injecting noise similar to dropout.
 - **Faster convergence.** Empirically, networks with BatchNorm train significantly faster.
 
-**At test time:** Replace $\mu_B$ and $\sigma_B^2$ with running averages accumulated during training (via exponential moving average). This makes the model deterministic at test time.
+**At test time:** Replace $\mu\_B$ and $\sigma\_B^2$ with running averages accumulated during training (via exponential moving average). This makes the model deterministic at test time.
 
 **Where to place it:** Typically after the linear transformation and before the activation: $\sigma(\text{BN}(W\mathbf{x}))$. Note that the bias term in $W\mathbf{x} + \mathbf{b}$ is redundant with the learned shift $\beta$, so it is typically omitted.
 
@@ -554,11 +670,13 @@ SGD with large learning rates and small batch sizes tends to find flat minima. T
 
 In a deep network with $L$ layers, the gradient of the loss with respect to the first layer's parameters involves a product of $L$ Jacobian matrices:
 
-$$\frac{\partial \mathcal{L}}{\partial W^{(1)}} \propto \prod_{\ell=2}^{L} D^{(\ell)} W^{(\ell)}$$
+$$
+\frac{\partial \mathcal{L}}{\partial W^{(1)}} \propto \prod_{\ell=2}^{L} D^{(\ell)} W^{(\ell)}
+$$
 
 where $D^{(\ell)}$ is the diagonal matrix of activation derivatives at layer $\ell$.
 
-If the spectral norm of each factor $\|D^{(\ell)} W^{(\ell)}\|$ is consistently $< 1$: the product vanishes exponentially. The first layer's gradients are negligibly small — **vanishing gradients**.
+If the spectral norm of each factor $\Vert D^{(\ell)} W^{(\ell)}\Vert $ is consistently $< 1$: the product vanishes exponentially. The first layer's gradients are negligibly small — **vanishing gradients**.
 
 If the spectral norm is consistently $> 1$: the product explodes exponentially — **exploding gradients**.
 
@@ -566,7 +684,7 @@ If the spectral norm is consistently $> 1$: the product explodes exponentially �
 
 - **ReLU activation:** For $x > 0$, $\text{ReLU}'(x) = 1$, so the activation derivative does not attenuate the gradient. (But for $x < 0$, $\text{ReLU}'(x) = 0$ — the "dead ReLU" problem. Variants like Leaky ReLU ($\text{ReLU}'(x) = 0.01$ for $x < 0$) address this.)
 
-- **Careful initialization:** He initialization (for ReLU layers): $W_{ij} \sim \mathcal{N}(0, 2/d_{\text{in}})$. Xavier/Glorot initialization (for sigmoid/tanh): $W_{ij} \sim \mathcal{N}(0, 1/d_{\text{in}})$. These are designed so that the variance of activations (forward pass) and gradients (backward pass) remains approximately constant across layers.
+- **Careful initialization:** He initialization (for ReLU layers): $W\_{ij} \sim \mathcal{N}(0, 2/d\_{\text{in}})$. Xavier/Glorot initialization (for sigmoid/tanh): $W\_{ij} \sim \mathcal{N}(0, 1/d\_{\text{in}})$. These are designed so that the variance of activations (forward pass) and gradients (backward pass) remains approximately constant across layers.
 
 - **Skip connections (preview):** ResNets add the input to the output: $\mathbf{y} = F(\mathbf{x}) + \mathbf{x}$. The gradient through the skip connection is simply the identity — it flows unattenuated regardless of depth. This is the key innovation that enabled training networks with hundreds of layers.
 
@@ -596,13 +714,17 @@ The learning rate is the single most important hyperparameter. A learning rate t
 
 **Cosine annealing:** Smoothly decrease $\eta$ following a cosine curve:
 
-$$\eta_t = \eta_{\min} + \frac{1}{2}(\eta_{\max} - \eta_{\min})\left(1 + \cos\left(\frac{t}{T}\pi\right)\right)$$
+$$
+\eta_t = \eta_{\min} + \frac{1}{2}(\eta_{\max} - \eta_{\min})\left(1 + \cos\left(\frac{t}{T}\pi\right)\right)
+$$
 
-Starts at $\eta_{\max}$ and smoothly decays to $\eta_{\min}$ over $T$ steps. No sharp jumps, no hyperparameter for when to decay.
+Starts at $\eta\_{\max}$ and smoothly decays to $\eta\_{\min}$ over $T$ steps. No sharp jumps, no hyperparameter for when to decay.
 
 **Linear warmup:** Start with $\eta = 0$ and linearly increase to the target learning rate over the first $W$ steps:
 
-$$\eta_t = \eta_{\text{target}} \cdot \frac{t}{W} \quad \text{for } t \leq W$$
+$$
+\eta_t = \eta_{\text{target}} \cdot \frac{t}{W} \quad \text{for } t \leq W
+$$
 
 This is especially important when using large batch sizes (the gradient estimates are unreliable for the first few steps from a random initialization) and with Adam (the second moment estimates need time to stabilize).
 
@@ -612,7 +734,9 @@ This is especially important when using large batch sizes (the gradient estimate
 
 A simple defense against exploding gradients: if the gradient norm exceeds a threshold $c$, rescale the entire gradient vector to have norm $c$:
 
-$$\mathbf{g} \leftarrow \begin{cases} \mathbf{g} & \text{if } \|\mathbf{g}\| \leq c \\ \frac{c}{\|\mathbf{g}\|} \mathbf{g} & \text{if } \|\mathbf{g}\| > c \end{cases}$$
+$$
+\mathbf{g} \leftarrow \begin{cases} \mathbf{g} & \text{if } \|\mathbf{g}\| \leq c \\ \frac{c}{\|\mathbf{g}\|} \mathbf{g} & \text{if } \|\mathbf{g}\| > c \end{cases}
+$$
 
 This preserves the gradient *direction* while capping its magnitude. Typical values: $c \in [1, 5]$.
 
@@ -647,8 +771,8 @@ When you have limited time, tune hyperparameters in this order (most impactful f
 1. **Learning rate.** Try values on a log scale: $10^{-1}, 10^{-2}, 10^{-3}, 10^{-4}$. The optimal value is usually clear from the training curves.
 2. **Batch size.** Use the largest batch size that fits in memory. Then adjust the learning rate (the "linear scaling rule": double the batch size, double the learning rate).
 3. **Architecture.** Number of layers, hidden dimension. Start simple and increase until validation loss stops improving.
-4. **Regularization strength.** Dropout rate ($p \in \{0.1, 0.3, 0.5\}$), weight decay ($\lambda \in \{10^{-4}, 10^{-3}, 10^{-2}\}$). Only add when overfitting is observed.
-5. **Optimizer hyperparameters.** Adam's $\beta_1, \beta_2$ rarely need tuning. Momentum coefficient $\mu$ is almost always 0.9.
+4. **Regularization strength.** Dropout rate ($p \in \lbrace 0.1, 0.3, 0.5\rbrace $), weight decay ($\lambda \in \lbrace 10^{-4}, 10^{-3}, 10^{-2}\rbrace $). Only add when overfitting is observed.
+5. **Optimizer hyperparameters.** Adam's $\beta\_1, \beta\_2$ rarely need tuning. Momentum coefficient $\mu$ is almost always 0.9.
 
 ---
 

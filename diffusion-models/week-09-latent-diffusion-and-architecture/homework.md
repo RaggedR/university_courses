@@ -15,13 +15,13 @@ A VAE encoder maps $x \in \mathbb{R}^{H \times W \times 3}$ to $z \in \mathbb{R}
 
 2. Argue that the autoencoder cannot represent all possible 256x256 images faithfully. What must the encoder learn to discard? Why is this actually desirable for generation?
 
-3. The KL regularization term $D_{\text{KL}}(q(z|x) \| \mathcal{N}(0,I))$ penalizes the encoder for deviating from a standard Gaussian. Write out the KL divergence for a diagonal Gaussian encoder $q(z|x) = \mathcal{N}(\mu(x), \text{diag}(\sigma^2(x)))$ in closed form. (Use the formula for KL between two multivariate Gaussians.)
+3. The KL regularization term $D\_{\text{KL}}(q(z|x) \Vert  \mathcal{N}(0,I))$ penalizes the encoder for deviating from a standard Gaussian. Write out the KL divergence for a diagonal Gaussian encoder $q(z|x) = \mathcal{N}(\mu(x), \text{diag}(\sigma^2(x)))$ in closed form. (Use the formula for KL between two multivariate Gaussians.)
 
 ### Part (b): Reconstruction Quality vs. Latent Smoothness
 
 Consider two autoencoders trained on the same dataset:
-- **AE-A**: Trained with $\lambda_{\text{KL}} = 10^{-2}$ (strong regularization)
-- **AE-B**: Trained with $\lambda_{\text{KL}} = 10^{-6}$ (weak regularization)
+- **AE-A**: Trained with $\lambda\_{\text{KL}} = 10^{-2}$ (strong regularization)
+- **AE-B**: Trained with $\lambda\_{\text{KL}} = 10^{-6}$ (weak regularization)
 
 1. Which autoencoder will have better reconstruction quality? Why?
 2. Which autoencoder will produce a latent space more suitable for diffusion? Why?
@@ -86,9 +86,11 @@ Implement the `ResBlock` as: GroupNorm -> SiLU -> Conv -> GroupNorm -> SiLU -> C
 
 Train the VAE on a dataset of 64x64 images (CelebA, CIFAR-10 resized, or LSUN bedrooms resized). Use the following loss:
 
-$$\mathcal{L} = \|x - \hat{x}\|_1 + \lambda_{\text{KL}} \cdot D_{\text{KL}}(q(z|x) \| \mathcal{N}(0, I))$$
+$$
+\mathcal{L} = \|x - \hat{x}\|_1 + \lambda_{\text{KL}} \cdot D_{\text{KL}}(q(z|x) \| \mathcal{N}(0, I))
+$$
 
-Train with three different $\lambda_{\text{KL}}$ values: $10^{-4}$, $10^{-6}$, $10^{-8}$.
+Train with three different $\lambda\_{\text{KL}}$ values: $10^{-4}$, $10^{-6}$, $10^{-8}$.
 
 For each, after training, display:
 1. 16 input images and their reconstructions side by side
@@ -97,9 +99,9 @@ For each, after training, display:
 ### Part (c): Latent Space Smoothness
 
 For the best-performing VAE:
-1. Take two images $x_a$ and $x_b$, encode them to $z_a = \mathcal{E}(x_a)$ and $z_b = \mathcal{E}(x_b)$.
-2. Interpolate: $z_\alpha = (1-\alpha) z_a + \alpha z_b$ for $\alpha \in \{0, 0.1, 0.2, \ldots, 1.0\}$.
-3. Decode each $z_\alpha$ and display the sequence. Does the interpolation look smooth?
+1. Take two images $x\_a$ and $x\_b$, encode them to $z\_a = \mathcal{E}(x\_a)$ and $z\_b = \mathcal{E}(x\_b)$.
+2. Interpolate: $z\_\alpha = (1-\alpha) z\_a + \alpha z\_b$ for $\alpha \in \lbrace 0, 0.1, 0.2, \ldots, 1.0\rbrace $.
+3. Decode each $z\_\alpha$ and display the sequence. Does the interpolation look smooth?
 4. Repeat with a plain autoencoder (no KL term). Is the interpolation smoother or rougher?
 
 ---
@@ -176,9 +178,11 @@ For the self-attention in the middle block, reshape the 8x8x256 feature map to 6
 
 Train the U-Net as a DDPM denoiser on MNIST:
 
-$$\mathcal{L} = \mathbb{E}_{x_0, \epsilon, t}\left[\|\epsilon - \epsilon_\theta(x_t, t)\|^2\right]$$
+$$
+\mathcal{L} = \mathbb{E}_{x_0, \epsilon, t}\left[\|\epsilon - \epsilon_\theta(x_t, t)\|^2\right]
+$$
 
-where $x_t = \sqrt{\bar{\alpha}_t}\, x_0 + \sqrt{1-\bar{\alpha}_t}\, \epsilon$.
+where $x\_t = \sqrt{\bar{\alpha}\_t}\, x\_0 + \sqrt{1-\bar{\alpha}\_t}\, \epsilon$.
 
 Train for 50-100 epochs. Then generate samples using DDIM with 50 steps. Display a grid of 64 generated digits. Are they recognizable?
 
@@ -274,7 +278,7 @@ class MiniDiT(nn.Module):
 
 ### Part (c): Train and Compare
 
-Train MiniDiT on MNIST with class conditioning ($y \in \{0, \ldots, 9\}$, embedded via a learnable embedding table).
+Train MiniDiT on MNIST with class conditioning ($y \in \lbrace 0, \ldots, 9\rbrace $, embedded via a learnable embedding table).
 
 Compare to the U-Net from Problem 3 (also with class conditioning, added to the time embedding):
 1. Parameter count of each model
@@ -310,9 +314,9 @@ Encode 1000 images and analyze the latent statistics:
 ### Part (c): Latent Arithmetic
 
 Using the pretrained VAE:
-1. Encode two images $x_a$ ("smiling face") and $x_b$ ("neutral face") to $z_a, z_b$.
-2. Compute $z_c = z_b + (z_a - z_b)$. Decode $z_c$. Does it add a "smile" to a neutral face?
-3. Take a latent $z$ and add Gaussian noise at different scales: $z + \sigma \epsilon$ for $\sigma \in \{0.1, 0.5, 1.0, 2.0\}$. Decode each. At what noise level does the decoded image become unrecognizable?
+1. Encode two images $x\_a$ ("smiling face") and $x\_b$ ("neutral face") to $z\_a, z\_b$.
+2. Compute $z\_c = z\_b + (z\_a - z\_b)$. Decode $z\_c$. Does it add a "smile" to a neutral face?
+3. Take a latent $z$ and add Gaussian noise at different scales: $z + \sigma \epsilon$ for $\sigma \in \lbrace 0.1, 0.5, 1.0, 2.0\rbrace $. Decode each. At what noise level does the decoded image become unrecognizable?
 
 This last experiment helps build intuition for what happens during the diffusion process in latent space.
 
@@ -321,7 +325,7 @@ This last experiment helps build intuition for what happens during the diffusion
 ## Submission Checklist
 
 - [ ] Problem 1: Information-theoretic analysis, KL derivation, trade-off discussion
-- [ ] Problem 2: VAE implementation, training with different $\lambda_{\text{KL}}$, interpolation experiment
+- [ ] Problem 2: VAE implementation, training with different $\lambda\_{\text{KL}}$, interpolation experiment
 - [ ] Problem 3: U-Net with time conditioning, sinusoidal embedding, MNIST generation
 - [ ] Problem 4: Pixel-space vs. latent-space comparison table and analysis
 - [ ] Problem 5: DiT block implementation, MiniDiT, comparison with U-Net

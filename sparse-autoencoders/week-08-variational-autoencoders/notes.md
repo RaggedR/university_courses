@@ -26,7 +26,7 @@ The VAE is arguably the most elegant architecture we will study in this course. 
 
 ### 1.1 The Problem with Unstructured Latent Spaces
 
-A trained autoencoder gives us an encoder $f: \mathbb{R}^{d_x} \to \mathbb{R}^{d_z}$ and a decoder $g: \mathbb{R}^{d_z} \to \mathbb{R}^{d_x}$. The decoder can, in principle, map *any* latent vector $z$ to an output. But the decoder was only trained on latent vectors that are *outputs of the encoder* -- i.e., on the set $\{f(x) : x \in \text{training data}\}$.
+A trained autoencoder gives us an encoder $f: \mathbb{R}^{d\_x} \to \mathbb{R}^{d\_z}$ and a decoder $g: \mathbb{R}^{d\_z} \to \mathbb{R}^{d\_x}$. The decoder can, in principle, map *any* latent vector $z$ to an output. But the decoder was only trained on latent vectors that are *outputs of the encoder* -- i.e., on the set $\lbrace f(x) : x \in \text{training data}\rbrace $.
 
 If you feed the decoder a random $z$ that does not lie in this set, the decoder is being asked to extrapolate, and neural networks are notoriously bad at extrapolation.
 
@@ -43,7 +43,7 @@ This is exactly what the VAE provides: it regularizes the latent space to be *cl
 
 ### 1.3 A Concrete Illustration
 
-Suppose we train a vanilla autoencoder and a VAE on MNIST, both with $d_z = 2$ (for visualization).
+Suppose we train a vanilla autoencoder and a VAE on MNIST, both with $d\_z = 2$ (for visualization).
 
 **Vanilla AE latent space:** The encoded digits form tight, separated clusters with irregular shapes. The space between clusters is empty. Sampling a random point from this space and decoding it yields noise.
 
@@ -60,31 +60,37 @@ The price of this structure: VAE reconstructions are typically blurrier than aut
 A latent variable model describes data generation as a two-step process:
 
 1. **Sample a latent variable:** $z \sim p(z)$ (the prior)
-2. **Generate data from the latent:** $x \sim p_\theta(x | z)$ (the likelihood, parameterized by $\theta$)
+2. **Generate data from the latent:** $x \sim p\_\theta(x | z)$ (the likelihood, parameterized by $\theta$)
 
 The latent variable $z$ captures the "underlying causes" of the data. For handwritten digits, $z$ might encode the digit identity, slant, stroke width, etc. The generative process first decides these latent factors, then renders the pixel image.
 
 The joint distribution is:
 
-$$p_\theta(x, z) = p_\theta(x | z) \cdot p(z)$$
+$$
+p_\theta(x, z) = p_\theta(x | z) \cdot p(z)
+$$
 
 and the marginal likelihood (the probability of observing $x$ regardless of $z$) is:
 
-$$p_\theta(x) = \int p_\theta(x | z) \, p(z) \, dz$$
+$$
+p_\theta(x) = \int p_\theta(x | z) \, p(z) \, dz
+$$
 
 ### 2.2 The Inference Problem
 
 Given observed data $x$, we want to infer the latent factors $z$ that generated it. By Bayes' theorem:
 
-$$p_\theta(z | x) = \frac{p_\theta(x | z) \, p(z)}{p_\theta(x)} = \frac{p_\theta(x | z) \, p(z)}{\int p_\theta(x | z') \, p(z') \, dz'}$$
+$$
+p_\theta(z | x) = \frac{p_\theta(x | z) \, p(z)}{p_\theta(x)} = \frac{p_\theta(x | z) \, p(z)}{\int p_\theta(x | z') \, p(z') \, dz'}
+$$
 
-This posterior $p_\theta(z|x)$ tells us which latent codes are likely to have generated a given observation. It is the "ideal encoder" -- the probabilistically correct mapping from data to latent space.
+This posterior $p\_\theta(z|x)$ tells us which latent codes are likely to have generated a given observation. It is the "ideal encoder" -- the probabilistically correct mapping from data to latent space.
 
 ### 2.3 The Intractability Problem
 
-Here is the fundamental difficulty: computing $p_\theta(x) = \int p_\theta(x|z) p(z) dz$ requires integrating over the entire latent space. When $p_\theta(x|z)$ is a neural network (a complicated nonlinear function of $z$), this integral has no closed-form solution, and numerical integration is infeasible in high dimensions.
+Here is the fundamental difficulty: computing $p\_\theta(x) = \int p\_\theta(x|z) p(z) dz$ requires integrating over the entire latent space. When $p\_\theta(x|z)$ is a neural network (a complicated nonlinear function of $z$), this integral has no closed-form solution, and numerical integration is infeasible in high dimensions.
 
-Since $p_\theta(x)$ appears in the denominator of Bayes' rule, the posterior $p_\theta(z|x)$ is also intractable.
+Since $p\_\theta(x)$ appears in the denominator of Bayes' rule, the posterior $p\_\theta(z|x)$ is also intractable.
 
 We cannot compute the true posterior. We need an approximation. This is where variational inference enters.
 
@@ -94,81 +100,107 @@ We cannot compute the true posterior. We need an approximation. This is where va
 
 ### 3.1 The Variational Approach
 
-Since we cannot compute $p_\theta(z|x)$, we will approximate it with a parametric distribution $q_\phi(z|x)$, called the **variational posterior** or **recognition model**. Here $\phi$ are the parameters of a neural network that takes $x$ as input and outputs the parameters of a distribution over $z$.
+Since we cannot compute $p\_\theta(z|x)$, we will approximate it with a parametric distribution $q\_\phi(z|x)$, called the **variational posterior** or **recognition model**. Here $\phi$ are the parameters of a neural network that takes $x$ as input and outputs the parameters of a distribution over $z$.
 
-We want $q_\phi(z|x)$ to be close to $p_\theta(z|x)$. The natural measure of closeness between distributions is the KL divergence (from Week 2):
+We want $q\_\phi(z|x)$ to be close to $p\_\theta(z|x)$. The natural measure of closeness between distributions is the KL divergence (from Week 2):
 
-$$D_{\text{KL}}(q_\phi(z|x) \| p_\theta(z|x)) = \mathbb{E}_{z \sim q_\phi} \left[ \log \frac{q_\phi(z|x)}{p_\theta(z|x)} \right]$$
+$$
+D_{\text{KL}}(q_\phi(z|x) \| p_\theta(z|x)) = \mathbb{E}_{z \sim q_\phi} \left[ \log \frac{q_\phi(z|x)}{p_\theta(z|x)} \right]
+$$
 
-We would like to minimize this KL divergence. But it involves $p_\theta(z|x)$, which we cannot compute! We seem stuck. The way out is one of the most important derivations in modern machine learning.
+We would like to minimize this KL divergence. But it involves $p\_\theta(z|x)$, which we cannot compute! We seem stuck. The way out is one of the most important derivations in modern machine learning.
 
 ### 3.2 Deriving the ELBO
 
-Start with the log marginal likelihood $\log p_\theta(x)$. We want to relate it to something we *can* compute.
+Start with the log marginal likelihood $\log p\_\theta(x)$. We want to relate it to something we *can* compute.
 
-**Step 1.** Write $\log p_\theta(x)$ and introduce $q_\phi(z|x)$:
+**Step 1.** Write $\log p\_\theta(x)$ and introduce $q\_\phi(z|x)$:
 
-$$\log p_\theta(x) = \log \int p_\theta(x, z) \, dz$$
+$$
+\log p_\theta(x) = \log \int p_\theta(x, z) \, dz
+$$
 
 Since this does not depend on $z$, we can write:
 
-$$\log p_\theta(x) = \mathbb{E}_{z \sim q_\phi(z|x)} [\log p_\theta(x)]$$
+$$
+\log p_\theta(x) = \mathbb{E}_{z \sim q_\phi(z|x)} [\log p_\theta(x)]
+$$
 
-**Step 2.** Use Bayes' rule $p_\theta(x) = p_\theta(x,z) / p_\theta(z|x)$:
+**Step 2.** Use Bayes' rule $p\_\theta(x) = p\_\theta(x,z) / p\_\theta(z|x)$:
 
-$$\log p_\theta(x) = \mathbb{E}_{z \sim q_\phi} \left[ \log \frac{p_\theta(x, z)}{p_\theta(z|x)} \right]$$
+$$
+\log p_\theta(x) = \mathbb{E}_{z \sim q_\phi} \left[ \log \frac{p_\theta(x, z)}{p_\theta(z|x)} \right]
+$$
 
-**Step 3.** Multiply and divide by $q_\phi(z|x)$:
+**Step 3.** Multiply and divide by $q\_\phi(z|x)$:
 
-$$\log p_\theta(x) = \mathbb{E}_{z \sim q_\phi} \left[ \log \frac{p_\theta(x, z)}{q_\phi(z|x)} \right] + \mathbb{E}_{z \sim q_\phi} \left[ \log \frac{q_\phi(z|x)}{p_\theta(z|x)} \right]$$
+$$
+\log p_\theta(x) = \mathbb{E}_{z \sim q_\phi} \left[ \log \frac{p_\theta(x, z)}{q_\phi(z|x)} \right] + \mathbb{E}_{z \sim q_\phi} \left[ \log \frac{q_\phi(z|x)}{p_\theta(z|x)} \right]
+$$
 
 **Step 4.** Identify the two terms:
 
-$$\log p_\theta(x) = \underbrace{\mathbb{E}_{z \sim q_\phi} \left[ \log \frac{p_\theta(x, z)}{q_\phi(z|x)} \right]}_{\text{ELBO: } \mathcal{L}(\theta, \phi; x)} + \underbrace{D_{\text{KL}}(q_\phi(z|x) \| p_\theta(z|x))}_{\geq 0}$$
+$$
+\log p_\theta(x) = \underbrace{\mathbb{E}_{z \sim q_\phi} \left[ \log \frac{p_\theta(x, z)}{q_\phi(z|x)} \right]}_{\text{ELBO: } \mathcal{L}(\theta, \phi; x)} + \underbrace{D_{\text{KL}}(q_\phi(z|x) \| p_\theta(z|x))}_{\geq 0}
+$$
 
 Since KL divergence is always non-negative, we have:
 
-$$\boxed{\log p_\theta(x) \geq \mathcal{L}(\theta, \phi; x) = \mathbb{E}_{z \sim q_\phi} \left[ \log \frac{p_\theta(x, z)}{q_\phi(z|x)} \right]}$$
+$$
+\boxed{\log p_\theta(x) \geq \mathcal{L}(\theta, \phi; x) = \mathbb{E}_{z \sim q_\phi} \left[ \log \frac{p_\theta(x, z)}{q_\phi(z|x)} \right]}
+$$
 
-This is the **Evidence Lower BOund (ELBO)**. The name is literal: it is a lower bound on the log-evidence $\log p_\theta(x)$.
+This is the **Evidence Lower BOund (ELBO)**. The name is literal: it is a lower bound on the log-evidence $\log p\_\theta(x)$.
 
 ### 3.3 Decomposing the ELBO
 
-We can rewrite the ELBO in a more interpretable form. Since $p_\theta(x,z) = p_\theta(x|z) p(z)$:
+We can rewrite the ELBO in a more interpretable form. Since $p\_\theta(x,z) = p\_\theta(x|z) p(z)$:
 
-$$\mathcal{L}(\theta, \phi; x) = \mathbb{E}_{z \sim q_\phi} \left[ \log p_\theta(x|z) + \log p(z) - \log q_\phi(z|x) \right]$$
+$$
+\mathcal{L}(\theta, \phi; x) = \mathbb{E}_{z \sim q_\phi} \left[ \log p_\theta(x|z) + \log p(z) - \log q_\phi(z|x) \right]
+$$
 
-$$= \mathbb{E}_{z \sim q_\phi} [\log p_\theta(x|z)] - \mathbb{E}_{z \sim q_\phi} \left[ \log \frac{q_\phi(z|x)}{p(z)} \right]$$
+$$
+= \mathbb{E}_{z \sim q_\phi} [\log p_\theta(x|z)] - \mathbb{E}_{z \sim q_\phi} \left[ \log \frac{q_\phi(z|x)}{p(z)} \right]
+$$
 
-$$\boxed{\mathcal{L}(\theta, \phi; x) = \underbrace{\mathbb{E}_{z \sim q_\phi(z|x)} [\log p_\theta(x|z)]}_{\text{Reconstruction term}} - \underbrace{D_{\text{KL}}(q_\phi(z|x) \| p(z))}_{\text{Regularization term}}}$$
+$$
+\boxed{\mathcal{L}(\theta, \phi; x) = \underbrace{\mathbb{E}_{z \sim q_\phi(z|x)} [\log p_\theta(x|z)]}_{\text{Reconstruction term}} - \underbrace{D_{\text{KL}}(q_\phi(z|x) \| p(z))}_{\text{Regularization term}}}
+$$
 
 This decomposition is the heart of the VAE. Let us understand each term:
 
-**Reconstruction term: $\mathbb{E}_{z \sim q_\phi(z|x)}[\log p_\theta(x|z)]$.**
+**Reconstruction term: $\mathbb{E}\_{z \sim q\_\phi(z|x)}[\log p\_\theta(x|z)]$.**
 This says: sample a latent code $z$ from the approximate posterior, then evaluate how well the decoder reconstructs $x$ from $z$. Maximizing this term pushes the decoder to be a good reconstructor and the encoder to produce informative codes.
 
-If $p_\theta(x|z) = \mathcal{N}(x; g_\theta(z), \sigma^2 I)$, then $\log p_\theta(x|z) = -\frac{1}{2\sigma^2}\|x - g_\theta(z)\|^2 + \text{const}$, and maximizing this is equivalent to minimizing reconstruction MSE. Sound familiar? It is the same reconstruction loss as in a vanilla autoencoder.
+If $p\_\theta(x|z) = \mathcal{N}(x; g\_\theta(z), \sigma^2 I)$, then $\log p\_\theta(x|z) = -\frac{1}{2\sigma^2}\Vert x - g\_\theta(z)\Vert ^2 + \text{const}$, and maximizing this is equivalent to minimizing reconstruction MSE. Sound familiar? It is the same reconstruction loss as in a vanilla autoencoder.
 
-**Regularization term: $D_{\text{KL}}(q_\phi(z|x) \| p(z))$.**
+**Regularization term: $D\_{\text{KL}}(q\_\phi(z|x) \Vert  p(z))$.**
 This penalizes the approximate posterior for being different from the prior. It encourages the encoder to produce latent codes that are distributed like $p(z)$. If $p(z) = \mathcal{N}(0, I)$, this term pushes all the encoded points toward a standard Gaussian -- exactly the structure we wanted for generation.
 
 ### 3.4 The Tightness of the Bound
 
 Recall that:
 
-$$\log p_\theta(x) = \mathcal{L}(\theta, \phi; x) + D_{\text{KL}}(q_\phi(z|x) \| p_\theta(z|x))$$
+$$
+\log p_\theta(x) = \mathcal{L}(\theta, \phi; x) + D_{\text{KL}}(q_\phi(z|x) \| p_\theta(z|x))
+$$
 
-The gap between the true log-likelihood and the ELBO is exactly $D_{\text{KL}}(q_\phi(z|x) \| p_\theta(z|x))$. This gap is zero if and only if $q_\phi(z|x) = p_\theta(z|x)$ -- i.e., the approximate posterior matches the true posterior exactly.
+The gap between the true log-likelihood and the ELBO is exactly $D\_{\text{KL}}(q\_\phi(z|x) \Vert  p\_\theta(z|x))$. This gap is zero if and only if $q\_\phi(z|x) = p\_\theta(z|x)$ -- i.e., the approximate posterior matches the true posterior exactly.
 
-In practice, this gap is non-zero because we use a restricted family for $q_\phi$ (typically Gaussian). The better our approximation, the tighter the bound, and the more faithfully we maximize the true likelihood.
+In practice, this gap is non-zero because we use a restricted family for $q\_\phi$ (typically Gaussian). The better our approximation, the tighter the bound, and the more faithfully we maximize the true likelihood.
 
 ### 3.5 An Alternative Derivation via Jensen's Inequality
 
 Here is a quicker (but less informative) derivation:
 
-$$\log p_\theta(x) = \log \int p_\theta(x|z) p(z) dz = \log \int p_\theta(x|z) p(z) \frac{q_\phi(z|x)}{q_\phi(z|x)} dz$$
+$$
+\log p_\theta(x) = \log \int p_\theta(x|z) p(z) dz = \log \int p_\theta(x|z) p(z) \frac{q_\phi(z|x)}{q_\phi(z|x)} dz
+$$
 
-$$= \log \mathbb{E}_{z \sim q_\phi} \left[ \frac{p_\theta(x|z) p(z)}{q_\phi(z|x)} \right] \geq \mathbb{E}_{z \sim q_\phi} \left[ \log \frac{p_\theta(x|z) p(z)}{q_\phi(z|x)} \right]$$
+$$
+= \log \mathbb{E}_{z \sim q_\phi} \left[ \frac{p_\theta(x|z) p(z)}{q_\phi(z|x)} \right] \geq \mathbb{E}_{z \sim q_\phi} \left[ \log \frac{p_\theta(x|z) p(z)}{q_\phi(z|x)} \right]
+$$
 
 where the inequality is Jensen's inequality ($\log$ is concave). This directly gives the ELBO.
 
@@ -178,13 +210,15 @@ where the inequality is Jensen's inequality ($\log$ is concave). This directly g
 
 ### 4.1 The Encoder (Recognition Model)
 
-The encoder is a neural network $q_\phi(z|x)$ that maps an input $x$ to the *parameters* of a distribution over $z$. We choose $q_\phi(z|x)$ to be Gaussian:
+The encoder is a neural network $q\_\phi(z|x)$ that maps an input $x$ to the *parameters* of a distribution over $z$. We choose $q\_\phi(z|x)$ to be Gaussian:
 
-$$q_\phi(z|x) = \mathcal{N}(z; \mu_\phi(x), \text{diag}(\sigma^2_\phi(x)))$$
+$$
+q_\phi(z|x) = \mathcal{N}(z; \mu_\phi(x), \text{diag}(\sigma^2_\phi(x)))
+$$
 
 The encoder network takes $x$ and outputs two vectors:
-- $\mu_\phi(x) \in \mathbb{R}^{d_z}$ -- the mean
-- $\log \sigma^2_\phi(x) \in \mathbb{R}^{d_z}$ -- the log-variance (we parameterize in log-space for numerical stability)
+- $\mu\_\phi(x) \in \mathbb{R}^{d\_z}$ -- the mean
+- $\log \sigma^2\_\phi(x) \in \mathbb{R}^{d\_z}$ -- the log-variance (we parameterize in log-space for numerical stability)
 
 Note the critical difference from a vanilla autoencoder: the encoder outputs a *distribution*, not a point. Each input $x$ maps to a cloud in latent space, not a single point.
 
@@ -192,14 +226,18 @@ Why output $\log \sigma^2$ instead of $\sigma^2$? Because variance must be posit
 
 ### 4.2 The Decoder (Generative Model)
 
-The decoder is a neural network $p_\theta(x|z)$ that maps a latent code $z$ to the parameters of a distribution over $x$.
+The decoder is a neural network $p\_\theta(x|z)$ that maps a latent code $z$ to the parameters of a distribution over $x$.
 
 For continuous data (images with pixel values in $[0,1]$):
-$$p_\theta(x|z) = \prod_{i} \text{Bernoulli}(x_i; g_\theta(z)_i) \quad \text{(binary cross-entropy loss)}$$
+$$
+p_\theta(x|z) = \prod_{i} \text{Bernoulli}(x_i; g_\theta(z)_i) \quad \text{(binary cross-entropy loss)}
+$$
 
 or
 
-$$p_\theta(x|z) = \mathcal{N}(x; g_\theta(z), \sigma^2 I) \quad \text{(MSE loss)}$$
+$$
+p_\theta(x|z) = \mathcal{N}(x; g_\theta(z), \sigma^2 I) \quad \text{(MSE loss)}
+$$
 
 The Bernoulli likelihood is more appropriate for binary-valued pixels (like binarized MNIST), while the Gaussian likelihood is used for continuous-valued data.
 
@@ -207,7 +245,9 @@ The Bernoulli likelihood is more appropriate for binary-valued pixels (like bina
 
 The prior on $z$ is chosen to be a standard Gaussian:
 
-$$p(z) = \mathcal{N}(0, I)$$
+$$
+p(z) = \mathcal{N}(0, I)
+$$
 
 This is a design choice, not a theoretical necessity. We choose it because:
 1. It has a simple, known form
@@ -239,42 +279,52 @@ The "sampling" step in the middle is the reparameterization trick, which we disc
 
 Before deriving the VAE-specific case, let us state the general result. For two multivariate Gaussians:
 
-$$p = \mathcal{N}(\mu_1, \Sigma_1), \quad q = \mathcal{N}(\mu_2, \Sigma_2)$$
+$$
+p = \mathcal{N}(\mu_1, \Sigma_1), \quad q = \mathcal{N}(\mu_2, \Sigma_2)
+$$
 
 The KL divergence is:
 
-$$D_{\text{KL}}(p \| q) = \frac{1}{2} \left[ \log \frac{|\Sigma_2|}{|\Sigma_1|} - d + \text{tr}(\Sigma_2^{-1} \Sigma_1) + (\mu_2 - \mu_1)^\top \Sigma_2^{-1} (\mu_2 - \mu_1) \right]$$
+$$
+D_{\text{KL}}(p \| q) = \frac{1}{2} \left[ \log \frac{|\Sigma_2|}{|\Sigma_1|} - d + \text{tr}(\Sigma_2^{-1} \Sigma_1) + (\mu_2 - \mu_1)^\top \Sigma_2^{-1} (\mu_2 - \mu_1) \right]
+$$
 
 where $d$ is the dimensionality. This is a standard result you will derive in the homework.
 
 ### 5.2 VAE-Specific Case
 
-For the VAE, we need $D_{\text{KL}}(q_\phi(z|x) \| p(z))$ where:
-- $q_\phi(z|x) = \mathcal{N}(\mu, \text{diag}(\sigma^2))$ (diagonal covariance, depending on $x$)
+For the VAE, we need $D\_{\text{KL}}(q\_\phi(z|x) \Vert  p(z))$ where:
+- $q\_\phi(z|x) = \mathcal{N}(\mu, \text{diag}(\sigma^2))$ (diagonal covariance, depending on $x$)
 - $p(z) = \mathcal{N}(0, I)$
 
-Plugging into the general formula with $\mu_1 = \mu$, $\Sigma_1 = \text{diag}(\sigma^2)$, $\mu_2 = 0$, $\Sigma_2 = I$:
+Plugging into the general formula with $\mu\_1 = \mu$, $\Sigma\_1 = \text{diag}(\sigma^2)$, $\mu\_2 = 0$, $\Sigma\_2 = I$:
 
-$$D_{\text{KL}} = \frac{1}{2} \left[ \log \frac{|I|}{|\text{diag}(\sigma^2)|} - d_z + \text{tr}(\text{diag}(\sigma^2)) + \mu^\top \mu \right]$$
+$$
+D_{\text{KL}} = \frac{1}{2} \left[ \log \frac{|I|}{|\text{diag}(\sigma^2)|} - d_z + \text{tr}(\text{diag}(\sigma^2)) + \mu^\top \mu \right]
+$$
 
-Since $|I| = 1$, $|\text{diag}(\sigma^2)| = \prod_j \sigma_j^2$, and $\text{tr}(\text{diag}(\sigma^2)) = \sum_j \sigma_j^2$:
+Since $|I| = 1$, $|\text{diag}(\sigma^2)| = \prod\_j \sigma\_j^2$, and $\text{tr}(\text{diag}(\sigma^2)) = \sum\_j \sigma\_j^2$:
 
-$$\boxed{D_{\text{KL}}(q_\phi(z|x) \| p(z)) = \frac{1}{2} \sum_{j=1}^{d_z} \left( \mu_j^2 + \sigma_j^2 - \log \sigma_j^2 - 1 \right)}$$
+$$
+\boxed{D_{\text{KL}}(q_\phi(z|x) \| p(z)) = \frac{1}{2} \sum_{j=1}^{d_z} \left( \mu_j^2 + \sigma_j^2 - \log \sigma_j^2 - 1 \right)}
+$$
 
-Or equivalently, using log-variance $\gamma_j = \log \sigma_j^2$:
+Or equivalently, using log-variance $\gamma\_j = \log \sigma\_j^2$:
 
-$$D_{\text{KL}} = \frac{1}{2} \sum_{j=1}^{d_z} \left( \mu_j^2 + e^{\gamma_j} - \gamma_j - 1 \right)$$
+$$
+D_{\text{KL}} = \frac{1}{2} \sum_{j=1}^{d_z} \left( \mu_j^2 + e^{\gamma_j} - \gamma_j - 1 \right)
+$$
 
-This is the form typically used in code, since the encoder outputs $\gamma_j = \log \sigma_j^2$ directly.
+This is the form typically used in code, since the encoder outputs $\gamma\_j = \log \sigma\_j^2$ directly.
 
 ### 5.3 Intuition for the KL Terms
 
-Let us understand each term in $\mu_j^2 + \sigma_j^2 - \log \sigma_j^2 - 1$:
+Let us understand each term in $\mu\_j^2 + \sigma\_j^2 - \log \sigma\_j^2 - 1$:
 
-- **$\mu_j^2$**: Penalizes the mean for being far from 0. This keeps encoded points centered.
-- **$\sigma_j^2$**: Penalizes the variance for being large. Prevents overly uncertain encodings.
-- **$-\log \sigma_j^2$**: Penalizes the variance for being *small*. Prevents the encoder from collapsing to a point (which would make $\sigma_j^2 \to 0$).
-- **$-1$**: A constant that makes the KL zero when $\mu_j = 0$ and $\sigma_j^2 = 1$.
+- **$\mu\_j^2$**: Penalizes the mean for being far from 0. This keeps encoded points centered.
+- **$\sigma\_j^2$**: Penalizes the variance for being large. Prevents overly uncertain encodings.
+- **$-\log \sigma\_j^2$**: Penalizes the variance for being *small*. Prevents the encoder from collapsing to a point (which would make $\sigma\_j^2 \to 0$).
+- **$-1$**: A constant that makes the KL zero when $\mu\_j = 0$ and $\sigma\_j^2 = 1$.
 
 The minimum of $f(\sigma^2) = \sigma^2 - \log \sigma^2$ is at $\sigma^2 = 1$ (you can verify: $f'(\sigma^2) = 1 - 1/\sigma^2 = 0$ when $\sigma^2 = 1$). So the KL term pushes each latent dimension toward a standard normal: mean 0, variance 1.
 
@@ -284,11 +334,13 @@ The minimum of $f(\sigma^2) = \sigma^2 - \log \sigma^2$ is at $\sigma^2 = 1$ (yo
 
 ### 6.1 The Problem: Sampling Is Not Differentiable
 
-To compute the reconstruction term $\mathbb{E}_{z \sim q_\phi(z|x)}[\log p_\theta(x|z)]$, we need to sample $z$ from $q_\phi(z|x) = \mathcal{N}(\mu_\phi(x), \text{diag}(\sigma^2_\phi(x)))$. In practice, we estimate this expectation with a single Monte Carlo sample:
+To compute the reconstruction term $\mathbb{E}\_{z \sim q\_\phi(z|x)}[\log p\_\theta(x|z)]$, we need to sample $z$ from $q\_\phi(z|x) = \mathcal{N}(\mu\_\phi(x), \text{diag}(\sigma^2\_\phi(x)))$. In practice, we estimate this expectation with a single Monte Carlo sample:
 
-$$\mathbb{E}_{z \sim q_\phi}[\log p_\theta(x|z)] \approx \log p_\theta(x|z), \quad z \sim q_\phi(z|x)$$
+$$
+\mathbb{E}_{z \sim q_\phi}[\log p_\theta(x|z)] \approx \log p_\theta(x|z), \quad z \sim q_\phi(z|x)
+$$
 
-But there is a problem: the sampling operation $z \sim \mathcal{N}(\mu, \sigma^2)$ is stochastic. The gradient $\nabla_\phi \mathbb{E}_{z \sim q_\phi}[\log p_\theta(x|z)]$ is not straightforward because $z$ depends on $\phi$ through $\mu_\phi$ and $\sigma_\phi$, and sampling introduces a non-differentiable step.
+But there is a problem: the sampling operation $z \sim \mathcal{N}(\mu, \sigma^2)$ is stochastic. The gradient $\nabla\_\phi \mathbb{E}\_{z \sim q\_\phi}[\log p\_\theta(x|z)]$ is not straightforward because $z$ depends on $\phi$ through $\mu\_\phi$ and $\sigma\_\phi$, and sampling introduces a non-differentiable step.
 
 We cannot backpropagate through a random number generator.
 
@@ -298,13 +350,17 @@ The reparameterization trick (Kingma and Welling, 2014) separates the randomness
 
 Instead of $z \sim \mathcal{N}(\mu, \sigma^2 I)$, write:
 
-$$\boxed{z = \mu + \sigma \odot \epsilon, \quad \epsilon \sim \mathcal{N}(0, I)}$$
+$$
+\boxed{z = \mu + \sigma \odot \epsilon, \quad \epsilon \sim \mathcal{N}(0, I)}
+$$
 
 where $\odot$ is element-wise multiplication. The randomness is now in $\epsilon$, which does not depend on $\phi$. The dependence on $\phi$ enters only through $\mu$ and $\sigma$, which are deterministic functions of $x$.
 
 Now $z$ is a deterministic, differentiable function of $\mu$, $\sigma$, and $\epsilon$. We can compute:
 
-$$\frac{\partial z}{\partial \mu} = I, \quad \frac{\partial z}{\partial \sigma} = \text{diag}(\epsilon)$$
+$$
+\frac{\partial z}{\partial \mu} = I, \quad \frac{\partial z}{\partial \sigma} = \text{diag}(\epsilon)
+$$
 
 and backpropagate through the sampling step as usual.
 
@@ -344,27 +400,35 @@ During training, we sample $\epsilon$ fresh for each forward pass. During evalua
 
 The VAE training objective is to maximize the ELBO. Equivalently, we minimize the negative ELBO:
 
-$$\mathcal{L}_{\text{VAE}} = -\mathcal{L}(\theta, \phi; x) = \underbrace{-\mathbb{E}_{z \sim q_\phi}[\log p_\theta(x|z)]}_{\text{Reconstruction loss}} + \underbrace{D_{\text{KL}}(q_\phi(z|x) \| p(z))}_{\text{KL regularization}}$$
+$$
+\mathcal{L}_{\text{VAE}} = -\mathcal{L}(\theta, \phi; x) = \underbrace{-\mathbb{E}_{z \sim q_\phi}[\log p_\theta(x|z)]}_{\text{Reconstruction loss}} + \underbrace{D_{\text{KL}}(q_\phi(z|x) \| p(z))}_{\text{KL regularization}}
+$$
 
 With a Bernoulli decoder (for binary data):
 
-$$\text{Reconstruction loss} = -\sum_{i=1}^{d_x} [x_i \log \hat{x}_i + (1 - x_i) \log(1 - \hat{x}_i)]$$
+$$
+\text{Reconstruction loss} = -\sum_{i=1}^{d_x} [x_i \log \hat{x}_i + (1 - x_i) \log(1 - \hat{x}_i)]
+$$
 
-where $\hat{x} = g_\theta(z)$ with sigmoid output.
+where $\hat{x} = g\_\theta(z)$ with sigmoid output.
 
 With a Gaussian decoder (MSE):
 
-$$\text{Reconstruction loss} = \frac{1}{2\sigma^2} \|x - g_\theta(z)\|^2 + \text{const}$$
+$$
+\text{Reconstruction loss} = \frac{1}{2\sigma^2} \|x - g_\theta(z)\|^2 + \text{const}
+$$
 
 The KL term (closed form):
 
-$$D_{\text{KL}} = \frac{1}{2} \sum_{j=1}^{d_z} (\mu_j^2 + e^{\gamma_j} - \gamma_j - 1)$$
+$$
+D_{\text{KL}} = \frac{1}{2} \sum_{j=1}^{d_z} (\mu_j^2 + e^{\gamma_j} - \gamma_j - 1)
+$$
 
-where $\gamma_j = \log \sigma_j^2$.
+where $\gamma\_j = \log \sigma\_j^2$.
 
 ### 7.2 A Numerical Example
 
-Let us trace through a single training step. Suppose $d_x = 4$, $d_z = 2$.
+Let us trace through a single training step. Suppose $d\_x = 4$, $d\_z = 2$.
 
 **Input:** $x = (0.8, 0.2, 0.9, 0.1)$
 
@@ -377,9 +441,9 @@ Let us trace through a single training step. Suppose $d_x = 4$, $d_z = 2$.
 - $\epsilon = (0.3, -0.7)$ (sampled)
 - $z = (0.5 + 0.779 \times 0.3, \; -0.3 + 1.105 \times (-0.7)) = (0.734, -1.074)$
 
-**Decoder output:** $\hat{x} = g_\theta(z) = (0.75, 0.25, 0.85, 0.15)$ (suppose)
+**Decoder output:** $\hat{x} = g\_\theta(z) = (0.75, 0.25, 0.85, 0.15)$ (suppose)
 
-**Reconstruction loss (MSE):** $\|x - \hat{x}\|^2 = (0.05)^2 + (0.05)^2 + (0.05)^2 + (0.05)^2 = 0.01$
+**Reconstruction loss (MSE):** $\Vert x - \hat{x}\Vert ^2 = (0.05)^2 + (0.05)^2 + (0.05)^2 + (0.05)^2 = 0.01$
 
 **KL divergence:**
 - Dimension 1: $0.5^2 + e^{-0.5} - (-0.5) - 1 = 0.25 + 0.607 + 0.5 - 1 = 0.357$
@@ -404,19 +468,19 @@ This is the key difference from vanilla autoencoders: the VAE's latent space is 
 
 One of the most visually striking properties of VAEs: you can interpolate between two data points in latent space, and the intermediate decoded images form a smooth transition.
 
-Given two inputs $x_1$ and $x_2$:
-1. Encode: $\mu_1 = \mu_\phi(x_1)$, $\mu_2 = \mu_\phi(x_2)$
-2. Interpolate: $z_t = (1-t)\mu_1 + t\mu_2$ for $t \in [0, 1]$
-3. Decode: $\hat{x}_t = g_\theta(z_t)$
+Given two inputs $x\_1$ and $x\_2$:
+1. Encode: $\mu\_1 = \mu\_\phi(x\_1)$, $\mu\_2 = \mu\_\phi(x\_2)$
+2. Interpolate: $z\_t = (1-t)\mu\_1 + t\mu\_2$ for $t \in [0, 1]$
+3. Decode: $\hat{x}\_t = g\_\theta(z\_t)$
 
 For MNIST, interpolating between a "3" and an "8" produces intermediate shapes that gradually morph from one digit to the other, passing through plausible intermediate forms. This is qualitatively different from pixel-space interpolation, which would produce ghostly overlaps.
 
 ### 8.3 Disentanglement
 
 Ideally, each dimension of $z$ would control one interpretable factor of variation. For example:
-- $z_1$ controls digit identity
-- $z_2$ controls slant
-- $z_3$ controls stroke width
+- $z\_1$ controls digit identity
+- $z\_2$ controls slant
+- $z\_3$ controls stroke width
 
 When this happens, the representation is called **disentangled**. Vanilla VAEs achieve some degree of disentanglement, but not perfectly. The $\beta$-VAE (Higgins et al., 2017) strengthens this by increasing the weight on the KL term.
 
@@ -424,7 +488,7 @@ When this happens, the representation is called **disentangled**. Vanilla VAEs a
 
 To generate new data:
 1. Sample $z \sim \mathcal{N}(0, I)$
-2. Decode: $\hat{x} = g_\theta(z)$
+2. Decode: $\hat{x} = g\_\theta(z)$
 
 Because the KL term has regularized the latent space to be approximately $\mathcal{N}(0, I)$, these random samples fall in regions the decoder has been trained on, producing plausible outputs.
 
@@ -489,7 +553,7 @@ If the KL term wins: the encoder ignores the input and produces $q(z|x) \approx 
 
 ### 10.1 Posterior Collapse
 
-Posterior collapse occurs when the encoder "gives up" and sets $q_\phi(z|x) \approx p(z)$ for all $x$, making the KL term zero. The decoder then ignores $z$ and produces a blurry average. This happens when:
+Posterior collapse occurs when the encoder "gives up" and sets $q\_\phi(z|x) \approx p(z)$ for all $x$, making the KL term zero. The decoder then ignores $z$ and produces a blurry average. This happens when:
 - The decoder is too powerful (can produce good reconstructions without $z$)
 - The KL term is weighted too strongly
 - Training dynamics allow the KL to decrease too quickly
@@ -511,7 +575,9 @@ GANs (Generative Adversarial Networks) avoid this problem by using a different t
 
 The $\beta$-VAE (Higgins et al., 2017) modifies the VAE objective:
 
-$$\mathcal{L}_{\beta\text{-VAE}} = \mathbb{E}_{z \sim q_\phi}[\log p_\theta(x|z)] - \beta \cdot D_{\text{KL}}(q_\phi(z|x) \| p(z))$$
+$$
+\mathcal{L}_{\beta\text{-VAE}} = \mathbb{E}_{z \sim q_\phi}[\log p_\theta(x|z)] - \beta \cdot D_{\text{KL}}(q_\phi(z|x) \| p(z))
+$$
 
 where $\beta > 1$ increases the pressure to match the prior, encouraging more disentangled representations at the cost of reconstruction quality. When $\beta = 1$, this is the standard VAE.
 
@@ -525,7 +591,7 @@ This avoids the blurriness problem (the decoder sees discrete codes, not average
 
 ### 10.5 Connection to Diffusion Models
 
-Recall from Week 7 that denoising autoencoders learn the score function $\nabla_x \log p(x)$. Diffusion models (Ho et al., 2020) formalize this into a multi-step denoising process: starting from pure noise, iteratively denoise to produce a sample. The VAE can be seen as a one-step version of this idea (encode to noise, decode to data), while diffusion models use many small steps.
+Recall from Week 7 that denoising autoencoders learn the score function $\nabla\_x \log p(x)$. Diffusion models (Ho et al., 2020) formalize this into a multi-step denoising process: starting from pure noise, iteratively denoise to produce a sample. The VAE can be seen as a one-step version of this idea (encode to noise, decode to data), while diffusion models use many small steps.
 
 The intellectual lineage: DAE $\to$ VAE $\to$ Diffusion Models. We are studying the history of a field that led to the image generation revolution.
 
@@ -551,9 +617,9 @@ This week we built the Variational Autoencoder from first principles:
 
 1. **Motivation:** Vanilla autoencoders have unstructured latent spaces that do not support generation.
 
-2. **Latent variable models:** We formulated data generation as $z \sim p(z)$, $x \sim p_\theta(x|z)$, and discovered that the true posterior $p_\theta(z|x)$ is intractable.
+2. **Latent variable models:** We formulated data generation as $z \sim p(z)$, $x \sim p\_\theta(x|z)$, and discovered that the true posterior $p\_\theta(z|x)$ is intractable.
 
-3. **Variational inference:** We approximated the posterior with $q_\phi(z|x)$ and derived the **ELBO** -- a lower bound on $\log p_\theta(x)$ that decomposes into reconstruction and KL regularization.
+3. **Variational inference:** We approximated the posterior with $q\_\phi(z|x)$ and derived the **ELBO** -- a lower bound on $\log p\_\theta(x)$ that decomposes into reconstruction and KL regularization.
 
 4. **The reparameterization trick:** By writing $z = \mu + \sigma \odot \epsilon$, we made the stochastic computation graph differentiable, enabling end-to-end training with backpropagation.
 
@@ -571,11 +637,11 @@ The VAE is the last autoencoder *variant* we study. Starting next week, we turn 
 
 | Concept | Equation |
 |---------|----------|
-| ELBO | $\log p(x) \geq \mathbb{E}_q[\log p(x|z)] - D_{\text{KL}}(q(z|x) \| p(z))$ |
-| ELBO gap | $\log p(x) = \text{ELBO} + D_{\text{KL}}(q(z|x) \| p(z|x))$ |
+| ELBO | $\log p(x) \geq \mathbb{E}\_q[\log p(x|z)] - D\_{\text{KL}}(q(z|x) \Vert  p(z))$ |
+| ELBO gap | $\log p(x) = \text{ELBO} + D\_{\text{KL}}(q(z|x) \Vert  p(z|x))$ |
 | Reparameterization | $z = \mu + \sigma \odot \epsilon, \quad \epsilon \sim \mathcal{N}(0, I)$ |
-| KL (VAE) | $D_{\text{KL}} = \frac{1}{2}\sum_j (\mu_j^2 + \sigma_j^2 - \log \sigma_j^2 - 1)$ |
-| KL (general Gaussian) | $D_{\text{KL}}(\mathcal{N}_1 \| \mathcal{N}_2) = \frac{1}{2}[\log\frac{|\Sigma_2|}{|\Sigma_1|} - d + \text{tr}(\Sigma_2^{-1}\Sigma_1) + \Delta\mu^\top \Sigma_2^{-1} \Delta\mu]$ |
+| KL (VAE) | $D\_{\text{KL}} = \frac{1}{2}\sum\_j (\mu\_j^2 + \sigma\_j^2 - \log \sigma\_j^2 - 1)$ |
+| KL (general Gaussian) | $D\_{\text{KL}}(\mathcal{N}\_1 \Vert  \mathcal{N}\_2) = \frac{1}{2}[\log\frac{|\Sigma\_2|}{|\Sigma\_1|} - d + \text{tr}(\Sigma\_2^{-1}\Sigma\_1) + \Delta\mu^\top \Sigma\_2^{-1} \Delta\mu]$ |
 
 ---
 

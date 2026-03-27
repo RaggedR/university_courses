@@ -99,23 +99,29 @@ The answer is yes, but it requires rethinking the noise process. You cannot add 
 
 Austin et al. (2021) introduced **D3PM** (Discrete Denoising Diffusion Probabilistic Models), which defines a forward process over discrete state spaces using transition matrices.
 
-For a token $x_t \in \{1, 2, \ldots, K\}$, the forward process is defined by a sequence of transition matrices $Q_t \in \mathbb{R}^{K \times K}$:
+For a token $x\_t \in \lbrace 1, 2, \ldots, K\rbrace $, the forward process is defined by a sequence of transition matrices $Q\_t \in \mathbb{R}^{K \times K}$:
 
-$$q(x_t | x_{t-1}) = \text{Cat}(x_t; Q_t^\top e_{x_{t-1}})$$
+$$
+q(x_t | x_{t-1}) = \text{Cat}(x_t; Q_t^\top e_{x_{t-1}})
+$$
 
-where $e_{x_{t-1}}$ is the one-hot vector for state $x_{t-1}$ and $\text{Cat}$ denotes the categorical distribution.
+where $e\_{x\_{t-1}}$ is the one-hot vector for state $x\_{t-1}$ and $\text{Cat}$ denotes the categorical distribution.
 
-Common choices for $Q_t$:
+Common choices for $Q\_t$:
 
 **Uniform diffusion**: Each token has a small probability of transitioning to any other token:
 
-$$Q_t = (1 - \beta_t) I + \frac{\beta_t}{K} \mathbf{1}\mathbf{1}^\top$$
+$$
+Q_t = (1 - \beta_t) I + \frac{\beta_t}{K} \mathbf{1}\mathbf{1}^\top
+$$
 
 As $t$ increases, the distribution converges to the uniform distribution over all tokens.
 
-**Absorbing state diffusion**: Each token transitions to a special [MASK] token with probability $\beta_t$:
+**Absorbing state diffusion**: Each token transitions to a special [MASK] token with probability $\beta\_t$:
 
-$$[Q_t]_{ij} = \begin{cases} 1 - \beta_t & \text{if } i = j \neq [\text{MASK}] \\ \beta_t & \text{if } j = [\text{MASK}], i \neq [\text{MASK}] \\ 1 & \text{if } i = j = [\text{MASK}] \end{cases}$$
+$$
+[Q_t]_{ij} = \begin{cases} 1 - \beta_t & \text{if } i = j \neq [\text{MASK}] \\ \beta_t & \text{if } j = [\text{MASK}], i \neq [\text{MASK}] \\ 1 & \text{if } i = j = [\text{MASK}] \end{cases}
+$$
 
 The fully corrupted state is all [MASK] tokens. The reverse process "fills in" the masks.
 
@@ -166,9 +172,11 @@ Audio is a natural fit for diffusion models -- it is continuous, high-dimensiona
 
 ### 5.1 Schrödinger Bridges
 
-The **Schrödinger bridge problem** (1932) asks: given two distributions $p_0$ and $p_1$ and a reference stochastic process $Q$ (typically Brownian motion), find the stochastic process $P^*$ that is closest to $Q$ (in KL divergence) while having marginals $p_0$ at time 0 and $p_1$ at time 1:
+The **Schrödinger bridge problem** (1932) asks: given two distributions $p\_0$ and $p\_1$ and a reference stochastic process $Q$ (typically Brownian motion), find the stochastic process $P^*$ that is closest to $Q$ (in KL divergence) while having marginals $p\_0$ at time 0 and $p\_1$ at time 1:
 
-$$P^* = \arg\min_{P : P_0 = p_0, P_1 = p_1} D_{\text{KL}}(P \| Q)$$
+$$
+P^* = \arg\min_{P : P_0 = p_0, P_1 = p_1} D_{\text{KL}}(P \| Q)
+$$
 
 This is a generalization of optimal transport to stochastic processes. When the reference process $Q$ has zero diffusion (pure ODE), the Schrödinger bridge reduces to the Monge optimal transport problem.
 
@@ -178,9 +186,9 @@ The connection to diffusion models: the diffusion forward process is a Brownian 
 
 ### 5.2 Flow Matching and Monge's Problem
 
-In the deterministic limit ($\sigma \to 0$), the Schrödinger bridge reduces to the **Monge optimal transport map**: the deterministic map $T : p_0 \to p_1$ that minimizes the total transport cost $\mathbb{E}[\|x_0 - T(x_0)\|^2]$.
+In the deterministic limit ($\sigma \to 0$), the Schrödinger bridge reduces to the **Monge optimal transport map**: the deterministic map $T : p\_0 \to p\_1$ that minimizes the total transport cost $\mathbb{E}[\Vert x\_0 - T(x\_0)\Vert ^2]$.
 
-Flow matching with linear interpolation $x_t = (1-t)x_0 + tx_1$ is *not* the optimal transport flow (because $x_0$ and $x_1$ are sampled independently, not paired optimally). But it approximates it, and methods like OT-CFM (Tong et al., 2024) incorporate mini-batch optimal transport to better approximate the Monge map.
+Flow matching with linear interpolation $x\_t = (1-t)x\_0 + tx\_1$ is *not* the optimal transport flow (because $x\_0$ and $x\_1$ are sampled independently, not paired optimally). But it approximates it, and methods like OT-CFM (Tong et al., 2024) incorporate mini-batch optimal transport to better approximate the Monge map.
 
 The mathematical thread from Monge (1781) to modern flow matching is surprisingly direct: how do you move mass from one distribution to another as efficiently as possible? Diffusion models solve this problem approximately; optimal transport theory tells us what the exact solution looks like.
 
@@ -194,7 +202,9 @@ Like language models, diffusion models obey scaling laws -- power-law relationsh
 
 Mei et al. (2024) established scaling laws for diffusion models on ImageNet:
 
-$$\text{FID} \propto C^{-\alpha}$$
+$$
+\text{FID} \propto C^{-\alpha}
+$$
 
 where $C$ is the total training compute and $\alpha \approx 0.2$. This means a 10x increase in compute yields roughly a 37% reduction in FID -- significant but less dramatic than language model scaling, where performance improvements are often more pronounced.
 
@@ -221,7 +231,7 @@ Perhaps the most fundamental open question: why do diffusion models generalize r
 A diffusion model trained on $N$ images can generate novel images that are clearly not in the training set. This is empirically undeniable. But the model has enough parameters to memorize the entire training set (models with hundreds of millions of parameters trained on datasets of tens of millions of images). Why does it choose to generalize?
 
 **Possible explanations**:
-- **Score function smoothness**: The score $\nabla \log p_t(x)$ is a smooth function of $x$ (especially at high noise levels). A neural network learns this smooth function, which automatically interpolates between training examples.
+- **Score function smoothness**: The score $\nabla \log p\_t(x)$ is a smooth function of $x$ (especially at high noise levels). A neural network learns this smooth function, which automatically interpolates between training examples.
 - **Inductive bias of the architecture**: U-Nets and transformers have built-in biases toward smooth, structured functions. These biases prevent memorization.
 - **The noise schedule as regularizer**: At high noise levels, many training examples contribute to the score at each point, forcing the model to learn shared structure rather than individual examples.
 - **Implicit regularization of SGD**: Stochastic gradient descent favors flat minima, which tend to correspond to models that generalize.
@@ -242,7 +252,7 @@ We have used Gaussian noise throughout this course. Is Gaussian the right choice
 - For data with specific structure (e.g., symmetries, discrete components), a matched noise process might be more efficient
 - Information-theoretic arguments suggest that the optimal noise process depends on the data distribution
 
-This is connected to the choice of probability paths in flow matching: the linear interpolation $x_t = (1-t)x_0 + tx_1$ assumes Gaussian source noise. Other source distributions (e.g., uniform, or learned) might give straighter paths and faster convergence.
+This is connected to the choice of probability paths in flow matching: the linear interpolation $x\_t = (1-t)x\_0 + tx\_1$ assumes Gaussian source noise. Other source distributions (e.g., uniform, or learned) might give straighter paths and faster convergence.
 
 ### 7.3 Practical: Real-Time High-Resolution Video
 

@@ -22,29 +22,31 @@ This week we confront that question and discover that the answer leads us to som
 
 ### 1.1 Recall: Undercomplete Autoencoders
 
-In Week 6, we studied autoencoders with a bottleneck: the latent dimension $d_z$ is smaller than the input dimension $d_x$. The encoder $f: \mathbb{R}^{d_x} \to \mathbb{R}^{d_z}$ compresses, and the decoder $g: \mathbb{R}^{d_z} \to \mathbb{R}^{d_x}$ reconstructs:
+In Week 6, we studied autoencoders with a bottleneck: the latent dimension $d\_z$ is smaller than the input dimension $d\_x$. The encoder $f: \mathbb{R}^{d\_x} \to \mathbb{R}^{d\_z}$ compresses, and the decoder $g: \mathbb{R}^{d\_z} \to \mathbb{R}^{d\_x}$ reconstructs:
 
-$$\min_{\theta_f, \theta_g} \mathbb{E}_{x \sim p_{\text{data}}} \left[ \| x - g(f(x)) \|^2 \right]$$
+$$
+\min_{\theta_f, \theta_g} \mathbb{E}_{x \sim p_{\text{data}}} \left[ \| x - g(f(x)) \|^2 \right]
+$$
 
-Because $d_z < d_x$, the network *must* discard some information. If the network is smart about what it discards, it keeps the important structure and throws away noise. This is why undercomplete autoencoders learn useful representations.
+Because $d\_z < d\_x$, the network *must* discard some information. If the network is smart about what it discards, it keeps the important structure and throws away noise. This is why undercomplete autoencoders learn useful representations.
 
-### 1.2 What Goes Wrong When $d_z \geq d_x$?
+### 1.2 What Goes Wrong When $d\_z \geq d\_x$?
 
-Now suppose $d_z \geq d_x$. The autoencoder has enough capacity to represent every input exactly. In the simplest case -- a linear autoencoder with $d_z = d_x$ -- the encoder can learn the identity mapping $f(x) = x$ and the decoder can learn $g(z) = z$, achieving zero reconstruction error without learning anything about the data structure.
+Now suppose $d\_z \geq d\_x$. The autoencoder has enough capacity to represent every input exactly. In the simplest case -- a linear autoencoder with $d\_z = d\_x$ -- the encoder can learn the identity mapping $f(x) = x$ and the decoder can learn $g(z) = z$, achieving zero reconstruction error without learning anything about the data structure.
 
-**Theorem (Identity Mapping in Overcomplete Linear AEs).** Let $f(x) = Wx + b$ with $W \in \mathbb{R}^{d_z \times d_x}$ and $g(z) = W'z + b'$ with $W' \in \mathbb{R}^{d_x \times d_z}$, where $d_z \geq d_x$. Then there exist $W, b, W', b'$ such that $g(f(x)) = x$ for all $x$.
+**Theorem (Identity Mapping in Overcomplete Linear AEs).** Let $f(x) = Wx + b$ with $W \in \mathbb{R}^{d\_z \times d\_x}$ and $g(z) = W'z + b'$ with $W' \in \mathbb{R}^{d\_x \times d\_z}$, where $d\_z \geq d\_x$. Then there exist $W, b, W', b'$ such that $g(f(x)) = x$ for all $x$.
 
-*Proof.* Set $W = \begin{pmatrix} I_{d_x} \\ 0 \end{pmatrix}$, $b = 0$, $W' = \begin{pmatrix} I_{d_x} & 0 \end{pmatrix}$, $b' = 0$. Then $f(x) = \begin{pmatrix} x \\ 0 \end{pmatrix}$ and $g(f(x)) = x$. $\square$
+*Proof.* Set $W = \begin{pmatrix} I\_{d\_x} \\ 0 \end{pmatrix}$, $b = 0$, $W' = \begin{pmatrix} I\_{d\_x} & 0 \end{pmatrix}$, $b' = 0$. Then $f(x) = \begin{pmatrix} x \\ 0 \end{pmatrix}$ and $g(f(x)) = x$. $\square$
 
-This is not just a theoretical concern. Even nonlinear autoencoders with $d_z < d_x$ can effectively learn identity-like mappings if they have enough hidden-layer capacity. A sufficiently wide encoder can memorize every training example.
+This is not just a theoretical concern. Even nonlinear autoencoders with $d\_z < d\_x$ can effectively learn identity-like mappings if they have enough hidden-layer capacity. A sufficiently wide encoder can memorize every training example.
 
 ### 1.3 Why We Want Overcomplete Representations
 
-Here is the tension: overcomplete representations ($d_z > d_x$) are actually *desirable* in many settings.
+Here is the tension: overcomplete representations ($d\_z > d\_x$) are actually *desirable* in many settings.
 
 **Reason 1: Expressiveness.** An overcomplete representation can express richer structure. Consider representing colours. RGB uses 3 dimensions. But a representation with separate features for "warm," "cool," "saturated," "pastel," "earthy" might use 5+ dimensions and be far more useful for downstream tasks, even though colours live in a 3D space.
 
-**Reason 2: Sparsity.** If we want each input to activate only a few features from a large vocabulary, we need $d_z \gg d_x$. This is exactly the regime of sparse coding and sparse autoencoders, which we will study in Weeks 9-10.
+**Reason 2: Sparsity.** If we want each input to activate only a few features from a large vocabulary, we need $d\_z \gg d\_x$. This is exactly the regime of sparse coding and sparse autoencoders, which we will study in Weeks 9-10.
 
 **Reason 3: Interpretability.** A larger dictionary of features is more likely to contain individually interpretable features. This is the core motivation behind the mechanistic interpretability work we will study in Weeks 11-12.
 
@@ -54,16 +56,18 @@ So we *want* overcomplete representations, but we need to prevent the identity m
 
 The general form of a regularized autoencoder's objective is:
 
-$$\mathcal{L} = \underbrace{\mathbb{E}_{x \sim p_{\text{data}}} \left[ \| x - g(f(x)) \|^2 \right]}_{\text{reconstruction}} + \underbrace{\lambda \cdot \Omega(f, g, x)}_{\text{regularization}}$$
+$$
+\mathcal{L} = \underbrace{\mathbb{E}_{x \sim p_{\text{data}}} \left[ \| x - g(f(x)) \|^2 \right]}_{\text{reconstruction}} + \underbrace{\lambda \cdot \Omega(f, g, x)}_{\text{regularization}}
+$$
 
 Different choices of $\Omega$ give different autoencoder variants:
 
 | Variant | Regularization $\Omega$ | What it penalizes |
 |---------|------------------------|-------------------|
-| Weight decay | $\|W\|_F^2$ | Large weights |
+| Weight decay | $\Vert W\Vert \_F^2$ | Large weights |
 | **Denoising** | (implicit, via noise) | Sensitivity to noise |
-| **Contractive** | $\|J_f(x)\|_F^2$ | Sensitivity to input perturbations |
-| **Sparse** | $\|f(x)\|_1$ or KL penalty | Dense activations |
+| **Contractive** | $\Vert J\_f(x)\Vert \_F^2$ | Sensitivity to input perturbations |
+| **Sparse** | $\Vert f(x)\Vert \_1$ or KL penalty | Dense activations |
 
 The first three are the focus of this week. The sparse autoencoder gets its own dedicated treatment in Weeks 9-10, but we will preview it here.
 
@@ -83,32 +87,40 @@ The training procedure:
 
 The objective:
 
-$$\mathcal{L}_{\text{DAE}} = \mathbb{E}_{x \sim p_{\text{data}}} \mathbb{E}_{\tilde{x} \sim q(\tilde{x}|x)} \left[ \| x - g(f(\tilde{x})) \|^2 \right]$$
+$$
+\mathcal{L}_{\text{DAE}} = \mathbb{E}_{x \sim p_{\text{data}}} \mathbb{E}_{\tilde{x} \sim q(\tilde{x}|x)} \left[ \| x - g(f(\tilde{x})) \|^2 \right]
+$$
 
-Notice: the input is $\tilde{x}$ but the target is $x$. The network sees a corrupted version and must reconstruct the original. This means it cannot simply learn the identity -- even if $d_z > d_x$ -- because the identity maps $\tilde{x}$ to $\tilde{x}$, not to $x$.
+Notice: the input is $\tilde{x}$ but the target is $x$. The network sees a corrupted version and must reconstruct the original. This means it cannot simply learn the identity -- even if $d\_z > d\_x$ -- because the identity maps $\tilde{x}$ to $\tilde{x}$, not to $x$.
 
 ### 2.2 Types of Corruption
 
 The corruption distribution $q(\tilde{x}|x)$ can take several forms:
 
 **Gaussian noise (additive):**
-$$\tilde{x} = x + \epsilon, \quad \epsilon \sim \mathcal{N}(0, \sigma^2 I)$$
+$$
+\tilde{x} = x + \epsilon, \quad \epsilon \sim \mathcal{N}(0, \sigma^2 I)
+$$
 
 This is the most common choice. The noise level $\sigma$ is a hyperparameter that controls how much the autoencoder must learn to denoise.
 
 **Masking noise (dropout):**
-$$\tilde{x}_i = \begin{cases} 0 & \text{with probability } p \\ x_i & \text{with probability } 1-p \end{cases}$$
+$$
+\tilde{x}_i = \begin{cases} 0 & \text{with probability } p \\ x_i & \text{with probability } 1-p \end{cases}
+$$
 
 Each input dimension is independently set to zero with probability $p$. This forces the network to learn to infer missing values from context -- if pixel $(i,j)$ is masked out, the network must reconstruct it from neighbouring pixels.
 
 **Salt-and-pepper noise:**
-$$\tilde{x}_i = \begin{cases} 0 & \text{with probability } p/2 \\ 1 & \text{with probability } p/2 \\ x_i & \text{with probability } 1-p \end{cases}$$
+$$
+\tilde{x}_i = \begin{cases} 0 & \text{with probability } p/2 \\ 1 & \text{with probability } p/2 \\ x_i & \text{with probability } 1-p \end{cases}
+$$
 
 This replaces random values with extreme values (for inputs normalized to $[0,1]$).
 
 ### 2.3 A Concrete Example
 
-Suppose we have MNIST digits (28x28 grayscale images, so $d_x = 784$). We build an overcomplete DAE with $d_z = 1000$.
+Suppose we have MNIST digits (28x28 grayscale images, so $d\_x = 784$). We build an overcomplete DAE with $d\_z = 1000$.
 
 With masking noise at $p = 0.3$, about 30% of pixels are zeroed out. The network sees an image with holes and must fill them in. To do this well, it needs to learn:
 - That certain pixel patterns form strokes
@@ -121,17 +133,21 @@ None of this can be accomplished by the identity mapping. The DAE is forced to l
 
 Here is the geometric intuition, which is quite beautiful.
 
-The data lies on (or near) a low-dimensional manifold $\mathcal{M}$ embedded in $\mathbb{R}^{d_x}$. When we corrupt $x$ to get $\tilde{x}$, we push the point off the manifold into the ambient space. The DAE learns to map $\tilde{x}$ back onto the manifold -- specifically, back to $x$.
+The data lies on (or near) a low-dimensional manifold $\mathcal{M}$ embedded in $\mathbb{R}^{d\_x}$. When we corrupt $x$ to get $\tilde{x}$, we push the point off the manifold into the ambient space. The DAE learns to map $\tilde{x}$ back onto the manifold -- specifically, back to $x$.
 
 The reconstruction function $r(\tilde{x}) = g(f(\tilde{x}))$ therefore learns a **projection onto the data manifold**. At each point, the learned mapping points from the corrupted input back toward the nearest point on the manifold.
 
 This is closely related to **score matching**. The score function of a distribution $p(x)$ is:
 
-$$s(x) = \nabla_x \log p(x)$$
+$$
+s(x) = \nabla_x \log p(x)
+$$
 
 This is a vector field that, at each point in space, points in the direction of increasing probability -- i.e., toward the data manifold. Alain and Bengio (2014) showed that the reconstruction error of a DAE, $r(\tilde{x}) - \tilde{x}$, estimates a scaled version of the score function:
 
-$$r(\tilde{x}) - \tilde{x} \approx \sigma^2 \nabla_{\tilde{x}} \log p(\tilde{x})$$
+$$
+r(\tilde{x}) - \tilde{x} \approx \sigma^2 \nabla_{\tilde{x}} \log p(\tilde{x})
+$$
 
 In other words, the DAE learns the gradient of the log-density of the (smoothed) data distribution. This is a deep connection between autoencoders and probabilistic models.
 
@@ -175,15 +191,19 @@ The contractive autoencoder, introduced by Rifai et al. (2011), takes a direct a
 
 The Jacobian of the encoder $f$ at input $x$ is the matrix of partial derivatives:
 
-$$J_f(x) = \frac{\partial f(x)}{\partial x} \in \mathbb{R}^{d_z \times d_x}$$
+$$
+J_f(x) = \frac{\partial f(x)}{\partial x} \in \mathbb{R}^{d_z \times d_x}
+$$
 
-where $[J_f(x)]_{ij} = \frac{\partial f_i(x)}{\partial x_j}$. This matrix describes how each component of the latent representation changes in response to small changes in each component of the input.
+where $[J\_f(x)]\_{ij} = \frac{\partial f\_i(x)}{\partial x\_j}$. This matrix describes how each component of the latent representation changes in response to small changes in each component of the input.
 
 The CAE objective is:
 
-$$\mathcal{L}_{\text{CAE}} = \mathbb{E}_{x \sim p_{\text{data}}} \left[ \| x - g(f(x)) \|^2 + \lambda \| J_f(x) \|_F^2 \right]$$
+$$
+\mathcal{L}_{\text{CAE}} = \mathbb{E}_{x \sim p_{\text{data}}} \left[ \| x - g(f(x)) \|^2 + \lambda \| J_f(x) \|_F^2 \right]
+$$
 
-where $\|J_f(x)\|_F^2 = \sum_{i,j} \left( \frac{\partial f_i(x)}{\partial x_j} \right)^2$ is the squared Frobenius norm of the Jacobian.
+where $\Vert J\_f(x)\Vert \_F^2 = \sum\_{i,j} \left( \frac{\partial f\_i(x)}{\partial x\_j} \right)^2$ is the squared Frobenius norm of the Jacobian.
 
 ### 3.2 What the Jacobian Penalty Does
 
@@ -200,12 +220,12 @@ The resolution of this tension is beautiful: the encoder learns to be sensitive 
 
 Imagine the data lies on a 1D curve (manifold) embedded in 2D space. At any point on the curve, we can decompose a perturbation $\delta x$ into:
 
-- A **tangent component** $\delta x_\parallel$ along the curve
-- A **normal component** $\delta x_\perp$ perpendicular to the curve
+- A **tangent component** $\delta x\_\parallel$ along the curve
+- A **normal component** $\delta x\_\perp$ perpendicular to the curve
 
 The CAE learns an encoder where:
-- $\| J_f(x) \cdot \delta x_\parallel \|$ is relatively large (sensitive along manifold)
-- $\| J_f(x) \cdot \delta x_\perp \|$ is small (insensitive perpendicular to manifold)
+- $\Vert  J\_f(x) \cdot \delta x\_\parallel \Vert $ is relatively large (sensitive along manifold)
+- $\Vert  J\_f(x) \cdot \delta x\_\perp \Vert $ is small (insensitive perpendicular to manifold)
 
 This means the CAE implicitly learns the tangent space of the data manifold at each point -- a remarkably useful geometric property.
 
@@ -213,21 +233,29 @@ This means the CAE implicitly learns the tangent space of the data manifold at e
 
 For a single hidden-layer encoder $f(x) = h(Wx + b)$ with element-wise activation $h$, the Jacobian is:
 
-$$J_f(x) = \text{diag}(h'(Wx + b)) \cdot W$$
+$$
+J_f(x) = \text{diag}(h'(Wx + b)) \cdot W
+$$
 
 where $h'$ is the derivative of the activation function applied element-wise, and $\text{diag}(\cdot)$ creates a diagonal matrix.
 
 The Frobenius norm squared is then:
 
-$$\| J_f(x) \|_F^2 = \sum_{i=1}^{d_z} \sum_{j=1}^{d_x} \left( h'(w_i^\top x + b_i) \cdot w_{ij} \right)^2 = \sum_{i=1}^{d_z} h'(w_i^\top x + b_i)^2 \sum_{j=1}^{d_x} w_{ij}^2$$
+$$
+\| J_f(x) \|_F^2 = \sum_{i=1}^{d_z} \sum_{j=1}^{d_x} \left( h'(w_i^\top x + b_i) \cdot w_{ij} \right)^2 = \sum_{i=1}^{d_z} h'(w_i^\top x + b_i)^2 \sum_{j=1}^{d_x} w_{ij}^2
+$$
 
-$$= \sum_{i=1}^{d_z} h'(a_i)^2 \| w_i \|^2$$
+$$
+= \sum_{i=1}^{d_z} h'(a_i)^2 \| w_i \|^2
+$$
 
-where $a_i = w_i^\top x + b_i$ is the pre-activation value and $w_i$ is the $i$-th row of $W$.
+where $a\_i = w\_i^\top x + b\_i$ is the pre-activation value and $w\_i$ is the $i$-th row of $W$.
 
 **For sigmoid activation** $h(a) = \sigma(a)$, we have $h'(a) = \sigma(a)(1 - \sigma(a))$, so:
 
-$$\| J_f(x) \|_F^2 = \sum_{i=1}^{d_z} [\sigma(a_i)(1 - \sigma(a_i))]^2 \| w_i \|^2$$
+$$
+\| J_f(x) \|_F^2 = \sum_{i=1}^{d_z} [\sigma(a_i)(1 - \sigma(a_i))]^2 \| w_i \|^2
+$$
 
 This is cheap to compute -- it is a function of the activations $f(x)$ and the weight matrix $W$, both of which we already have during the forward pass.
 
@@ -235,28 +263,34 @@ This is cheap to compute -- it is a function of the activations $f(x)$ and the w
 
 ### 3.5 A Numerical Example
 
-Suppose we have a tiny encoder with $d_x = 3$, $d_z = 2$, sigmoid activation, and:
+Suppose we have a tiny encoder with $d\_x = 3$, $d\_z = 2$, sigmoid activation, and:
 
-$$W = \begin{pmatrix} 1 & 0 & 0 \\ 0 & 1 & 0 \end{pmatrix}, \quad b = \begin{pmatrix} 0 \\ 0 \end{pmatrix}$$
+$$
+W = \begin{pmatrix} 1 & 0 & 0 \\ 0 & 1 & 0 \end{pmatrix}, \quad b = \begin{pmatrix} 0 \\ 0 \end{pmatrix}
+$$
 
 For input $x = (0, 0, 0)^\top$:
 - Pre-activations: $a = (0, 0)^\top$
 - Activations: $f(x) = (\sigma(0), \sigma(0))^\top = (0.5, 0.5)^\top$
 - $\sigma'(0) = 0.5 \times 0.5 = 0.25$
-- $\| w_1 \|^2 = 1^2 + 0^2 + 0^2 = 1$
-- $\| w_2 \|^2 = 0^2 + 1^2 + 0^2 = 1$
+- $\Vert  w\_1 \Vert ^2 = 1^2 + 0^2 + 0^2 = 1$
+- $\Vert  w\_2 \Vert ^2 = 0^2 + 1^2 + 0^2 = 1$
 
-$$\| J_f(x) \|_F^2 = 0.25^2 \cdot 1 + 0.25^2 \cdot 1 = 0.0625 + 0.0625 = 0.125$$
+$$
+\| J_f(x) \|_F^2 = 0.25^2 \cdot 1 + 0.25^2 \cdot 1 = 0.0625 + 0.0625 = 0.125
+$$
 
-Now consider an encoder where the weights are 10 times larger: $W' = 10W$. The pre-activations are $a = (0, 0)^\top$ (same for this input), but the norms are $\|w'_i\|^2 = 100$. So:
+Now consider an encoder where the weights are 10 times larger: $W' = 10W$. The pre-activations are $a = (0, 0)^\top$ (same for this input), but the norms are $\Vert w'\_i\Vert ^2 = 100$. So:
 
-$$\| J_{f'}(x) \|_F^2 = 0.25^2 \cdot 100 + 0.25^2 \cdot 100 = 12.5$$
+$$
+\| J_{f'}(x) \|_F^2 = 0.25^2 \cdot 100 + 0.25^2 \cdot 100 = 12.5
+$$
 
 The contractive penalty would strongly discourage these large weights. Note, however, that the effect is input-dependent: for inputs where the sigmoid is saturated ($\sigma'(a) \approx 0$), even large weights produce small Jacobian norms. The penalty is truly about *local* sensitivity.
 
 ### 3.6 CAE vs. Weight Decay
 
-You might ask: doesn't weight decay ($\lambda \|W\|_F^2$) also discourage large weights? Yes, but the CAE penalty is more nuanced because it involves the activation derivatives $h'(a_i)$. Weight decay penalizes large weights everywhere; the Jacobian penalty only penalizes large weights *where the activation function is sensitive* (i.e., in the non-saturated regime). This is a data-dependent form of regularization.
+You might ask: doesn't weight decay ($\lambda \Vert W\Vert \_F^2$) also discourage large weights? Yes, but the CAE penalty is more nuanced because it involves the activation derivatives $h'(a\_i)$. Weight decay penalizes large weights everywhere; the Jacobian penalty only penalizes large weights *where the activation function is sensitive* (i.e., in the non-saturated regime). This is a data-dependent form of regularization.
 
 ---
 
@@ -268,9 +302,11 @@ One of the most satisfying results in autoencoder theory is the connection betwe
 
 **Theorem.** For a denoising autoencoder with small Gaussian noise $\tilde{x} = x + \epsilon$, $\epsilon \sim \mathcal{N}(0, \sigma^2 I)$, the expected DAE reconstruction error (as a function of the learned reconstruction $r(x) = g(f(x))$) is, to first order in $\sigma^2$:
 
-$$\mathcal{L}_{\text{DAE}} \approx \mathbb{E}_x \left[ \| x - r(x) \|^2 + \sigma^2 \| J_r(x) \|_F^2 \right]$$
+$$
+\mathcal{L}_{\text{DAE}} \approx \mathbb{E}_x \left[ \| x - r(x) \|^2 + \sigma^2 \| J_r(x) \|_F^2 \right]
+$$
 
-where $J_r(x) = \frac{\partial r(x)}{\partial x}$ is the Jacobian of the full reconstruction function.
+where $J\_r(x) = \frac{\partial r(x)}{\partial x}$ is the Jacobian of the full reconstruction function.
 
 This means that **training a DAE with small noise implicitly penalizes the Jacobian of the reconstruction**, which is closely related to the CAE's explicit Jacobian penalty on the encoder.
 
@@ -278,24 +314,32 @@ This means that **training a DAE with small noise implicitly penalizes the Jacob
 
 We expand $r(\tilde{x}) = r(x + \epsilon)$ in a Taylor series around $x$:
 
-$$r(x + \epsilon) = r(x) + J_r(x) \epsilon + O(\|\epsilon\|^2)$$
+$$
+r(x + \epsilon) = r(x) + J_r(x) \epsilon + O(\|\epsilon\|^2)
+$$
 
 Now substitute into the DAE loss:
 
-$$\| x - r(x + \epsilon) \|^2 = \| x - r(x) - J_r(x)\epsilon \|^2 + O(\|\epsilon\|^3)$$
+$$
+\| x - r(x + \epsilon) \|^2 = \| x - r(x) - J_r(x)\epsilon \|^2 + O(\|\epsilon\|^3)
+$$
 
 Expanding:
 
-$$= \|x - r(x)\|^2 - 2(x - r(x))^\top J_r(x)\epsilon + \|J_r(x)\epsilon\|^2 + O(\|\epsilon\|^3)$$
+$$
+= \|x - r(x)\|^2 - 2(x - r(x))^\top J_r(x)\epsilon + \|J_r(x)\epsilon\|^2 + O(\|\epsilon\|^3)
+$$
 
 Taking the expectation over $\epsilon \sim \mathcal{N}(0, \sigma^2 I)$:
 
 - $\mathbb{E}[\epsilon] = 0$, so the middle term vanishes.
-- $\mathbb{E}[\|J_r(x)\epsilon\|^2] = \mathbb{E}[\epsilon^\top J_r(x)^\top J_r(x) \epsilon] = \sigma^2 \text{tr}(J_r(x)^\top J_r(x)) = \sigma^2 \|J_r(x)\|_F^2$
+- $\mathbb{E}[\Vert J\_r(x)\epsilon\Vert ^2] = \mathbb{E}[\epsilon^\top J\_r(x)^\top J\_r(x) \epsilon] = \sigma^2 \text{tr}(J\_r(x)^\top J\_r(x)) = \sigma^2 \Vert J\_r(x)\Vert \_F^2$
 
 Therefore:
 
-$$\mathbb{E}_\epsilon \left[ \| x - r(\tilde{x}) \|^2 \right] = \|x - r(x)\|^2 + \sigma^2 \|J_r(x)\|_F^2 + O(\sigma^4)$$
+$$
+\mathbb{E}_\epsilon \left[ \| x - r(\tilde{x}) \|^2 \right] = \|x - r(x)\|^2 + \sigma^2 \|J_r(x)\|_F^2 + O(\sigma^4)
+$$
 
 Taking the expectation over $x$ gives us the result. $\square$
 
@@ -328,13 +372,15 @@ Denoising and contractive autoencoders regularize by controlling *how the encode
 
 The idea: instead of penalizing how much the representation *changes*, penalize how *dense* it is. Encourage most latent units to be zero (or near zero) for any given input.
 
-$$\mathcal{L}_{\text{SAE}} = \mathbb{E}_x \left[ \| x - g(f(x)) \|^2 + \lambda \| f(x) \|_1 \right]$$
+$$
+\mathcal{L}_{\text{SAE}} = \mathbb{E}_x \left[ \| x - g(f(x)) \|^2 + \lambda \| f(x) \|_1 \right]
+$$
 
-Here $\|f(x)\|_1 = \sum_{i} |f_i(x)|$ is the L1 norm of the activations, not the weights.
+Here $\Vert f(x)\Vert \_1 = \sum\_{i} |f\_i(x)|$ is the L1 norm of the activations, not the weights.
 
 ### 5.2 Why Sparsity Is Special
 
-Sparsity is uniquely suited for overcomplete autoencoders. Consider $d_z = 10000$ and $d_x = 784$ (MNIST). The autoencoder has a dictionary of 10000 features. For any given input, only, say, 50 features activate. Different inputs activate different subsets.
+Sparsity is uniquely suited for overcomplete autoencoders. Consider $d\_z = 10000$ and $d\_x = 784$ (MNIST). The autoencoder has a dictionary of 10000 features. For any given input, only, say, 50 features activate. Different inputs activate different subsets.
 
 This means:
 - Each feature can be interpretable (it represents one specific pattern)
@@ -386,17 +432,21 @@ Each of these is a form of inductive bias -- an assumption we bake into the mode
 
 ### 7.1 Autoencoders and Score Matching
 
-We mentioned briefly that DAEs learn the score function $\nabla_x \log p(x)$. Let us make this more precise.
+We mentioned briefly that DAEs learn the score function $\nabla\_x \log p(x)$. Let us make this more precise.
 
 The **score function** of a distribution $p(x)$ is the gradient of the log-density:
 
-$$s(x) = \nabla_x \log p(x)$$
+$$
+s(x) = \nabla_x \log p(x)
+$$
 
 It is a vector field that points toward high-probability regions. Score matching (Hyvarinen, 2005) provides a way to estimate $s(x)$ without knowing the normalizing constant of $p(x)$.
 
 For a DAE with small Gaussian noise ($\sigma \to 0$), the optimal reconstruction function satisfies:
 
-$$r(x) - x \approx \sigma^2 s(x)$$
+$$
+r(x) - x \approx \sigma^2 s(x)
+$$
 
 This means the "correction" the DAE applies (the difference between its output and input) is proportional to the score function. The DAE literally learns which direction to "push" a corrupted input to make it more likely under the data distribution.
 
@@ -407,7 +457,7 @@ This connection became the foundation for **diffusion models** (Song and Ermon, 
 Each regularized autoencoder can be interpreted as performing approximate MAP (maximum a posteriori) inference under a different prior on the latent code $z$:
 
 - **Weight decay** $\to$ Gaussian prior on weights (L2 regularization = MAP with $p(W) = \mathcal{N}(0, I/\lambda)$)
-- **Sparse AE** $\to$ Laplace prior on activations (L1 on $z$ = MAP with $p(z) \propto e^{-\lambda \|z\|_1}$)
+- **Sparse AE** $\to$ Laplace prior on activations (L1 on $z$ = MAP with $p(z) \propto e^{-\lambda \Vert z\Vert \_1}$)
 - **DAE** $\to$ Smoothness prior on the reconstruction (the data manifold should be smooth)
 - **CAE** $\to$ Invariance prior (the representation should be locally constant off the manifold)
 
@@ -454,12 +504,12 @@ The common thread: regularization forces the autoencoder to learn the *structure
 
 | Concept | Equation |
 |---------|----------|
-| DAE objective | $\mathcal{L}_{\text{DAE}} = \mathbb{E}_{x, \tilde{x}} \left[ \|x - g(f(\tilde{x}))\|^2 \right]$ |
-| CAE objective | $\mathcal{L}_{\text{CAE}} = \mathbb{E}_x \left[ \|x - g(f(x))\|^2 + \lambda \|J_f(x)\|_F^2 \right]$ |
-| Jacobian (single layer) | $J_f(x) = \text{diag}(h'(Wx+b)) \cdot W$ |
-| Frobenius norm squared | $\|J_f(x)\|_F^2 = \sum_i h'(a_i)^2 \|w_i\|^2$ |
-| DAE-CAE equivalence | $\mathcal{L}_{\text{DAE}} \approx \mathbb{E}_x[\|x-r(x)\|^2 + \sigma^2 \|J_r(x)\|_F^2]$ |
-| Score function | $r(x) - x \approx \sigma^2 \nabla_x \log p(x)$ |
+| DAE objective | $\mathcal{L}\_{\text{DAE}} = \mathbb{E}\_{x, \tilde{x}} \left[ \Vert x - g(f(\tilde{x}))\Vert ^2 \right]$ |
+| CAE objective | $\mathcal{L}\_{\text{CAE}} = \mathbb{E}\_x \left[ \Vert x - g(f(x))\Vert ^2 + \lambda \Vert J\_f(x)\Vert \_F^2 \right]$ |
+| Jacobian (single layer) | $J\_f(x) = \text{diag}(h'(Wx+b)) \cdot W$ |
+| Frobenius norm squared | $\Vert J\_f(x)\Vert \_F^2 = \sum\_i h'(a\_i)^2 \Vert w\_i\Vert ^2$ |
+| DAE-CAE equivalence | $\mathcal{L}\_{\text{DAE}} \approx \mathbb{E}\_x[\Vert x-r(x)\Vert ^2 + \sigma^2 \Vert J\_r(x)\Vert \_F^2]$ |
+| Score function | $r(x) - x \approx \sigma^2 \nabla\_x \log p(x)$ |
 
 ---
 

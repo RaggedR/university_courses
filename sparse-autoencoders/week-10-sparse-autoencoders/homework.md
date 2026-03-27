@@ -28,7 +28,9 @@ Your `forward` method should return both the reconstruction $\hat{\mathbf{x}}$ a
 
 Implement the L1-penalized loss:
 
-$$\mathcal{L} = \frac{1}{m} \sum_{i=1}^{m} \|\mathbf{x}_i - \hat{\mathbf{x}}_i\|_2^2 + \lambda \frac{1}{m} \sum_{i=1}^{m} \|\mathbf{z}_i\|_1$$
+$$
+\mathcal{L} = \frac{1}{m} \sum_{i=1}^{m} \|\mathbf{x}_i - \hat{\mathbf{x}}_i\|_2^2 + \lambda \frac{1}{m} \sum_{i=1}^{m} \|\mathbf{z}_i\|_1
+$$
 
 Use $\lambda = 0.005$ initially.
 
@@ -51,7 +53,7 @@ Log and plot (per epoch):
 After training:
 1. **Decoder columns as features:** Reshape each of the 2000 decoder columns to $28 \times 28$ and display the first 100 as a $10 \times 10$ grid of small images. Use a diverging colormap (e.g., `RdBu_r`).
 2. **Reconstructions:** Show 10 original MNIST digits and their SAE reconstructions side by side.
-3. **Activation histogram:** For a batch of 1000 inputs, plot a histogram of all activation values $z_j$. Comment on the distribution -- how many are exactly zero?
+3. **Activation histogram:** For a batch of 1000 inputs, plot a histogram of all activation values $z\_j$. Comment on the distribution -- how many are exactly zero?
 
 ---
 
@@ -68,17 +70,23 @@ Use the same encoder-decoder architecture as Problem 1.
 Implement the KL divergence sparsity loss. For each minibatch:
 
 1. Compute the average activation of each neuron across the batch:
-   $$\hat{\rho}_j = \frac{1}{m} \sum_{i=1}^m z_j(\mathbf{x}_i)$$
+   $$
+   \hat{\rho}_j = \frac{1}{m} \sum_{i=1}^m z_j(\mathbf{x}_i)
+   $$
 
 2. Compute the Bernoulli KL divergence for each neuron:
-   $$\text{KL}_j = \rho \log \frac{\rho}{\hat{\rho}_j} + (1 - \rho) \log \frac{1 - \rho}{1 - \hat{\rho}_j}$$
+   $$
+   \text{KL}_j = \rho \log \frac{\rho}{\hat{\rho}_j} + (1 - \rho) \log \frac{1 - \rho}{1 - \hat{\rho}_j}
+   $$
 
 3. Sum over all neurons and add to the reconstruction loss:
-   $$\mathcal{L} = \text{MSE} + \beta \sum_{j=1}^{d} \text{KL}_j$$
+   $$
+   \mathcal{L} = \text{MSE} + \beta \sum_{j=1}^{d} \text{KL}_j
+   $$
 
 Use target sparsity $\rho = 0.05$ and weight $\beta = 3.0$ as starting values.
 
-**Implementation note:** You will need to clamp $\hat{\rho}_j$ to avoid $\log(0)$. Use `torch.clamp(rho_hat, min=1e-6, max=1-1e-6)`.
+**Implementation note:** You will need to clamp $\hat{\rho}\_j$ to avoid $\log(0)$. Use `torch.clamp(rho_hat, min=1e-6, max=1-1e-6)`.
 
 ### 2c. Training
 
@@ -103,17 +111,21 @@ Write a paragraph summarizing the differences you observe.
 
 Starting from the definition of KL divergence for discrete distributions:
 
-$$\text{KL}(P \| Q) = \sum_x P(x) \log \frac{P(x)}{Q(x)}$$
+$$
+\text{KL}(P \| Q) = \sum_x P(x) \log \frac{P(x)}{Q(x)}
+$$
 
 derive the formula for the KL divergence between $\text{Bernoulli}(\rho)$ and $\text{Bernoulli}(\hat{\rho})$:
 
-$$\text{KL}(\rho \| \hat{\rho}) = \rho \log \frac{\rho}{\hat{\rho}} + (1 - \rho) \log \frac{1 - \rho}{1 - \hat{\rho}}$$
+$$
+\text{KL}(\rho \| \hat{\rho}) = \rho \log \frac{\rho}{\hat{\rho}} + (1 - \rho) \log \frac{1 - \rho}{1 - \hat{\rho}}
+$$
 
 Show each step explicitly.
 
 ### 3b. Gradient
 
-Compute $\frac{\partial}{\partial \hat{\rho}} \text{KL}(\rho \| \hat{\rho})$.
+Compute $\frac{\partial}{\partial \hat{\rho}} \text{KL}(\rho \Vert  \hat{\rho})$.
 
 Verify that this gradient:
 - Equals zero when $\hat{\rho} = \rho$
@@ -122,13 +134,13 @@ Verify that this gradient:
 
 ### 3c. Second Derivative
 
-Compute $\frac{\partial^2}{\partial \hat{\rho}^2} \text{KL}(\rho \| \hat{\rho})$ and show that it is always positive for $\hat{\rho} \in (0, 1)$. What does this tell you about the shape of the KL penalty as a function of $\hat{\rho}$?
+Compute $\frac{\partial^2}{\partial \hat{\rho}^2} \text{KL}(\rho \Vert  \hat{\rho})$ and show that it is always positive for $\hat{\rho} \in (0, 1)$. What does this tell you about the shape of the KL penalty as a function of $\hat{\rho}$?
 
 ### 3d. Numerical Verification
 
 Write a short Python script that:
 1. Computes the KL divergence numerically for $\rho = 0.05$ and $\hat{\rho} \in [0.001, 0.999]$.
-2. Plots $\text{KL}(\rho \| \hat{\rho})$ as a function of $\hat{\rho}$.
+2. Plots $\text{KL}(\rho \Vert  \hat{\rho})$ as a function of $\hat{\rho}$.
 3. Overlays the analytical gradient on the same plot (as a second y-axis or a separate subplot).
 
 Verify that the minimum is at $\hat{\rho} = \rho = 0.05$ and that the gradient changes sign there.
@@ -141,7 +153,9 @@ Verify that the minimum is at $\hat{\rho} = \rho = 0.05$ and that the gradient c
 
 Train L1 SAEs (same architecture as Problem 1) with the following values of $\lambda$:
 
-$$\lambda \in \{0.0001, 0.0005, 0.001, 0.005, 0.01, 0.05, 0.1\}$$
+$$
+\lambda \in \{0.0001, 0.0005, 0.001, 0.005, 0.01, 0.05, 0.1\}
+$$
 
 For each, record:
 - Final reconstruction MSE (on the test set)
@@ -154,7 +168,7 @@ Create a scatter plot of **reconstruction MSE (y-axis) vs. average L0 (x-axis)**
 
 ### 4c. Feature Quality
 
-For $\lambda \in \{0.0005, 0.005, 0.05\}$ (representing low, medium, and high sparsity), visualize the top 25 decoder column features (by decoder column norm or by average activation frequency).
+For $\lambda \in \lbrace 0.0005, 0.005, 0.05\rbrace $ (representing low, medium, and high sparsity), visualize the top 25 decoder column features (by decoder column norm or by average activation frequency).
 
 Comment on how feature quality changes with $\lambda$:
 - At low $\lambda$, are features interpretable?
@@ -183,11 +197,11 @@ Report: how many neurons are dead in your trained SAE?
 Implement a neuron resampling function. The algorithm:
 
 1. **Identify dead neurons:** neurons with zero activations on a large batch (e.g., 10,000 examples).
-2. **Compute reconstruction errors** $e_i = \|\mathbf{x}_i - \hat{\mathbf{x}}_i\|^2$ for each example.
-3. **Sample a data point** $\mathbf{x}_i$ with probability proportional to $e_i$.
-4. **Reinitialize the dead neuron's encoder weights:** set them to a normalized version of the residual: $\mathbf{w}_j \leftarrow c \cdot (\mathbf{x}_i - \hat{\mathbf{x}}_i) / \|\mathbf{x}_i - \hat{\mathbf{x}}_i\|$, where $c$ is the average encoder weight norm of alive neurons.
+2. **Compute reconstruction errors** $e\_i = \Vert \mathbf{x}\_i - \hat{\mathbf{x}}\_i\Vert ^2$ for each example.
+3. **Sample a data point** $\mathbf{x}\_i$ with probability proportional to $e\_i$.
+4. **Reinitialize the dead neuron's encoder weights:** set them to a normalized version of the residual: $\mathbf{w}\_j \leftarrow c \cdot (\mathbf{x}\_i - \hat{\mathbf{x}}\_i) / \Vert \mathbf{x}\_i - \hat{\mathbf{x}}\_i\Vert $, where $c$ is the average encoder weight norm of alive neurons.
 5. **Reinitialize the decoder column** to match (also normalized).
-6. **Set the encoder bias** $b_j$ to $0$ or a small negative value.
+6. **Set the encoder bias** $b\_j$ to $0$ or a small negative value.
 
 ### 5c. Training with Resampling
 
@@ -238,15 +252,17 @@ Write a comparative analysis (1-2 paragraphs) addressing:
 
 Prove the following claim: if the SAE loss is
 
-$$\mathcal{L} = \|\mathbf{x} - \mathbf{W}_d \mathbf{z}\|_2^2 + \lambda \|\mathbf{z}\|_1$$
+$$
+\mathcal{L} = \|\mathbf{x} - \mathbf{W}_d \mathbf{z}\|_2^2 + \lambda \|\mathbf{z}\|_1
+$$
 
-and there is no constraint on $\mathbf{W}_d$, then for any encoding $\mathbf{z}$ with $\mathbf{z} \neq \mathbf{0}$, we can find $\mathbf{W}_d'$ and $\mathbf{z}'$ such that:
-- $\mathbf{W}_d' \mathbf{z}' = \mathbf{W}_d \mathbf{z}$ (same reconstruction)
-- $\|\mathbf{z}'\|_1 < \|\mathbf{z}\|_1$ (lower sparsity penalty)
+and there is no constraint on $\mathbf{W}\_d$, then for any encoding $\mathbf{z}$ with $\mathbf{z} \neq \mathbf{0}$, we can find $\mathbf{W}\_d'$ and $\mathbf{z}'$ such that:
+- $\mathbf{W}\_d' \mathbf{z}' = \mathbf{W}\_d \mathbf{z}$ (same reconstruction)
+- $\Vert \mathbf{z}'\Vert \_1 < \Vert \mathbf{z}\Vert \_1$ (lower sparsity penalty)
 
-Conclude that without a decoder norm constraint, the optimal strategy drives $\|\mathbf{z}\|_1 \to 0$, making the sparsity penalty meaningless.
+Conclude that without a decoder norm constraint, the optimal strategy drives $\Vert \mathbf{z}\Vert \_1 \to 0$, making the sparsity penalty meaningless.
 
-*Hint:* Consider the scaling transformation $\mathbf{z}' = \mathbf{z}/\alpha$, $\mathbf{W}_d' = \alpha \mathbf{W}_d$ for $\alpha > 1$.
+*Hint:* Consider the scaling transformation $\mathbf{z}' = \mathbf{z}/\alpha$, $\mathbf{W}\_d' = \alpha \mathbf{W}\_d$ for $\alpha > 1$.
 
 ### 7b. Experimental Verification
 

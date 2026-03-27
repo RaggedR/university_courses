@@ -11,29 +11,33 @@
 
 Consider the 1D mixture of Gaussians:
 
-$$p(x) = 0.5\,\mathcal{N}(x; -5, 0.5^2) + 0.5\,\mathcal{N}(x; 5, 0.5^2)$$
+$$
+p(x) = 0.5\,\mathcal{N}(x; -5, 0.5^2) + 0.5\,\mathcal{N}(x; 5, 0.5^2)
+$$
 
-1. Derive the exact score $\nabla_x \log p(x)$. *Hint: compute $p'(x)/p(x)$.*
+1. Derive the exact score $\nabla\_x \log p(x)$. *Hint: compute $p'(x)/p(x)$.*
 
 2. Evaluate the score at $x = 0$ (the midpoint between modes). What is its magnitude? What does this tell you about the quality of the gradient signal for Langevin dynamics initialized at $x = 0$?
 
-3. Now consider the noised distribution $p_\sigma(x) = p * \mathcal{N}(0, \sigma^2)$ (convolution with a Gaussian). For $\sigma = 3$, derive (or numerically compute) $\nabla_x \log p_\sigma(x)$ at $x = 0$. Compare to the unperturbed case.
+3. Now consider the noised distribution $p\_\sigma(x) = p * \mathcal{N}(0, \sigma^2)$ (convolution with a Gaussian). For $\sigma = 3$, derive (or numerically compute) $\nabla\_x \log p\_\sigma(x)$ at $x = 0$. Compare to the unperturbed case.
 
 ### Part (b): Empirical Demonstration (Implementation)
 
-1. Draw 10000 samples from $p(x)$ above. Train a small MLP $s_\theta(x)$ to estimate the score via the explicit score matching loss (Hyvarinen, 2005):
+1. Draw 10000 samples from $p(x)$ above. Train a small MLP $s\_\theta(x)$ to estimate the score via the explicit score matching loss (Hyvarinen, 2005):
 
-$$\mathcal{L} = \mathbb{E}_{p(x)}\!\left[\frac{1}{2}\|s_\theta(x)\|^2 + \text{tr}(\nabla_x s_\theta(x))\right]$$
+$$
+\mathcal{L} = \mathbb{E}_{p(x)}\!\left[\frac{1}{2}\|s_\theta(x)\|^2 + \text{tr}(\nabla_x s_\theta(x))\right]
+$$
 
-*For a 1D scalar network, $\text{tr}(\nabla_x s_\theta(x)) = s_\theta'(x)$, the derivative with respect to the input. Use `torch.autograd` to compute it.*
+*For a 1D scalar network, $\text{tr}(\nabla\_x s\_\theta(x)) = s\_\theta'(x)$, the derivative with respect to the input. Use `torch.autograd` to compute it.*
 
-2. Plot the learned score $s_\theta(x)$ vs. the true score $\nabla_x \log p(x)$ over $x \in [-10, 10]$. Where does the learned score match well? Where does it diverge?
+2. Plot the learned score $s\_\theta(x)$ vs. the true score $\nabla\_x \log p(x)$ over $x \in [-10, 10]$. Where does the learned score match well? Where does it diverge?
 
-3. Run Langevin dynamics for 5000 steps with $\eta = 0.01$, starting from $x_0 = 0$, using (i) the true score and (ii) the learned score. Plot histograms of 1000 independent chains. Does the learned-score version recover both modes?
+3. Run Langevin dynamics for 5000 steps with $\eta = 0.01$, starting from $x\_0 = 0$, using (i) the true score and (ii) the learned score. Plot histograms of 1000 independent chains. Does the learned-score version recover both modes?
 
 ### Part (c): The Noise Fix (Implementation)
 
-Repeat Part (b) but now train $s_\theta(x, \sigma)$ with denoising score matching at noise level $\sigma = 3$. Show that the learned score at $\sigma = 3$ is accurate even near $x = 0$.
+Repeat Part (b) but now train $s\_\theta(x, \sigma)$ with denoising score matching at noise level $\sigma = 3$. Show that the learned score at $\sigma = 3$ is accurate even near $x = 0$.
 
 ---
 
@@ -45,13 +49,13 @@ Implement the full NCSN training pipeline on a 2D dataset.
 
 Using the same 8-Gaussians dataset from Week 5 Homework Problem 4:
 
-1. Define $L = 10$ geometrically spaced noise levels from $\sigma_1 = 5.0$ to $\sigma_L = 0.01$.
+1. Define $L = 10$ geometrically spaced noise levels from $\sigma\_1 = 5.0$ to $\sigma\_L = 0.01$.
 
-2. Implement a noise-conditional score network: an MLP that takes $(x, \sigma)$ as input (concatenate $x \in \mathbb{R}^2$ with $\log \sigma$) and outputs $s_\theta(x, \sigma) \in \mathbb{R}^2$.
+2. Implement a noise-conditional score network: an MLP that takes $(x, \sigma)$ as input (concatenate $x \in \mathbb{R}^2$ with $\log \sigma$) and outputs $s\_\theta(x, \sigma) \in \mathbb{R}^2$.
 
    Architecture: 4 hidden layers, 256 units each, SiLU activations.
 
-3. Implement the NCSN training loss with $\lambda(\sigma_i) = \sigma_i^2$ weighting:
+3. Implement the NCSN training loss with $\lambda(\sigma\_i) = \sigma\_i^2$ weighting:
 
 ```python
 def ncsn_loss(model, x, sigmas):
@@ -86,7 +90,7 @@ def ncsn_loss(model, x, sigmas):
 
 ### Part (b): Visualize Learned Scores
 
-For each of the 10 noise levels $\sigma_i$, plot the learned score field $s_\theta(x, \sigma_i)$ as a vector field over $[-3, 3]^2$. At high noise, the arrows should point uniformly toward the center (one broad mode). At low noise, they should point toward the 8 individual modes.
+For each of the 10 noise levels $\sigma\_i$, plot the learned score field $s\_\theta(x, \sigma\_i)$ as a vector field over $[-3, 3]^2$. At high noise, the arrows should point uniformly toward the center (one broad mode). At low noise, they should point toward the 8 individual modes.
 
 ---
 
@@ -126,11 +130,11 @@ Generate 5000 samples and plot them alongside the true data distribution.
 
 ### Part (b): Effect of Langevin Steps $K$
 
-Run annealed Langevin dynamics with $K \in \{1, 10, 50, 100, 500\}$ steps per noise level. For each, plot the generated samples and compute the Wasserstein distance to the true distribution. How many steps per level are needed for good samples?
+Run annealed Langevin dynamics with $K \in \lbrace 1, 10, 50, 100, 500\rbrace $ steps per noise level. For each, plot the generated samples and compute the Wasserstein distance to the true distribution. How many steps per level are needed for good samples?
 
 ### Part (c): Visualize the Annealing
 
-Generate one batch of 500 samples and record the intermediate states at each noise level transition. Create a 2x5 grid showing the sample distribution after levels $\{1, 3, 5, 7, 10\}$ (from highest to lowest noise). You should see the samples progressively organize from a diffuse cloud into 8 tight clusters.
+Generate one batch of 500 samples and record the intermediate states at each noise level transition. Create a 2x5 grid showing the sample distribution after levels $\lbrace 1, 3, 5, 7, 10\rbrace $ (from highest to lowest noise). You should see the samples progressively organize from a diffuse cloud into 8 tight clusters.
 
 ---
 
@@ -140,17 +144,19 @@ This is the key theoretical result of the week. Prove each part carefully.
 
 ### Part (a): Score of the Forward Process
 
-Starting from $q(x_t \mid x_0) = \mathcal{N}\!\left(\sqrt{\bar{\alpha}_t}\, x_0,\; (1 - \bar{\alpha}_t)\, I\right)$:
+Starting from $q(x\_t \mid x\_0) = \mathcal{N}\!\left(\sqrt{\bar{\alpha}\_t}\, x\_0,\; (1 - \bar{\alpha}\_t)\, I\right)$:
 
-1. Write the log-density $\log q(x_t \mid x_0)$ explicitly.
-2. Compute $\nabla_{x_t} \log q(x_t \mid x_0)$.
-3. Using $x_t = \sqrt{\bar{\alpha}_t}\, x_0 + \sqrt{1-\bar{\alpha}_t}\, \varepsilon$, express the score in terms of $\varepsilon$.
+1. Write the log-density $\log q(x\_t \mid x\_0)$ explicitly.
+2. Compute $\nabla\_{x\_t} \log q(x\_t \mid x\_0)$.
+3. Using $x\_t = \sqrt{\bar{\alpha}\_t}\, x\_0 + \sqrt{1-\bar{\alpha}\_t}\, \varepsilon$, express the score in terms of $\varepsilon$.
 
 ### Part (b): Noise Prediction = Score Estimation
 
-1. In DDPM, the network predicts $\varepsilon_\theta(x_t, t)$ and the training loss is $\|\varepsilon - \varepsilon_\theta(x_t, t)\|^2$. Show that minimizing this loss is equivalent to training a score network $s_\theta(x_t, t)$ with the denoising score matching objective, where:
+1. In DDPM, the network predicts $\varepsilon\_\theta(x\_t, t)$ and the training loss is $\Vert \varepsilon - \varepsilon\_\theta(x\_t, t)\Vert ^2$. Show that minimizing this loss is equivalent to training a score network $s\_\theta(x\_t, t)$ with the denoising score matching objective, where:
 
-$$s_\theta(x_t, t) = -\frac{\varepsilon_\theta(x_t, t)}{\sqrt{1 - \bar{\alpha}_t}}$$
+$$
+s_\theta(x_t, t) = -\frac{\varepsilon_\theta(x_t, t)}{\sqrt{1 - \bar{\alpha}_t}}
+$$
 
 2. Derive the relationship between the DDPM loss weight (uniform over $t$) and the NCSN loss weight ($\sigma^2$).
 
@@ -158,17 +164,21 @@ $$s_\theta(x_t, t) = -\frac{\varepsilon_\theta(x_t, t)}{\sqrt{1 - \bar{\alpha}_t
 
 Starting from the DDPM sampling formula:
 
-$$x_{t-1} = \frac{1}{\sqrt{\alpha_t}}\!\left(x_t - \frac{\beta_t}{\sqrt{1 - \bar{\alpha}_t}}\,\varepsilon_\theta(x_t, t)\right) + \sigma_t\, z$$
+$$
+x_{t-1} = \frac{1}{\sqrt{\alpha_t}}\!\left(x_t - \frac{\beta_t}{\sqrt{1 - \bar{\alpha}_t}}\,\varepsilon_\theta(x_t, t)\right) + \sigma_t\, z
+$$
 
-Substitute $\varepsilon_\theta = -\sqrt{1-\bar{\alpha}_t}\, s_\theta$ and rewrite the sampling step in terms of the score function $s_\theta$. Compare the resulting expression to one step of Langevin dynamics:
+Substitute $\varepsilon\_\theta = -\sqrt{1-\bar{\alpha}\_t}\, s\_\theta$ and rewrite the sampling step in terms of the score function $s\_\theta$. Compare the resulting expression to one step of Langevin dynamics:
 
-$$x \leftarrow x + \frac{\eta}{2}\, s_\theta(x, \sigma) + \sqrt{\eta}\, z$$
+$$
+x \leftarrow x + \frac{\eta}{2}\, s_\theta(x, \sigma) + \sqrt{\eta}\, z
+$$
 
 Identify the effective step size $\eta$ in terms of the DDPM noise schedule parameters. Are they exactly the same, or is there an additional correction factor?
 
 ### Part (d): The Missing Piece
 
-The DDPM sampling step includes a $1/\sqrt{\alpha_t}$ factor that pure Langevin dynamics does not have. Explain what this factor does geometrically. *Hint: in the DDPM forward process, the signal is scaled by $\sqrt{\bar{\alpha}_t}$ at time $t$. The reverse process must undo this scaling.*
+The DDPM sampling step includes a $1/\sqrt{\alpha\_t}$ factor that pure Langevin dynamics does not have. Explain what this factor does geometrically. *Hint: in the DDPM forward process, the signal is scaled by $\sqrt{\bar{\alpha}\_t}$ at time $t$. The reverse process must undo this scaling.*
 
 ---
 
@@ -181,7 +191,7 @@ Train both models on the same dataset and compare them directly.
 Using the 8-Gaussians dataset (10000 training points):
 
 1. Train a DDPM (from Week 5 Homework Problem 4) with $T = 100$ steps and a linear schedule.
-2. Train an NCSN with $L = 100$ noise levels, geometrically spaced, chosen so that the effective noise levels match the DDPM schedule: $\sigma_i = \sqrt{(1-\bar{\alpha}_i)/\bar{\alpha}_i}$.
+2. Train an NCSN with $L = 100$ noise levels, geometrically spaced, chosen so that the effective noise levels match the DDPM schedule: $\sigma\_i = \sqrt{(1-\bar{\alpha}\_i)/\bar{\alpha}\_i}$.
 3. Use the same MLP architecture for both (3 hidden layers, 256 units, SiLU), with identical capacity.
 4. Train both for the same number of gradient steps (10000).
 
@@ -197,9 +207,9 @@ Plot the samples side by side. Compute:
 
 ### Part (c): Convert Between Parameterizations
 
-Take your trained DDPM noise predictor $\varepsilon_\theta$ and convert it to a score network: $s_{\text{converted}}(x, t) = -\varepsilon_\theta(x, t)/\sqrt{1-\bar{\alpha}_t}$.
+Take your trained DDPM noise predictor $\varepsilon\_\theta$ and convert it to a score network: $s\_{\text{converted}}(x, t) = -\varepsilon\_\theta(x, t)/\sqrt{1-\bar{\alpha}\_t}$.
 
-Use $s_{\text{converted}}$ for annealed Langevin dynamics. Compare the samples to those from the directly-trained NCSN. They should be similar (both are trained with equivalent objectives).
+Use $s\_{\text{converted}}$ for annealed Langevin dynamics. Compare the samples to those from the directly-trained NCSN. They should be similar (both are trained with equivalent objectives).
 
 ---
 
@@ -207,17 +217,17 @@ Use $s_{\text{converted}}$ for annealed Langevin dynamics. Compare the samples t
 
 ### Part (a): Analytic Score at Multiple Scales (Theory)
 
-Consider a 2D mixture: $p(x) = 0.5\,\mathcal{N}(x; \mu_1, 0.3^2 I) + 0.5\,\mathcal{N}(x; \mu_2, 0.3^2 I)$ where $\mu_1 = (-2, 0)$ and $\mu_2 = (2, 0)$.
+Consider a 2D mixture: $p(x) = 0.5\,\mathcal{N}(x; \mu\_1, 0.3^2 I) + 0.5\,\mathcal{N}(x; \mu\_2, 0.3^2 I)$ where $\mu\_1 = (-2, 0)$ and $\mu\_2 = (2, 0)$.
 
-1. Compute the exact score $\nabla_x \log p_\sigma(x)$ for the noised distribution $p_\sigma = p * \mathcal{N}(0, \sigma^2 I)$. *Hint: each component becomes $\mathcal{N}(\mu_k, (0.3^2 + \sigma^2)I)$.*
+1. Compute the exact score $\nabla\_x \log p\_\sigma(x)$ for the noised distribution $p\_\sigma = p * \mathcal{N}(0, \sigma^2 I)$. *Hint: each component becomes $\mathcal{N}(\mu\_k, (0.3^2 + \sigma^2)I)$.*
 
-2. Evaluate the score at $x = (0, 0)$ for $\sigma \in \{0.1, 0.5, 1, 2, 5\}$. At what $\sigma$ does the score at the origin become negligible? What does this tell you about Langevin mixing between modes?
+2. Evaluate the score at $x = (0, 0)$ for $\sigma \in \lbrace 0.1, 0.5, 1, 2, 5\rbrace $. At what $\sigma$ does the score at the origin become negligible? What does this tell you about Langevin mixing between modes?
 
 ### Part (b): Visualization (Implementation)
 
 For the same distribution:
 
-1. Plot the score field $\nabla_x \log p_\sigma(x)$ as a quiver plot over $[-5, 5]^2$ for $\sigma \in \{0.1, 0.5, 1.0, 3.0\}$. Use a 2x2 grid.
+1. Plot the score field $\nabla\_x \log p\_\sigma(x)$ as a quiver plot over $[-5, 5]^2$ for $\sigma \in \lbrace 0.1, 0.5, 1.0, 3.0\rbrace $. Use a 2x2 grid.
 
 2. At $\sigma = 0.1$: the score should point toward the nearest mode, with a "watershed" boundary between them.
    At $\sigma = 3.0$: the score should point toward the overall center of mass, with nearly unimodal behavior.

@@ -8,29 +8,33 @@
 
 **(a)** [2 marks]
 
-The eigenvectors of the covariance matrix $\mathbf{C}$ are the **principal directions** of the data — the orthogonal directions along which the data has maximum variance. The corresponding eigenvalues $\lambda_1 \geq \lambda_2 \geq \cdots \geq \lambda_d$ are the **variances** of the data projected along each principal direction. Geometrically, the eigenvectors define the axes of the ellipsoid that best approximates the data cloud, and the eigenvalues give the squared lengths of each axis.
+The eigenvectors of the covariance matrix $\mathbf{C}$ are the **principal directions** of the data — the orthogonal directions along which the data has maximum variance. The corresponding eigenvalues $\lambda\_1 \geq \lambda\_2 \geq \cdots \geq \lambda\_d$ are the **variances** of the data projected along each principal direction. Geometrically, the eigenvectors define the axes of the ellipsoid that best approximates the data cloud, and the eigenvalues give the squared lengths of each axis.
 
 **(b)** [4 marks]
 
-Let $\mathbf{C} = \mathbf{U} \boldsymbol{\Lambda} \mathbf{U}^\top$ be the eigendecomposition, where $\mathbf{U} = [\mathbf{u}_1, \ldots, \mathbf{u}_d]$ and $\boldsymbol{\Lambda} = \text{diag}(\lambda_1, \ldots, \lambda_d)$ with $\lambda_1 \geq \cdots \geq \lambda_d$.
+Let $\mathbf{C} = \mathbf{U} \boldsymbol{\Lambda} \mathbf{U}^\top$ be the eigendecomposition, where $\mathbf{U} = [\mathbf{u}\_1, \ldots, \mathbf{u}\_d]$ and $\boldsymbol{\Lambda} = \text{diag}(\lambda\_1, \ldots, \lambda\_d)$ with $\lambda\_1 \geq \cdots \geq \lambda\_d$.
 
-We want to maximize $\text{tr}(\mathbf{W}^\top \mathbf{C} \mathbf{W})$ subject to $\mathbf{W}^\top \mathbf{W} = \mathbf{I}_k$.
+We want to maximize $\text{tr}(\mathbf{W}^\top \mathbf{C} \mathbf{W})$ subject to $\mathbf{W}^\top \mathbf{W} = \mathbf{I}\_k$.
 
 Substitute $\mathbf{C} = \mathbf{U} \boldsymbol{\Lambda} \mathbf{U}^\top$:
 
-$$\text{tr}(\mathbf{W}^\top \mathbf{U} \boldsymbol{\Lambda} \mathbf{U}^\top \mathbf{W})$$
+$$
+\text{tr}(\mathbf{W}^\top \mathbf{U} \boldsymbol{\Lambda} \mathbf{U}^\top \mathbf{W})
+$$
 
-Let $\mathbf{V} = \mathbf{U}^\top \mathbf{W}$. Since $\mathbf{U}$ is orthogonal, $\mathbf{V}^\top \mathbf{V} = \mathbf{W}^\top \mathbf{U} \mathbf{U}^\top \mathbf{W} = \mathbf{W}^\top \mathbf{W} = \mathbf{I}_k$, so $\mathbf{V}$ also has orthonormal columns.
+Let $\mathbf{V} = \mathbf{U}^\top \mathbf{W}$. Since $\mathbf{U}$ is orthogonal, $\mathbf{V}^\top \mathbf{V} = \mathbf{W}^\top \mathbf{U} \mathbf{U}^\top \mathbf{W} = \mathbf{W}^\top \mathbf{W} = \mathbf{I}\_k$, so $\mathbf{V}$ also has orthonormal columns.
 
 The objective becomes:
 
-$$\text{tr}(\mathbf{V}^\top \boldsymbol{\Lambda} \mathbf{V}) = \sum_{j=1}^{k} \mathbf{v}_j^\top \boldsymbol{\Lambda} \mathbf{v}_j = \sum_{j=1}^{k} \sum_{i=1}^{d} \lambda_i v_{ij}^2$$
+$$
+\text{tr}(\mathbf{V}^\top \boldsymbol{\Lambda} \mathbf{V}) = \sum_{j=1}^{k} \mathbf{v}_j^\top \boldsymbol{\Lambda} \mathbf{v}_j = \sum_{j=1}^{k} \sum_{i=1}^{d} \lambda_i v_{ij}^2
+$$
 
-Since $\mathbf{v}_j$ is a unit vector, $\sum_i v_{ij}^2 = 1$ for each $j$. This is a weighted sum of the eigenvalues, where the weights for each $j$ form a probability distribution over eigenvalues. To maximize a weighted sum where weights must sum to 1, we should put all weight on the largest values.
+Since $\mathbf{v}\_j$ is a unit vector, $\sum\_i v\_{ij}^2 = 1$ for each $j$. This is a weighted sum of the eigenvalues, where the weights for each $j$ form a probability distribution over eigenvalues. To maximize a weighted sum where weights must sum to 1, we should put all weight on the largest values.
 
-The maximum is achieved when each $\mathbf{v}_j$ is a standard basis vector $\mathbf{e}_{\sigma(j)}$, selecting the top $k$ eigenvalues. The maximum is $\sum_{i=1}^{k} \lambda_i$.
+The maximum is achieved when each $\mathbf{v}\_j$ is a standard basis vector $\mathbf{e}\_{\sigma(j)}$, selecting the top $k$ eigenvalues. The maximum is $\sum\_{i=1}^{k} \lambda\_i$.
 
-This means $\mathbf{V} = [\mathbf{e}_1, \ldots, \mathbf{e}_k]$ (up to column permutations), so $\mathbf{W} = \mathbf{U} \mathbf{V} = [\mathbf{u}_1, \ldots, \mathbf{u}_k]$ — the top $k$ eigenvectors of $\mathbf{C}$. $\square$
+This means $\mathbf{V} = [\mathbf{e}\_1, \ldots, \mathbf{e}\_k]$ (up to column permutations), so $\mathbf{W} = \mathbf{U} \mathbf{V} = [\mathbf{u}\_1, \ldots, \mathbf{u}\_k]$ — the top $k$ eigenvectors of $\mathbf{C}$. $\square$
 
 ---
 
@@ -42,15 +46,17 @@ The maximum learning rate that guarantees descent is $\eta = \frac{1}{L}$.
 
 Justification: For an $L$-smooth function, we have the descent lemma:
 
-$$f(\mathbf{w} - \eta \nabla f(\mathbf{w})) \leq f(\mathbf{w}) - \eta(1 - \frac{L\eta}{2}) \|\nabla f(\mathbf{w})\|^2$$
+$$
+f(\mathbf{w} - \eta \nabla f(\mathbf{w})) \leq f(\mathbf{w}) - \eta(1 - \frac{L\eta}{2}) \|\nabla f(\mathbf{w})\|^2
+$$
 
-For this to guarantee descent, we need $1 - \frac{L\eta}{2} > 0$, i.e., $\eta < \frac{2}{L}$. The optimal fixed step size (maximizing the guaranteed decrease) is $\eta = \frac{1}{L}$, which gives a guaranteed decrease of $\frac{1}{2L}\|\nabla f(\mathbf{w})\|^2$ per step.
+For this to guarantee descent, we need $1 - \frac{L\eta}{2} > 0$, i.e., $\eta < \frac{2}{L}$. The optimal fixed step size (maximizing the guaranteed decrease) is $\eta = \frac{1}{L}$, which gives a guaranteed decrease of $\frac{1}{2L}\Vert \nabla f(\mathbf{w})\Vert ^2$ per step.
 
 **(b)** [3 marks]
 
-The first moment estimate $\mathbf{m}_t$ is an exponential moving average of the gradients, serving as a **momentum** term that smooths out gradient noise and accelerates optimization along consistent gradient directions. The second moment estimate $\mathbf{v}_t$ is an exponential moving average of the squared gradients, estimating the **variance** (or scale) of the gradient for each parameter.
+The first moment estimate $\mathbf{m}\_t$ is an exponential moving average of the gradients, serving as a **momentum** term that smooths out gradient noise and accelerates optimization along consistent gradient directions. The second moment estimate $\mathbf{v}\_t$ is an exponential moving average of the squared gradients, estimating the **variance** (or scale) of the gradient for each parameter.
 
-Adam divides each parameter's gradient by $\sqrt{v_t}$, effectively normalizing the step size by the gradient's typical magnitude in that dimension. On loss surfaces with different curvatures along different dimensions (e.g., a narrow ravine), vanilla SGD takes the same step size everywhere, leading to oscillation along high-curvature directions or slow progress along low-curvature directions. Adam adapts: parameters with large, consistent gradients get smaller effective learning rates, and parameters with small gradients get larger effective learning rates, leading to more uniform progress.
+Adam divides each parameter's gradient by $\sqrt{v\_t}$, effectively normalizing the step size by the gradient's typical magnitude in that dimension. On loss surfaces with different curvatures along different dimensions (e.g., a narrow ravine), vanilla SGD takes the same step size everywhere, leading to oscillation along high-curvature directions or slow progress along low-curvature directions. Adam adapts: parameters with large, consistent gradients get smaller effective learning rates, and parameters with small gradients get larger effective learning rates, leading to more uniform progress.
 
 ---
 
@@ -60,33 +66,45 @@ Adam divides each parameter's gradient by $\sqrt{v_t}$, effectively normalizing 
 
 The KL divergence between continuous distributions $p$ and $q$ is:
 
-$$D_{\text{KL}}(p \| q) = \int p(x) \log \frac{p(x)}{q(x)} \, dx$$
+$$
+D_{\text{KL}}(p \| q) = \int p(x) \log \frac{p(x)}{q(x)} \, dx
+$$
 
 Two properties:
 
-1. **Non-negativity:** $D_{\text{KL}}(p \| q) \geq 0$ for all $p, q$, with equality iff $p = q$ almost everywhere. This follows from Jensen's inequality applied to the concave function $\log$: $\mathbb{E}_p[\log \frac{q}{p}] \leq \log \mathbb{E}_p[\frac{q}{p}] = \log 1 = 0$, so $D_{\text{KL}} = -\mathbb{E}_p[\log \frac{q}{p}] \geq 0$.
+1. **Non-negativity:** $D\_{\text{KL}}(p \Vert  q) \geq 0$ for all $p, q$, with equality iff $p = q$ almost everywhere. This follows from Jensen's inequality applied to the concave function $\log$: $\mathbb{E}\_p[\log \frac{q}{p}] \leq \log \mathbb{E}\_p[\frac{q}{p}] = \log 1 = 0$, so $D\_{\text{KL}} = -\mathbb{E}\_p[\log \frac{q}{p}] \geq 0$.
 
-2. **Asymmetry:** $D_{\text{KL}}(p \| q) \neq D_{\text{KL}}(q \| p)$ in general. This means KL divergence is not a true metric. For example, $D_{\text{KL}}(p \| q)$ is large when $p(x) > 0$ but $q(x) \approx 0$ (it penalizes $q$ for assigning low probability where $p$ is high), but $D_{\text{KL}}(q \| p)$ does not penalize this scenario.
+2. **Asymmetry:** $D\_{\text{KL}}(p \Vert  q) \neq D\_{\text{KL}}(q \Vert  p)$ in general. This means KL divergence is not a true metric. For example, $D\_{\text{KL}}(p \Vert  q)$ is large when $p(x) > 0$ but $q(x) \approx 0$ (it penalizes $q$ for assigning low probability where $p$ is high), but $D\_{\text{KL}}(q \Vert  p)$ does not penalize this scenario.
 
 **(b)** [5 marks]
 
-The empirical distribution is $\hat{p}_{\text{data}}(x) = \frac{1}{n}\sum_{i=1}^n \delta(x - x_i)$.
+The empirical distribution is $\hat{p}\_{\text{data}}(x) = \frac{1}{n}\sum\_{i=1}^n \delta(x - x\_i)$.
 
-The KL divergence from $\hat{p}_{\text{data}}$ to $p_\theta$ is:
+The KL divergence from $\hat{p}\_{\text{data}}$ to $p\_\theta$ is:
 
-$$D_{\text{KL}}(\hat{p}_{\text{data}} \| p_\theta) = \int \hat{p}_{\text{data}}(x) \log \frac{\hat{p}_{\text{data}}(x)}{p_\theta(x)} \, dx$$
+$$
+D_{\text{KL}}(\hat{p}_{\text{data}} \| p_\theta) = \int \hat{p}_{\text{data}}(x) \log \frac{\hat{p}_{\text{data}}(x)}{p_\theta(x)} \, dx
+$$
 
-$$= \int \hat{p}_{\text{data}}(x) \log \hat{p}_{\text{data}}(x) \, dx - \int \hat{p}_{\text{data}}(x) \log p_\theta(x) \, dx$$
+$$
+= \int \hat{p}_{\text{data}}(x) \log \hat{p}_{\text{data}}(x) \, dx - \int \hat{p}_{\text{data}}(x) \log p_\theta(x) \, dx
+$$
 
-$$= -H(\hat{p}_{\text{data}}) - \mathbb{E}_{\hat{p}_{\text{data}}}[\log p_\theta(x)]$$
+$$
+= -H(\hat{p}_{\text{data}}) - \mathbb{E}_{\hat{p}_{\text{data}}}[\log p_\theta(x)]
+$$
 
-The first term $-H(\hat{p}_{\text{data}})$ is the negative entropy of the empirical distribution, which is a constant with respect to $\theta$.
+The first term $-H(\hat{p}\_{\text{data}})$ is the negative entropy of the empirical distribution, which is a constant with respect to $\theta$.
 
 Therefore:
 
-$$\arg\min_\theta D_{\text{KL}}(\hat{p}_{\text{data}} \| p_\theta) = \arg\max_\theta \mathbb{E}_{\hat{p}_{\text{data}}}[\log p_\theta(x)]$$
+$$
+\arg\min_\theta D_{\text{KL}}(\hat{p}_{\text{data}} \| p_\theta) = \arg\max_\theta \mathbb{E}_{\hat{p}_{\text{data}}}[\log p_\theta(x)]
+$$
 
-$$= \arg\max_\theta \frac{1}{n} \sum_{i=1}^n \log p_\theta(x_i)$$
+$$
+= \arg\max_\theta \frac{1}{n} \sum_{i=1}^n \log p_\theta(x_i)
+$$
 
 This is exactly the maximum likelihood objective (up to the constant $\frac{1}{n}$). $\square$
 
@@ -100,27 +118,33 @@ This is exactly the maximum likelihood objective (up to the constant $\frac{1}{n
 
 The reconstruction loss is:
 
-$$\mathcal{L} = \mathbb{E}[\|\mathbf{x} - \mathbf{W}_d \mathbf{W}_e \mathbf{x}\|^2] = \text{tr}\left((\mathbf{I} - \mathbf{W}_d \mathbf{W}_e)^\top (\mathbf{I} - \mathbf{W}_d \mathbf{W}_e) \mathbf{C}\right)$$
+$$
+\mathcal{L} = \mathbb{E}[\|\mathbf{x} - \mathbf{W}_d \mathbf{W}_e \mathbf{x}\|^2] = \text{tr}\left((\mathbf{I} - \mathbf{W}_d \mathbf{W}_e)^\top (\mathbf{I} - \mathbf{W}_d \mathbf{W}_e) \mathbf{C}\right)
+$$
 
-Let $\mathbf{P} = \mathbf{W}_d \mathbf{W}_e$. The loss is $\mathbb{E}[\|(\mathbf{I} - \mathbf{P})\mathbf{x}\|^2] = \text{tr}((\mathbf{I} - \mathbf{P})^\top(\mathbf{I} - \mathbf{P}) \mathbf{C})$.
+Let $\mathbf{P} = \mathbf{W}\_d \mathbf{W}\_e$. The loss is $\mathbb{E}[\Vert (\mathbf{I} - \mathbf{P})\mathbf{x}\Vert ^2] = \text{tr}((\mathbf{I} - \mathbf{P})^\top(\mathbf{I} - \mathbf{P}) \mathbf{C})$.
 
-Since $\mathbf{W}_e \in \mathbb{R}^{k \times d}$ and $\mathbf{W}_d \in \mathbb{R}^{d \times k}$, $\mathbf{P}$ is a $d \times d$ matrix of rank at most $k$. The loss is minimized when $\mathbf{P}$ is the orthogonal projection onto a $k$-dimensional subspace that captures the most variance.
+Since $\mathbf{W}\_e \in \mathbb{R}^{k \times d}$ and $\mathbf{W}\_d \in \mathbb{R}^{d \times k}$, $\mathbf{P}$ is a $d \times d$ matrix of rank at most $k$. The loss is minimized when $\mathbf{P}$ is the orthogonal projection onto a $k$-dimensional subspace that captures the most variance.
 
 To see this, note that $\mathcal{L} = \text{tr}(\mathbf{C}) - 2\text{tr}(\mathbf{P}\mathbf{C}) + \text{tr}(\mathbf{P}^\top \mathbf{P} \mathbf{C})$. At the optimum, $\mathbf{P}$ should be an orthogonal projection ($\mathbf{P}^2 = \mathbf{P}$, $\mathbf{P}^\top = \mathbf{P}$), because for any rank-$k$ $\mathbf{P}$, the orthogonal projection onto its column space achieves lower or equal loss. For an orthogonal projection, $\mathbf{P}^\top \mathbf{P} = \mathbf{P}$, so:
 
-$$\mathcal{L} = \text{tr}(\mathbf{C}) - \text{tr}(\mathbf{P}\mathbf{C})$$
+$$
+\mathcal{L} = \text{tr}(\mathbf{C}) - \text{tr}(\mathbf{P}\mathbf{C})
+$$
 
-Minimizing $\mathcal{L}$ is equivalent to maximizing $\text{tr}(\mathbf{P}\mathbf{C})$. Writing $\mathbf{P} = \sum_{j=1}^k \mathbf{w}_j \mathbf{w}_j^\top$ for orthonormal $\{\mathbf{w}_j\}$:
+Minimizing $\mathcal{L}$ is equivalent to maximizing $\text{tr}(\mathbf{P}\mathbf{C})$. Writing $\mathbf{P} = \sum\_{j=1}^k \mathbf{w}\_j \mathbf{w}\_j^\top$ for orthonormal $\lbrace \mathbf{w}\_j\rbrace $:
 
-$$\text{tr}(\mathbf{P}\mathbf{C}) = \sum_{j=1}^k \mathbf{w}_j^\top \mathbf{C} \mathbf{w}_j$$
+$$
+\text{tr}(\mathbf{P}\mathbf{C}) = \sum_{j=1}^k \mathbf{w}_j^\top \mathbf{C} \mathbf{w}_j
+$$
 
-By the result from Q1.1(b), this is maximized when $\{\mathbf{w}_j\}$ are the top $k$ eigenvectors of $\mathbf{C}$. Therefore, the columns of $\mathbf{W}_d$ span the top-$k$ PCA subspace at the optimum. $\square$
+By the result from Q1.1(b), this is maximized when $\lbrace \mathbf{w}\_j\rbrace $ are the top $k$ eigenvectors of $\mathbf{C}$. Therefore, the columns of $\mathbf{W}\_d$ span the top-$k$ PCA subspace at the optimum. $\square$
 
 **(b)** [3 marks]
 
 The equivalence breaks for nonlinear autoencoders because they can capture **curved** (nonlinear) manifolds, not just flat (linear) subspaces. PCA projects onto a linear subspace, which fails when the data lies on a curved manifold.
 
-**Concrete example:** Consider data points uniformly distributed along a half-circle (semicircle) in 2D: $\{(\cos\theta, \sin\theta) : \theta \in [0, \pi]\}$. The best 1D linear projection (PCA) would project onto the $x$-axis, losing information about whether a point is on the upper or lower part of the circle near the ends. A nonlinear autoencoder with a 1D bottleneck can learn to encode $\theta$ (the angle parameter), which perfectly parameterizes the semicircle — zero reconstruction error, whereas PCA necessarily has nonzero error.
+**Concrete example:** Consider data points uniformly distributed along a half-circle (semicircle) in 2D: $\lbrace (\cos\theta, \sin\theta) : \theta \in [0, \pi]\rbrace $. The best 1D linear projection (PCA) would project onto the $x$-axis, losing information about whether a point is on the upper or lower part of the circle near the ends. A nonlinear autoencoder with a 1D bottleneck can learn to encode $\theta$ (the angle parameter), which perfectly parameterizes the semicircle — zero reconstruction error, whereas PCA necessarily has nonzero error.
 
 ---
 
@@ -130,41 +154,57 @@ The equivalence breaks for nonlinear autoencoders because they can capture **cur
 
 Starting from the marginal log-likelihood:
 
-$$\log p_\theta(\mathbf{x}) = \log \int p_\theta(\mathbf{x}, \mathbf{z}) \, d\mathbf{z}$$
+$$
+\log p_\theta(\mathbf{x}) = \log \int p_\theta(\mathbf{x}, \mathbf{z}) \, d\mathbf{z}
+$$
 
-Introduce an arbitrary distribution $q_\phi(\mathbf{z}|\mathbf{x})$:
+Introduce an arbitrary distribution $q\_\phi(\mathbf{z}|\mathbf{x})$:
 
-$$\log p_\theta(\mathbf{x}) = \log \int q_\phi(\mathbf{z}|\mathbf{x}) \frac{p_\theta(\mathbf{x}, \mathbf{z})}{q_\phi(\mathbf{z}|\mathbf{x})} \, d\mathbf{z}$$
+$$
+\log p_\theta(\mathbf{x}) = \log \int q_\phi(\mathbf{z}|\mathbf{x}) \frac{p_\theta(\mathbf{x}, \mathbf{z})}{q_\phi(\mathbf{z}|\mathbf{x})} \, d\mathbf{z}
+$$
 
-$$= \log \mathbb{E}_{q_\phi(\mathbf{z}|\mathbf{x})}\left[\frac{p_\theta(\mathbf{x}, \mathbf{z})}{q_\phi(\mathbf{z}|\mathbf{x})}\right]$$
+$$
+= \log \mathbb{E}_{q_\phi(\mathbf{z}|\mathbf{x})}\left[\frac{p_\theta(\mathbf{x}, \mathbf{z})}{q_\phi(\mathbf{z}|\mathbf{x})}\right]
+$$
 
 By Jensen's inequality (since $\log$ is concave):
 
-$$\geq \mathbb{E}_{q_\phi(\mathbf{z}|\mathbf{x})}\left[\log \frac{p_\theta(\mathbf{x}, \mathbf{z})}{q_\phi(\mathbf{z}|\mathbf{x})}\right]$$
+$$
+\geq \mathbb{E}_{q_\phi(\mathbf{z}|\mathbf{x})}\left[\log \frac{p_\theta(\mathbf{x}, \mathbf{z})}{q_\phi(\mathbf{z}|\mathbf{x})}\right]
+$$
 
-Expanding $p_\theta(\mathbf{x}, \mathbf{z}) = p_\theta(\mathbf{x}|\mathbf{z}) p(\mathbf{z})$:
+Expanding $p\_\theta(\mathbf{x}, \mathbf{z}) = p\_\theta(\mathbf{x}|\mathbf{z}) p(\mathbf{z})$:
 
-$$= \mathbb{E}_{q_\phi(\mathbf{z}|\mathbf{x})}\left[\log p_\theta(\mathbf{x}|\mathbf{z}) + \log p(\mathbf{z}) - \log q_\phi(\mathbf{z}|\mathbf{x})\right]$$
+$$
+= \mathbb{E}_{q_\phi(\mathbf{z}|\mathbf{x})}\left[\log p_\theta(\mathbf{x}|\mathbf{z}) + \log p(\mathbf{z}) - \log q_\phi(\mathbf{z}|\mathbf{x})\right]
+$$
 
-$$= \mathbb{E}_{q_\phi(\mathbf{z}|\mathbf{x})}[\log p_\theta(\mathbf{x}|\mathbf{z})] + \mathbb{E}_{q_\phi(\mathbf{z}|\mathbf{x})}\left[\log \frac{p(\mathbf{z})}{q_\phi(\mathbf{z}|\mathbf{x})}\right]$$
+$$
+= \mathbb{E}_{q_\phi(\mathbf{z}|\mathbf{x})}[\log p_\theta(\mathbf{x}|\mathbf{z})] + \mathbb{E}_{q_\phi(\mathbf{z}|\mathbf{x})}\left[\log \frac{p(\mathbf{z})}{q_\phi(\mathbf{z}|\mathbf{x})}\right]
+$$
 
-$$= \mathbb{E}_{q_\phi(\mathbf{z}|\mathbf{x})}[\log p_\theta(\mathbf{x}|\mathbf{z})] - D_{\text{KL}}(q_\phi(\mathbf{z}|\mathbf{x}) \| p(\mathbf{z}))$$
+$$
+= \mathbb{E}_{q_\phi(\mathbf{z}|\mathbf{x})}[\log p_\theta(\mathbf{x}|\mathbf{z})] - D_{\text{KL}}(q_\phi(\mathbf{z}|\mathbf{x}) \| p(\mathbf{z}))
+$$
 
 This is the ELBO. $\square$
 
 **(b)** [3 marks]
 
-The reparameterization trick rewrites a sample from $q_\phi(\mathbf{z}|\mathbf{x}) = \mathcal{N}(\boldsymbol{\mu}_\phi(\mathbf{x}), \text{diag}(\boldsymbol{\sigma}_\phi^2(\mathbf{x})))$ as:
+The reparameterization trick rewrites a sample from $q\_\phi(\mathbf{z}|\mathbf{x}) = \mathcal{N}(\boldsymbol{\mu}\_\phi(\mathbf{x}), \text{diag}(\boldsymbol{\sigma}\_\phi^2(\mathbf{x})))$ as:
 
-$$\mathbf{z} = \boldsymbol{\mu}_\phi(\mathbf{x}) + \boldsymbol{\sigma}_\phi(\mathbf{x}) \odot \boldsymbol{\epsilon}, \quad \boldsymbol{\epsilon} \sim \mathcal{N}(\mathbf{0}, \mathbf{I})$$
+$$
+\mathbf{z} = \boldsymbol{\mu}_\phi(\mathbf{x}) + \boldsymbol{\sigma}_\phi(\mathbf{x}) \odot \boldsymbol{\epsilon}, \quad \boldsymbol{\epsilon} \sim \mathcal{N}(\mathbf{0}, \mathbf{I})
+$$
 
-This is necessary because the expectation $\mathbb{E}_{q_\phi(\mathbf{z}|\mathbf{x})}[\log p_\theta(\mathbf{x}|\mathbf{z})]$ involves sampling from a distribution that depends on $\phi$. If we sample $\mathbf{z} \sim q_\phi$ directly, the sampling operation is non-differentiable with respect to $\phi$ — we cannot backpropagate through the stochastic sampling step. The reparameterization trick moves the stochasticity into the fixed distribution $\boldsymbol{\epsilon} \sim \mathcal{N}(\mathbf{0}, \mathbf{I})$, making $\mathbf{z}$ a deterministic, differentiable function of $\phi$ (given $\boldsymbol{\epsilon}$), enabling standard backpropagation.
+This is necessary because the expectation $\mathbb{E}\_{q\_\phi(\mathbf{z}|\mathbf{x})}[\log p\_\theta(\mathbf{x}|\mathbf{z})]$ involves sampling from a distribution that depends on $\phi$. If we sample $\mathbf{z} \sim q\_\phi$ directly, the sampling operation is non-differentiable with respect to $\phi$ — we cannot backpropagate through the stochastic sampling step. The reparameterization trick moves the stochasticity into the fixed distribution $\boldsymbol{\epsilon} \sim \mathcal{N}(\mathbf{0}, \mathbf{I})$, making $\mathbf{z}$ a deterministic, differentiable function of $\phi$ (given $\boldsymbol{\epsilon}$), enabling standard backpropagation.
 
 **(c)** [3 marks]
 
-When $\beta \gg 1$: The KL term dominates the objective. The model is strongly penalized for having $q_\phi(\mathbf{z}|\mathbf{x})$ deviate from the prior $p(\mathbf{z}) = \mathcal{N}(\mathbf{0}, \mathbf{I})$. The result is that the encoder collapses to roughly $q_\phi(\mathbf{z}|\mathbf{x}) \approx \mathcal{N}(\mathbf{0}, \mathbf{I})$ for all inputs — the latent space becomes **uninformative** (posterior collapse). Reconstruction quality degrades severely because the latent code carries almost no information about the input. The latent space is smooth and well-structured but useless.
+When $\beta \gg 1$: The KL term dominates the objective. The model is strongly penalized for having $q\_\phi(\mathbf{z}|\mathbf{x})$ deviate from the prior $p(\mathbf{z}) = \mathcal{N}(\mathbf{0}, \mathbf{I})$. The result is that the encoder collapses to roughly $q\_\phi(\mathbf{z}|\mathbf{x}) \approx \mathcal{N}(\mathbf{0}, \mathbf{I})$ for all inputs — the latent space becomes **uninformative** (posterior collapse). Reconstruction quality degrades severely because the latent code carries almost no information about the input. The latent space is smooth and well-structured but useless.
 
-When $\beta \to 0$: The KL term vanishes. The model becomes a standard autoencoder with a stochastic bottleneck. Reconstruction quality is excellent, but the latent space has no structure — $q_\phi(\mathbf{z}|\mathbf{x})$ can be arbitrary, with no pressure to match the prior. The latent space is not useful for generation (sampling from $p(\mathbf{z})$ and decoding produces garbage).
+When $\beta \to 0$: The KL term vanishes. The model becomes a standard autoencoder with a stochastic bottleneck. Reconstruction quality is excellent, but the latent space has no structure — $q\_\phi(\mathbf{z}|\mathbf{x})$ can be arbitrary, with no pressure to match the prior. The latent space is not useful for generation (sampling from $p(\mathbf{z})$ and decoding produces garbage).
 
 The tradeoff: $\beta$ controls the balance between reconstruction fidelity and latent space regularity. The standard VAE ($\beta = 1$) balances both; increasing $\beta$ sacrifices reconstruction for a more disentangled, structured latent space.
 
@@ -178,34 +218,40 @@ The tradeoff: $\beta$ controls the balance between reconstruction fidelity and l
 
 With $\mathbf{D} = \mathbf{I}$, the LASSO objective becomes:
 
-$$\min_{\mathbf{z}} \frac{1}{2}\|\mathbf{x} - \mathbf{z}\|_2^2 + \lambda \|\mathbf{z}\|_1$$
+$$
+\min_{\mathbf{z}} \frac{1}{2}\|\mathbf{x} - \mathbf{z}\|_2^2 + \lambda \|\mathbf{z}\|_1
+$$
 
 This separates into independent scalar problems for each $i$:
 
-$$\min_{z_i} \frac{1}{2}(x_i - z_i)^2 + \lambda |z_i|$$
+$$
+\min_{z_i} \frac{1}{2}(x_i - z_i)^2 + \lambda |z_i|
+$$
 
-**Case 1: $z_i > 0$.** The objective is $\frac{1}{2}(x_i - z_i)^2 + \lambda z_i$. Taking the derivative and setting to zero: $-(x_i - z_i) + \lambda = 0$, so $z_i = x_i - \lambda$. This is valid (positive) only if $x_i > \lambda$.
+**Case 1: $z\_i > 0$.** The objective is $\frac{1}{2}(x\_i - z\_i)^2 + \lambda z\_i$. Taking the derivative and setting to zero: $-(x\_i - z\_i) + \lambda = 0$, so $z\_i = x\_i - \lambda$. This is valid (positive) only if $x\_i > \lambda$.
 
-**Case 2: $z_i < 0$.** The objective is $\frac{1}{2}(x_i - z_i)^2 - \lambda z_i$. Taking the derivative: $-(x_i - z_i) - \lambda = 0$, so $z_i = x_i + \lambda$. This is valid (negative) only if $x_i < -\lambda$.
+**Case 2: $z\_i < 0$.** The objective is $\frac{1}{2}(x\_i - z\_i)^2 - \lambda z\_i$. Taking the derivative: $-(x\_i - z\_i) - \lambda = 0$, so $z\_i = x\_i + \lambda$. This is valid (negative) only if $x\_i < -\lambda$.
 
-**Case 3: $z_i = 0$.** Valid when $|x_i| \leq \lambda$, which can be verified by checking that the subdifferential of the objective at $z_i = 0$ contains 0.
+**Case 3: $z\_i = 0$.** Valid when $|x\_i| \leq \lambda$, which can be verified by checking that the subdifferential of the objective at $z\_i = 0$ contains 0.
 
 Combining all cases:
 
-$$z_i^* = \text{sign}(x_i) \max(|x_i| - \lambda, 0) = S_\lambda(x_i)$$
+$$
+z_i^* = \text{sign}(x_i) \max(|x_i| - \lambda, 0) = S_\lambda(x_i)
+$$
 
 This is the soft-thresholding operator. $\square$
 
 **(b)** [3 marks]
 
 The soft-thresholding operator is a piecewise linear function:
-- For $|x_i| \leq \lambda$: output is 0 (the "dead zone").
-- For $x_i > \lambda$: output is $x_i - \lambda$ (a line with slope 1, shifted down by $\lambda$).
-- For $x_i < -\lambda$: output is $x_i + \lambda$ (a line with slope 1, shifted up by $\lambda$).
+- For $|x\_i| \leq \lambda$: output is 0 (the "dead zone").
+- For $x\_i > \lambda$: output is $x\_i - \lambda$ (a line with slope 1, shifted down by $\lambda$).
+- For $x\_i < -\lambda$: output is $x\_i + \lambda$ (a line with slope 1, shifted up by $\lambda$).
 
-**Hard thresholding** is $z_i = x_i \cdot \mathbb{1}[|x_i| > \lambda]$: values below the threshold are zeroed, but values above are passed through unchanged.
+**Hard thresholding** is $z\_i = x\_i \cdot \mathbb{1}[|x\_i| > \lambda]$: values below the threshold are zeroed, but values above are passed through unchanged.
 
-**Soft thresholding introduces shrinkage bias** because all active values are reduced by $\lambda$ — the output $x_i - \lambda$ is always smaller in magnitude than the input $x_i$. Hard thresholding does not shrink active values, but it has a discontinuity at $|x_i| = \lambda$, making optimization harder (the objective with hard thresholding is non-convex).
+**Soft thresholding introduces shrinkage bias** because all active values are reduced by $\lambda$ — the output $x\_i - \lambda$ is always smaller in magnitude than the input $x\_i$. Hard thresholding does not shrink active values, but it has a discontinuity at $|x\_i| = \lambda$, making optimization harder (the objective with hard thresholding is non-convex).
 
 ---
 
@@ -217,15 +263,15 @@ One ISTA iteration has two steps:
 
 1. **Gradient step** on the smooth part of the objective: $\mathbf{u}^{(t)} = \mathbf{z}^{(t)} + \frac{1}{L}\mathbf{D}^\top(\mathbf{x} - \mathbf{D}\mathbf{z}^{(t)})$. This computes the residual $\mathbf{x} - \mathbf{D}\mathbf{z}^{(t)}$, projects it back to the code space via $\mathbf{D}^\top$, and takes a gradient step with step size $\frac{1}{L}$ to reduce the reconstruction error.
 
-2. **Proximal step** for the non-smooth L1 term: $\mathbf{z}^{(t+1)} = S_{\lambda/L}(\mathbf{u}^{(t)})$. This applies soft-thresholding, which is the proximal operator of the L1 norm. It enforces sparsity by shrinking small components to zero.
+2. **Proximal step** for the non-smooth L1 term: $\mathbf{z}^{(t+1)} = S\_{\lambda/L}(\mathbf{u}^{(t)})$. This applies soft-thresholding, which is the proximal operator of the L1 norm. It enforces sparsity by shrinking small components to zero.
 
-We cannot use standard gradient descent on the full objective $\frac{1}{2}\|\mathbf{x} - \mathbf{D}\mathbf{z}\|_2^2 + \lambda \|\mathbf{z}\|_1$ because the L1 term $\lambda \|\mathbf{z}\|_1$ is **non-differentiable** at $z_i = 0$. The subgradient exists but using subgradient descent converges very slowly and does not produce exact zeros. The proximal splitting approach (ISTA) handles the non-smooth term analytically via the proximal operator while using gradient descent on the smooth term.
+We cannot use standard gradient descent on the full objective $\frac{1}{2}\Vert \mathbf{x} - \mathbf{D}\mathbf{z}\Vert \_2^2 + \lambda \Vert \mathbf{z}\Vert \_1$ because the L1 term $\lambda \Vert \mathbf{z}\Vert \_1$ is **non-differentiable** at $z\_i = 0$. The subgradient exists but using subgradient descent converges very slowly and does not produce exact zeros. The proximal splitting approach (ISTA) handles the non-smooth term analytically via the proximal operator while using gradient descent on the smooth term.
 
 **(b)** [3 marks]
 
-A single forward pass of an SAE encoder computes $\mathbf{z} = \text{ReLU}(\mathbf{W}_e \mathbf{x} + \mathbf{b}_e)$. This has the same structural form as one ISTA step: a linear transformation of $\mathbf{x}$ followed by a nonlinear thresholding operation. The matrix $\mathbf{W}_e$ plays the role of $\mathbf{D}^\top$ (projecting from data space to code space), and ReLU plays the role of thresholding (though ReLU is not exactly soft-thresholding).
+A single forward pass of an SAE encoder computes $\mathbf{z} = \text{ReLU}(\mathbf{W}\_e \mathbf{x} + \mathbf{b}\_e)$. This has the same structural form as one ISTA step: a linear transformation of $\mathbf{x}$ followed by a nonlinear thresholding operation. The matrix $\mathbf{W}\_e$ plays the role of $\mathbf{D}^\top$ (projecting from data space to code space), and ReLU plays the role of thresholding (though ReLU is not exactly soft-thresholding).
 
-The SAE **amortizes** inference: instead of running ISTA for many iterations to convergence for each input $\mathbf{x}$, the SAE learns weights $\mathbf{W}_e$ that produce a good sparse code in a single step for all inputs in the training distribution. What the SAE sacrifices is **optimality per input** — ISTA converges to the exact minimizer for each $\mathbf{x}$, while the SAE uses a single linear + nonlinear step that is approximate. However, the SAE is much faster at test time (one forward pass vs. many iterations).
+The SAE **amortizes** inference: instead of running ISTA for many iterations to convergence for each input $\mathbf{x}$, the SAE learns weights $\mathbf{W}\_e$ that produce a good sparse code in a single step for all inputs in the training distribution. What the SAE sacrifices is **optimality per input** — ISTA converges to the exact minimizer for each $\mathbf{x}$, while the SAE uses a single linear + nonlinear step that is approximate. However, the SAE is much faster at test time (one forward pass vs. many iterations).
 
 ---
 
@@ -259,12 +305,12 @@ The expansion factor is $\frac{n\_\text{features}}{d\_\text{model}} = \frac{512 
 
 To compute CE loss recovered:
 
-1. Run the language model on a held-out evaluation set and record the cross-entropy loss $\mathcal{L}_{\text{orig}}$.
-2. Run the model again, but at the SAE's target layer, replace the model's activations with the SAE's reconstructions. Record $\mathcal{L}_{\text{SAE}}$.
-3. Run the model a third time, replacing the target layer's activations with zeros. Record $\mathcal{L}_{\text{zero}}$.
-4. Compute: $\text{CE recovered} = \frac{\mathcal{L}_{\text{zero}} - \mathcal{L}_{\text{SAE}}}{\mathcal{L}_{\text{zero}} - \mathcal{L}_{\text{orig}}}$.
+1. Run the language model on a held-out evaluation set and record the cross-entropy loss $\mathcal{L}\_{\text{orig}}$.
+2. Run the model again, but at the SAE's target layer, replace the model's activations with the SAE's reconstructions. Record $\mathcal{L}\_{\text{SAE}}$.
+3. Run the model a third time, replacing the target layer's activations with zeros. Record $\mathcal{L}\_{\text{zero}}$.
+4. Compute: $\text{CE recovered} = \frac{\mathcal{L}\_{\text{zero}} - \mathcal{L}\_{\text{SAE}}}{\mathcal{L}\_{\text{zero}} - \mathcal{L}\_{\text{orig}}}$.
 
-The baseline is $\mathcal{L}_{\text{zero}}$ (worst case: all information at this layer is destroyed) and the reference is $\mathcal{L}_{\text{orig}}$ (best case: perfect reconstruction).
+The baseline is $\mathcal{L}\_{\text{zero}}$ (worst case: all information at this layer is destroyed) and the reference is $\mathcal{L}\_{\text{orig}}$ (best case: perfect reconstruction).
 
 A CE loss recovered of 0.85 means the SAE reconstruction preserves 85% of the useful information at this layer. The model's performance degrades by only 15% of the gap between "no information" and "perfect information." This is reasonably good — the SAE captures most of the functionally important structure — but there is still meaningful information being lost, which could correspond to subtle features the SAE fails to represent.
 
@@ -286,7 +332,7 @@ A CE loss recovered of 0.85 means the SAE reconstruction preserves 85% of the us
 
 **(b)** [4 marks]
 
-When features are sufficiently sparse, the expected interference cost of superposition is low. Consider two features $\mathbf{f}_1$ and $\mathbf{f}_2$ represented by columns $\mathbf{w}_1, \mathbf{w}_2$ of $\mathbf{W}$. The reconstruction error due to interference is proportional to $(\mathbf{w}_1^\top \mathbf{w}_2)^2$ times the probability that both features are simultaneously active. If features are active with probability $p$, the interference cost scales as $O(p^2)$, while the benefit of representing an additional feature (reducing the "not-represented" loss) is $O(p)$.
+When features are sufficiently sparse, the expected interference cost of superposition is low. Consider two features $\mathbf{f}\_1$ and $\mathbf{f}\_2$ represented by columns $\mathbf{w}\_1, \mathbf{w}\_2$ of $\mathbf{W}$. The reconstruction error due to interference is proportional to $(\mathbf{w}\_1^\top \mathbf{w}\_2)^2$ times the probability that both features are simultaneously active. If features are active with probability $p$, the interference cost scales as $O(p^2)$, while the benefit of representing an additional feature (reducing the "not-represented" loss) is $O(p)$.
 
 When $p$ is small enough, $O(p) \gg O(p^2)$, so the benefit of representing extra features exceeds the interference cost. The network can profitably represent $m > n$ features.
 
@@ -302,13 +348,13 @@ The sparsity level determines the **transition point**: at high sparsity, many f
 
 **Causal intervention experiment:**
 
-1. Run the model on prompts where $f_{3421}$ is naturally active (e.g., text mentioning the Golden Gate Bridge) and record the model's output distribution (next-token probabilities).
+1. Run the model on prompts where $f\_{3421}$ is naturally active (e.g., text mentioning the Golden Gate Bridge) and record the model's output distribution (next-token probabilities).
 
-2. **Activation patching / clamping:** Run the model on the same prompts but, at layer 8, set $f_{3421}$'s activation to zero (ablation) while keeping all other SAE features unchanged. Reconstruct the layer-8 activations from the modified SAE features and continue the forward pass.
+2. **Activation patching / clamping:** Run the model on the same prompts but, at layer 8, set $f\_{3421}$'s activation to zero (ablation) while keeping all other SAE features unchanged. Reconstruct the layer-8 activations from the modified SAE features and continue the forward pass.
 
-3. **Measure:** Compare the output distribution with and without $f_{3421}$. Specifically, measure whether the probabilities of Golden Gate Bridge-related tokens (e.g., "Bridge," "San Francisco," "bay") decrease when $f_{3421}$ is ablated.
+3. **Measure:** Compare the output distribution with and without $f\_{3421}$. Specifically, measure whether the probabilities of Golden Gate Bridge-related tokens (e.g., "Bridge," "San Francisco," "bay") decrease when $f\_{3421}$ is ablated.
 
-4. **Expected result supporting causal role:** Ablating $f_{3421}$ significantly reduces the probability of Golden Gate Bridge-related completions while having minimal effect on unrelated completions. Additionally, **clamping $f_{3421}$ to a high value** on prompts that do not mention the bridge should *increase* the probability of bridge-related completions.
+4. **Expected result supporting causal role:** Ablating $f\_{3421}$ significantly reduces the probability of Golden Gate Bridge-related completions while having minimal effect on unrelated completions. Additionally, **clamping $f\_{3421}$ to a high value** on prompts that do not mention the bridge should *increase* the probability of bridge-related completions.
 
 **(b)** [4 marks]
 
@@ -316,11 +362,11 @@ The distinction is between the feature being **causal** (the model's computation
 
 **Experiment:**
 
-1. **Ablation specificity test.** Ablate $f_{3421}$ and measure performance on a task that *requires* Golden Gate Bridge knowledge (e.g., "The Golden Gate Bridge is located in ___"). If the model's accuracy drops significantly, this suggests the feature is causal.
+1. **Ablation specificity test.** Ablate $f\_{3421}$ and measure performance on a task that *requires* Golden Gate Bridge knowledge (e.g., "The Golden Gate Bridge is located in ___"). If the model's accuracy drops significantly, this suggests the feature is causal.
 
-2. **Sufficiency test.** Take a prompt that does not mention the Golden Gate Bridge. Clamp $f_{3421}$ to a high activation value and check if the model begins producing Golden Gate Bridge-related output. If it does, the feature is sufficient to influence behavior.
+2. **Sufficiency test.** Take a prompt that does not mention the Golden Gate Bridge. Clamp $f\_{3421}$ to a high activation value and check if the model begins producing Golden Gate Bridge-related output. If it does, the feature is sufficient to influence behavior.
 
-3. **Alternative pathway test.** This is the key test to distinguish causation from correlation. Ablate $f_{3421}$ and check: does the model *still* correctly handle Golden Gate Bridge-related prompts, just using other features or pathways? If the model performs just as well without $f_{3421}$, then the feature is a correlate — the model has redundant pathways, and $f_{3421}$ is not on the critical path. If performance degrades and does not recover, $f_{3421}$ is causally necessary.
+3. **Alternative pathway test.** This is the key test to distinguish causation from correlation. Ablate $f\_{3421}$ and check: does the model *still* correctly handle Golden Gate Bridge-related prompts, just using other features or pathways? If the model performs just as well without $f\_{3421}$, then the feature is a correlate — the model has redundant pathways, and $f\_{3421}$ is not on the critical path. If performance degrades and does not recover, $f\_{3421}$ is causally necessary.
 
 **Causal pattern:** Large performance drop on ablation AND successful steering on clamping = causal role.
 **Correlate pattern:** No performance drop on ablation (even though the feature activates on bridge-related inputs) = the feature detects the concept but the model's computation does not depend on it.
@@ -331,17 +377,17 @@ The distinction is between the feature being **causal** (the model's computation
 
 **(a)** [4 marks]
 
-**Shrinkage bias in L1 SAEs:** In a vanilla SAE with loss $\mathcal{L} = \|\mathbf{x} - \hat{\mathbf{x}}\|^2 + \lambda \|\mathbf{z}\|_1$, the L1 penalty contributes a gradient of $\lambda \cdot \text{sign}(z_i)$ for each active feature $z_i > 0$. This pushes all active features toward zero, systematically reducing their magnitude. The result is that the SAE underestimates the true magnitude of active features.
+**Shrinkage bias in L1 SAEs:** In a vanilla SAE with loss $\mathcal{L} = \Vert \mathbf{x} - \hat{\mathbf{x}}\Vert ^2 + \lambda \Vert \mathbf{z}\Vert \_1$, the L1 penalty contributes a gradient of $\lambda \cdot \text{sign}(z\_i)$ for each active feature $z\_i > 0$. This pushes all active features toward zero, systematically reducing their magnitude. The result is that the SAE underestimates the true magnitude of active features.
 
 **Gated SAE solution:** The Gated SAE decouples feature selection from magnitude estimation using two parallel paths:
 
-- **Gating path:** $\boldsymbol{\pi}_{\text{gate}} = \mathbf{W}_e \mathbf{x} + \mathbf{b}_{\text{gate}}$, with gate $\mathbf{g} = \mathbb{1}[\boldsymbol{\pi}_{\text{gate}} > 0]$.
-- **Magnitude path:** $\boldsymbol{\pi}_{\text{mag}} = \mathbf{W}_e \mathbf{x} + \mathbf{b}_{\text{mag}}$, with magnitude $\tilde{\mathbf{z}} = \text{ReLU}(\boldsymbol{\pi}_{\text{mag}})$.
+- **Gating path:** $\boldsymbol{\pi}\_{\text{gate}} = \mathbf{W}\_e \mathbf{x} + \mathbf{b}\_{\text{gate}}$, with gate $\mathbf{g} = \mathbb{1}[\boldsymbol{\pi}\_{\text{gate}} > 0]$.
+- **Magnitude path:** $\boldsymbol{\pi}\_{\text{mag}} = \mathbf{W}\_e \mathbf{x} + \mathbf{b}\_{\text{mag}}$, with magnitude $\tilde{\mathbf{z}} = \text{ReLU}(\boldsymbol{\pi}\_{\text{mag}})$.
 - **Output:** $\mathbf{z} = \mathbf{g} \odot \tilde{\mathbf{z}}$.
 
-The L1 penalty is applied to $\boldsymbol{\pi}_{\text{gate}}$ (the gate pre-activations), NOT to $\mathbf{z}$ or $\tilde{\mathbf{z}}$. This means:
+The L1 penalty is applied to $\boldsymbol{\pi}\_{\text{gate}}$ (the gate pre-activations), NOT to $\mathbf{z}$ or $\tilde{\mathbf{z}}$. This means:
 - The sparsity penalty controls *which features are active* (through the gate), but does not touch the magnitude.
-- For features where $g_i = 1$, the magnitude $\tilde{z}_i$ is determined purely by the magnitude path, which receives no L1 penalty. Hence, no shrinkage.
+- For features where $g\_i = 1$, the magnitude $\tilde{z}\_i$ is determined purely by the magnitude path, which receives no L1 penalty. Hence, no shrinkage.
 
 **(b)** [3 marks]
 
@@ -349,7 +395,9 @@ In a TopK SAE, the forward pass selects the $K$ largest pre-activations and zero
 
 Gradients are computed using the **straight-through estimator (STE)**: in the backward pass, gradients for the selected features (top-K) are passed through as if the selection were the identity function, and gradients for non-selected features are set to zero:
 
-$$\frac{\partial \mathcal{L}}{\partial h_i} = \frac{\partial \mathcal{L}}{\partial z_i} \cdot \mathbb{1}[i \in \text{top-K}]$$
+$$
+\frac{\partial \mathcal{L}}{\partial h_i} = \frac{\partial \mathcal{L}}{\partial z_i} \cdot \mathbb{1}[i \in \text{top-K}]
+$$
 
 The key assumption is **local stability of the top-K set**: for small perturbations to the pre-activations $\mathbf{h}$, the identity of the top-K elements does not change (the same features remain in the top K). Under this assumption, the TopK operation is locally equivalent to the identity for selected features and locally equivalent to zero for unselected features, making the STE a valid local approximation to the gradient.
 
@@ -397,7 +445,7 @@ Decoder column normalization should be done as a **post-processing step after `o
 
 **Why not inside `forward()`:** Normalizing inside the forward pass would change the computational graph at every step. The optimizer would compute gradients for unnormalized weights but then the next forward pass would use normalized weights, creating a mismatch. Also, normalization during forward would affect the gradient computation in confusing ways.
 
-**Why not as a loss term:** Adding $\sum_j (\|\mathbf{w}_j\|^2 - 1)^2$ as a penalty would work in principle but is indirect — it encourages unit norm rather than enforcing it, and it introduces another hyperparameter (the penalty weight). The penalty must be quite strong to keep norms close to 1, which can interfere with optimization.
+**Why not as a loss term:** Adding $\sum\_j (\Vert \mathbf{w}\_j\Vert ^2 - 1)^2$ as a penalty would work in principle but is indirect — it encourages unit norm rather than enforcing it, and it introduces another hyperparameter (the penalty weight). The penalty must be quite strong to keep norms close to 1, which can interfere with optimization.
 
 **Why post-processing works best:** Projecting the decoder columns to unit norm after each gradient step is a form of **projected gradient descent**. It is simple, exact (norms are exactly 1 after each step), and does not interfere with gradient computation. The optimizer computes and applies gradients freely, and then we project back to the constraint set. This is the standard approach in the SAE literature.
 
@@ -424,17 +472,17 @@ Justification from scaling laws (Gao et al.):
 
 **Metric 1: Reconstruction MSE (or $R^2$).**
 - *What it measures:* How well the SAE reconstructs the original activations.
-- *How to compute:* On a held-out set of activation vectors, compute $\text{MSE} = \mathbb{E}[\|\mathbf{x} - \hat{\mathbf{x}}\|^2]$ and $R^2 = 1 - \text{MSE} / \text{Var}(\mathbf{x})$.
+- *How to compute:* On a held-out set of activation vectors, compute $\text{MSE} = \mathbb{E}[\Vert \mathbf{x} - \hat{\mathbf{x}}\Vert ^2]$ and $R^2 = 1 - \text{MSE} / \text{Var}(\mathbf{x})$.
 - *Good value:* $R^2 > 0.95$ indicates the SAE captures most activation variance. Below 0.9 suggests significant information loss.
 
 **Metric 2: CE loss recovered.**
 - *What it measures:* Functional fidelity — how much the model's behavior is preserved when real activations are replaced by SAE reconstructions.
-- *How to compute:* Compute $\text{CE recovered} = (\mathcal{L}_{\text{zero}} - \mathcal{L}_{\text{SAE}}) / (\mathcal{L}_{\text{zero}} - \mathcal{L}_{\text{orig}})$ on an evaluation dataset.
+- *How to compute:* Compute $\text{CE recovered} = (\mathcal{L}\_{\text{zero}} - \mathcal{L}\_{\text{SAE}}) / (\mathcal{L}\_{\text{zero}} - \mathcal{L}\_{\text{orig}})$ on an evaluation dataset.
 - *Good value:* Above 0.90 is strong; above 0.95 is excellent. Below 0.85 suggests the SAE is losing information the model relies on.
 
 **Metric 3: L0 (average number of active features per input).**
 - *What it measures:* Sparsity of the representation.
-- *How to compute:* Average $\|\mathbf{z}\|_0$ over the test set.
+- *How to compute:* Average $\Vert \mathbf{z}\Vert \_0$ over the test set.
 - *Good value:* Depends on dictionary size, but typically 10-100 active features out of 16K. The L0 should be much smaller than $m$ (strong sparsity) but large enough to reconstruct well.
 
 **Metric 4: Feature utilization / dead feature fraction.**
@@ -484,7 +532,7 @@ The key insight connecting dictionary learning to mechanistic interpretability: 
 
 **Argument for the linear representation hypothesis:**
 
-The core claim is that neural network features are represented as **directions** in activation space, and that the effect of a feature is a linear function of its activation strength (a feature's contribution to the activation is $\alpha_i \mathbf{d}_i$, where $\alpha_i$ is the strength and $\mathbf{d}_i$ is the direction).
+The core claim is that neural network features are represented as **directions** in activation space, and that the effect of a feature is a linear function of its activation strength (a feature's contribution to the activation is $\alpha\_i \mathbf{d}\_i$, where $\alpha\_i$ is the strength and $\mathbf{d}\_i$ is the direction).
 
 **Evidence:**
 1. **Probing classifiers.** Linear probes trained on neural network activations can often recover meaningful features (sentiment, part of speech, entity type) with high accuracy. If features were nonlinearly encoded, linear probes would fail.
@@ -504,11 +552,13 @@ More formally, if features interact (e.g., feature A modulates the meaning of fe
 
 **Proposed modification: Bilinear SAE with pairwise feature interactions.**
 
-Instead of the standard linear decoder $\hat{\mathbf{x}} = \sum_i z_i \mathbf{d}_i + \mathbf{b}$, use a decoder that includes pairwise interaction terms:
+Instead of the standard linear decoder $\hat{\mathbf{x}} = \sum\_i z\_i \mathbf{d}\_i + \mathbf{b}$, use a decoder that includes pairwise interaction terms:
 
-$$\hat{\mathbf{x}} = \sum_i z_i \mathbf{d}_i + \sum_{i < j} z_i z_j \mathbf{d}_{ij} + \mathbf{b}$$
+$$
+\hat{\mathbf{x}} = \sum_i z_i \mathbf{d}_i + \sum_{i < j} z_i z_j \mathbf{d}_{ij} + \mathbf{b}
+$$
 
-where $\mathbf{d}_{ij}$ are learned interaction directions. This allows the SAE to capture cases where the combined effect of two features is not the sum of their individual effects. For sparsity, most $z_i$ are zero, so the pairwise terms are also mostly zero (the number of nonzero interaction terms scales as $K^2$ where $K$ is the sparsity level, which is manageable).
+where $\mathbf{d}\_{ij}$ are learned interaction directions. This allows the SAE to capture cases where the combined effect of two features is not the sum of their individual effects. For sparsity, most $z\_i$ are zero, so the pairwise terms are also mostly zero (the number of nonzero interaction terms scales as $K^2$ where $K$ is the sparsity level, which is manageable).
 
 **Motivation:** This directly addresses the limitation from (b) — compositional and context-dependent features can be represented as interactions between base features. The approach preserves the sparsity structure (most terms are zero) while adding expressiveness. The main cost is additional parameters ($O(m^2)$ interaction terms, though sparsity + pruning could keep this tractable).
 

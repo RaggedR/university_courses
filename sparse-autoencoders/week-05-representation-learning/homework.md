@@ -18,39 +18,43 @@ This problem set connects PCA theory to practice, establishes the bridge between
 
 **(c)** Explain why the first principal component is the eigenvector corresponding to the *largest* eigenvalue, not just any eigenvalue.
 
-**(d)** Show that the second principal component — the direction of maximum variance orthogonal to $\mathbf{u}_1$ — is the eigenvector corresponding to the second-largest eigenvalue. (Hint: add the constraint $\mathbf{u}_2^\top \mathbf{u}_1 = 0$ and use a second Lagrange multiplier.)
+**(d)** Show that the second principal component — the direction of maximum variance orthogonal to $\mathbf{u}\_1$ — is the eigenvector corresponding to the second-largest eigenvalue. (Hint: add the constraint $\mathbf{u}\_2^\top \mathbf{u}\_1 = 0$ and use a second Lagrange multiplier.)
 
-**(e)** The total variance of the data is $\text{tr}(C) = \sum_{j=1}^d \lambda_j$. Show that the fraction of variance captured by the top $k$ components is $\frac{\sum_{j=1}^k \lambda_j}{\sum_{j=1}^d \lambda_j}$.
+**(e)** The total variance of the data is $\text{tr}(C) = \sum\_{j=1}^d \lambda\_j$. Show that the fraction of variance captured by the top $k$ components is $\frac{\sum\_{j=1}^k \lambda\_j}{\sum\_{j=1}^d \lambda\_j}$.
 
-**(f)** Conversely, show that the reconstruction error from projecting onto the top $k$ components is $\sum_{j=k+1}^d \lambda_j$. Explain in one sentence why maximizing captured variance and minimizing reconstruction error are equivalent.
+**(f)** Conversely, show that the reconstruction error from projecting onto the top $k$ components is $\sum\_{j=k+1}^d \lambda\_j$. Explain in one sentence why maximizing captured variance and minimizing reconstruction error are equivalent.
 
 ---
 
 ## Problem 2: Linear Autoencoder = PCA (Guided Proof)
 
-Consider a linear autoencoder with encoder $W_e \in \mathbb{R}^{k \times d}$ and decoder $W_d \in \mathbb{R}^{d \times k}$, trained to minimize:
+Consider a linear autoencoder with encoder $W\_e \in \mathbb{R}^{k \times d}$ and decoder $W\_d \in \mathbb{R}^{d \times k}$, trained to minimize:
 
-$$\mathcal{L} = \frac{1}{N} \sum_{i=1}^N \|\mathbf{x}_i - W_d W_e \mathbf{x}_i\|^2$$
+$$
+\mathcal{L} = \frac{1}{N} \sum_{i=1}^N \|\mathbf{x}_i - W_d W_e \mathbf{x}_i\|^2
+$$
 
 Assume the data is centered ($\bar{\mathbf{x}} = \mathbf{0}$) and has covariance $C$ with eigendecomposition $C = V \Lambda V^\top$.
 
-**(a)** Define $M = W_d W_e$. What is the maximum possible rank of $M$? (Answer in terms of $k$ and $d$.)
+**(a)** Define $M = W\_d W\_e$. What is the maximum possible rank of $M$? (Answer in terms of $k$ and $d$.)
 
 **(b)** Show that the loss can be written as:
 
-$$\mathcal{L} = \text{tr}(C) - 2\,\text{tr}(MC) + \text{tr}(MCM^\top)$$
+$$
+\mathcal{L} = \text{tr}(C) - 2\,\text{tr}(MC) + \text{tr}(MCM^\top)
+$$
 
-(Hint: expand $\|\mathbf{x} - M\mathbf{x}\|^2 = (\mathbf{x} - M\mathbf{x})^\top(\mathbf{x} - M\mathbf{x})$ and use the fact that $\frac{1}{N}\sum_i \mathbf{x}_i\mathbf{x}_i^\top = C$.)
+(Hint: expand $\Vert \mathbf{x} - M\mathbf{x}\Vert ^2 = (\mathbf{x} - M\mathbf{x})^\top(\mathbf{x} - M\mathbf{x})$ and use the fact that $\frac{1}{N}\sum\_i \mathbf{x}\_i\mathbf{x}\_i^\top = C$.)
 
 **(c)** If $M$ is a projection matrix (i.e., $M^2 = M$ and $M = M^\top$), show that the loss simplifies to $\mathcal{L} = \text{tr}(C) - \text{tr}(MC)$.
 
 (Hint: for projection matrices, $M M^\top = M^2 = M$.)
 
-**(d)** Among all rank-$k$ projection matrices, which one minimizes the loss? (Express your answer in terms of the eigenvectors of $C$. Recall that $\text{tr}(MC) = \sum_j \mathbf{u}_j^\top C \mathbf{u}_j$ where $\mathbf{u}_j$ are the columns of the projection.)
+**(d)** Among all rank-$k$ projection matrices, which one minimizes the loss? (Express your answer in terms of the eigenvectors of $C$. Recall that $\text{tr}(MC) = \sum\_j \mathbf{u}\_j^\top C \mathbf{u}\_j$ where $\mathbf{u}\_j$ are the columns of the projection.)
 
-**(e)** Does gradient descent on $W_e$ and $W_d$ necessarily converge to a solution where $W_d W_e$ is a projection matrix? Or could the product be a non-projection matrix that still minimizes the loss? Discuss whether the individual matrices $W_e, W_d$ are uniquely determined at the optimum, even if their product $W_d W_e$ is.
+**(e)** Does gradient descent on $W\_e$ and $W\_d$ necessarily converge to a solution where $W\_d W\_e$ is a projection matrix? Or could the product be a non-projection matrix that still minimizes the loss? Discuss whether the individual matrices $W\_e, W\_d$ are uniquely determined at the optimum, even if their product $W\_d W\_e$ is.
 
-**(f)** Suppose you add an L2 penalty $\frac{\mu}{2}(\|W_e\|_F^2 + \|W_d\|_F^2)$ to the loss. How would this affect the solution? Would the product $W_d W_e$ still be the PCA projection at the optimum?
+**(f)** Suppose you add an L2 penalty $\frac{\mu}{2}(\Vert W\_e\Vert \_F^2 + \Vert W\_d\Vert \_F^2)$ to the loss. How would this affect the solution? Would the product $W\_d W\_e$ still be the PCA projection at the optimum?
 
 ---
 

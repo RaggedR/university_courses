@@ -28,7 +28,7 @@ def sample_moons_or_gaussians(n, dataset='8gaussians'):
     return x  # shape (n, 2)
 ```
 
-Build a simple MLP velocity network $v_\theta(x_t, t) : \mathbb{R}^2 \times [0,1] \to \mathbb{R}^2$:
+Build a simple MLP velocity network $v\_\theta(x\_t, t) : \mathbb{R}^2 \times [0,1] \to \mathbb{R}^2$:
 
 ```python
 class VelocityNetwork(nn.Module):
@@ -44,10 +44,10 @@ class VelocityNetwork(nn.Module):
 
 Implement the CFM training loop:
 
-1. Sample $t \sim U[0, 1]$, $x_0 \sim \mathcal{N}(0, I)$, $x_1 \sim p_{\text{data}}$
-2. Compute $x_t = (1-t)x_0 + tx_1$
-3. Target velocity: $u_t = x_1 - x_0$
-4. Loss: $\|v_\theta(x_t, t) - u_t\|^2$
+1. Sample $t \sim U[0, 1]$, $x\_0 \sim \mathcal{N}(0, I)$, $x\_1 \sim p\_{\text{data}}$
+2. Compute $x\_t = (1-t)x\_0 + tx\_1$
+3. Target velocity: $u\_t = x\_1 - x\_0$
+4. Loss: $\Vert v\_\theta(x\_t, t) - u\_t\Vert ^2$
 
 Train for 10000-20000 steps with batch size 256. Plot the loss curve.
 
@@ -71,7 +71,7 @@ Generate 2000 samples and plot them alongside the true data distribution. How ma
 
 ### Part (d): Visualize the Velocity Field
 
-At several time steps ($t = 0, 0.25, 0.5, 0.75, 1.0$), create a grid of points in $[-6, 6]^2$ and plot the predicted velocity field as arrows (using `matplotlib.pyplot.quiver`). Overlay the density of $p_t$ (estimated by histogramming interpolated samples $x_t = (1-t)x_0 + tx_1$).
+At several time steps ($t = 0, 0.25, 0.5, 0.75, 1.0$), create a grid of points in $[-6, 6]^2$ and plot the predicted velocity field as arrows (using `matplotlib.pyplot.quiver`). Overlay the density of $p\_t$ (estimated by histogramming interpolated samples $x\_t = (1-t)x\_0 + tx\_1$).
 
 Describe qualitatively how the velocity field evolves over time.
 
@@ -83,18 +83,20 @@ This problem makes the comparison between diffusion and flow matching concrete.
 
 ### Part (a): Path Comparison (Theory)
 
-Consider two interpolation schemes from noise $x_0$ to data $x_1$:
+Consider two interpolation schemes from noise $x\_0$ to data $x\_1$:
 
-**Flow matching (linear):** $x_t^{\text{FM}} = (1-t)x_0 + tx_1$
+**Flow matching (linear):** $x\_t^{\text{FM}} = (1-t)x\_0 + tx\_1$
 
-**Diffusion (VP-SDE):** $x_t^{\text{diff}} = \sqrt{\bar{\alpha}_t} \, x_1 + \sqrt{1 - \bar{\alpha}_t} \, x_0$ where $\bar{\alpha}_t = e^{-\frac{1}{2}\int_0^t \beta(s)ds}$ with linear schedule $\beta(t) = \beta_{\min} + (\beta_{\max} - \beta_{\min})t$.
+**Diffusion (VP-SDE):** $x\_t^{\text{diff}} = \sqrt{\bar{\alpha}\_t} \, x\_1 + \sqrt{1 - \bar{\alpha}\_t} \, x\_0$ where $\bar{\alpha}\_t = e^{-\frac{1}{2}\int\_0^t \beta(s)ds}$ with linear schedule $\beta(t) = \beta\_{\min} + (\beta\_{\max} - \beta\_{\min})t$.
 
-1. For a fixed pair $(x_0, x_1)$ in 2D with $x_0 = (1, -1)$ and $x_1 = (3, 2)$, plot both paths $x_t^{\text{FM}}$ and $x_t^{\text{diff}}$ for $t \in [0, 1]$. Use $\beta_{\min} = 0.1$, $\beta_{\max} = 20$.
+1. For a fixed pair $(x\_0, x\_1)$ in 2D with $x\_0 = (1, -1)$ and $x\_1 = (3, 2)$, plot both paths $x\_t^{\text{FM}}$ and $x\_t^{\text{diff}}$ for $t \in [0, 1]$. Use $\beta\_{\min} = 0.1$, $\beta\_{\max} = 20$.
 
 2. Which path is straighter? Compute the **path length** for each:
-$$L = \int_0^1 \left\|\frac{dx_t}{dt}\right\| dt$$
+$$
+L = \int_0^1 \left\|\frac{dx_t}{dt}\right\| dt
+$$
 
-3. Compute the straight-line distance $\|x_1 - x_0\|$ and the **straightness ratio** $\|x_1 - x_0\| / L$ for each path. A ratio of 1 means perfectly straight.
+3. Compute the straight-line distance $\Vert x\_1 - x\_0\Vert $ and the **straightness ratio** $\Vert x\_1 - x\_0\Vert  / L$ for each path. A ratio of 1 means perfectly straight.
 
 ### Part (b): Velocity Field Comparison (Implementation)
 
@@ -107,7 +109,7 @@ For each model, generate 2000 samples using 10 Euler steps. Compare the sample q
 
 ### Part (c): Step Count Sweep
 
-For each model, generate 2000 samples using $N \in \{1, 2, 4, 8, 16, 32, 64\}$ steps. For each, compute the Wasserstein-2 distance to the true distribution (using `scipy.stats.wasserstein_distance` on each coordinate, or using the `pot` library for 2D OT distance).
+For each model, generate 2000 samples using $N \in \lbrace 1, 2, 4, 8, 16, 32, 64\rbrace $ steps. For each, compute the Wasserstein-2 distance to the true distribution (using `scipy.stats.wasserstein_distance` on each coordinate, or using the `pot` library for 2D OT distance).
 
 Plot W2 distance vs. number of steps for both models. At what step count does each model converge to the true distribution?
 
@@ -121,31 +123,37 @@ This problem walks through the proof that the conditional and marginal flow matc
 
 Consider the marginal FM loss:
 
-$$\mathcal{L}_{\text{FM}} = \mathbb{E}_t \int p_t(x) \|v_\theta(x,t) - u_t(x)\|^2 dx$$
+$$
+\mathcal{L}_{\text{FM}} = \mathbb{E}_t \int p_t(x) \|v_\theta(x,t) - u_t(x)\|^2 dx
+$$
 
 and the conditional FM loss:
 
-$$\mathcal{L}_{\text{CFM}} = \mathbb{E}_t \int \int p_t(x|x_1) q(x_1) \|v_\theta(x,t) - u_t(x|x_1)\|^2 dx \, dx_1$$
+$$
+\mathcal{L}_{\text{CFM}} = \mathbb{E}_t \int \int p_t(x|x_1) q(x_1) \|v_\theta(x,t) - u_t(x|x_1)\|^2 dx \, dx_1
+$$
 
-where $q = p_{\text{data}}$.
+where $q = p\_{\text{data}}$.
 
-Expand both losses by writing $\|a - b\|^2 = \|a\|^2 - 2a \cdot b + \|b\|^2$. Show that $\mathcal{L}_{\text{FM}}$ and $\mathcal{L}_{\text{CFM}}$ can each be written as a sum of three terms.
+Expand both losses by writing $\Vert a - b\Vert ^2 = \Vert a\Vert ^2 - 2a \cdot b + \Vert b\Vert ^2$. Show that $\mathcal{L}\_{\text{FM}}$ and $\mathcal{L}\_{\text{CFM}}$ can each be written as a sum of three terms.
 
 ### Part (b): The First Term
 
-Show that the first term ($\mathbb{E}[\|v_\theta\|^2]$) is identical in both losses. *Hint: use the fact that $p_t(x) = \int p_t(x|x_1) q(x_1) dx_1$.*
+Show that the first term ($\mathbb{E}[\Vert v\_\theta\Vert ^2]$) is identical in both losses. *Hint: use the fact that $p\_t(x) = \int p\_t(x|x\_1) q(x\_1) dx\_1$.*
 
 ### Part (c): The Cross Term
 
 Show that the cross terms are equal:
 
-$$\int p_t(x) v_\theta(x,t)^\top u_t(x) \, dx = \int \int p_t(x|x_1) q(x_1) v_\theta(x,t)^\top u_t(x|x_1) \, dx \, dx_1$$
+$$
+\int p_t(x) v_\theta(x,t)^\top u_t(x) \, dx = \int \int p_t(x|x_1) q(x_1) v_\theta(x,t)^\top u_t(x|x_1) \, dx \, dx_1
+$$
 
-*Hint: use the definition $u_t(x) = \frac{\int u_t(x|x_1) p_t(x|x_1) q(x_1) dx_1}{p_t(x)}$.*
+*Hint: use the definition $u\_t(x) = \frac{\int u\_t(x|x\_1) p\_t(x|x\_1) q(x\_1) dx\_1}{p\_t(x)}$.*
 
 ### Part (d): Conclusion
 
-Conclude that $\nabla_\theta \mathcal{L}_{\text{FM}} = \nabla_\theta \mathcal{L}_{\text{CFM}}$, noting that the third terms ($\|u_t\|^2$ and $\|u_t(\cdot|x_1)\|^2$) differ but do not depend on $\theta$.
+Conclude that $\nabla\_\theta \mathcal{L}\_{\text{FM}} = \nabla\_\theta \mathcal{L}\_{\text{CFM}}$, noting that the third terms ($\Vert u\_t\Vert ^2$ and $\Vert u\_t(\cdot|x\_1)\Vert ^2$) differ but do not depend on $\theta$.
 
 ---
 
@@ -155,15 +163,17 @@ Implement the rectified flow "reflow" procedure and demonstrate that it straight
 
 ### Part (a): Train a Base Model
 
-Using your flow matching model from Problem 1 (trained on the 8-Gaussians dataset), generate the ODE trajectories for 5000 noise samples. For each $x_0 \sim \mathcal{N}(0, I)$, solve $dx/dt = v_\theta(x, t)$ from $t = 0$ to $t = 1$ using 100 Euler steps. Record the final point $\hat{x}_1$.
+Using your flow matching model from Problem 1 (trained on the 8-Gaussians dataset), generate the ODE trajectories for 5000 noise samples. For each $x\_0 \sim \mathcal{N}(0, I)$, solve $dx/dt = v\_\theta(x, t)$ from $t = 0$ to $t = 1$ using 100 Euler steps. Record the final point $\hat{x}\_1$.
 
-You now have 5000 coupled pairs $(x_0, \hat{x}_1)$.
+You now have 5000 coupled pairs $(x\_0, \hat{x}\_1)$.
 
 ### Part (b): Reflow
 
-Train a new velocity network $v_\theta^{(2)}$ using CFM on the coupled pairs. The training loop is identical to Problem 1, except that instead of sampling $x_1$ from the data distribution, you sample a coupled pair $(x_0, \hat{x}_1)$ and use:
+Train a new velocity network $v\_\theta^{(2)}$ using CFM on the coupled pairs. The training loop is identical to Problem 1, except that instead of sampling $x\_1$ from the data distribution, you sample a coupled pair $(x\_0, \hat{x}\_1)$ and use:
 
-$$x_t = (1-t)x_0 + t\hat{x}_1, \quad u_t = \hat{x}_1 - x_0$$
+$$
+x_t = (1-t)x_0 + t\hat{x}_1, \quad u_t = \hat{x}_1 - x_0
+$$
 
 Train for the same number of steps as the base model.
 
@@ -171,7 +181,9 @@ Train for the same number of steps as the base model.
 
 For each model (base and reflowed), generate 500 trajectories and compute the **straightness** of each trajectory:
 
-$$S = \frac{\|x_1 - x_0\|}{\int_0^1 \|v_\theta(x_t, t)\| dt}$$
+$$
+S = \frac{\|x_1 - x_0\|}{\int_0^1 \|v_\theta(x_t, t)\| dt}
+$$
 
 where $S = 1$ means perfectly straight. Approximate the integral using the Euler steps.
 
@@ -233,7 +245,7 @@ If you have a DDPM model from Week 5 (or train one quickly), compare the sample 
 
 ### Part (d): Class-Conditional Generation (Optional)
 
-Extend your model to accept a class label $c \in \{0, 1, \ldots, 9\}$ as conditioning. Train with 10% unconditional dropout (replacing $c$ with a null token). Sample using classifier-free guidance with guidance scale $w = 2.0$.
+Extend your model to accept a class label $c \in \lbrace 0, 1, \ldots, 9\rbrace $ as conditioning. Train with 10% unconditional dropout (replacing $c$ with a null token). Sample using classifier-free guidance with guidance scale $w = 2.0$.
 
 Generate 10 samples per class and display them.
 
@@ -243,23 +255,23 @@ Generate 10 samples per class and display them.
 
 ### Part (a): 1D Optimal Transport
 
-Consider one-dimensional distributions $p_0 = \mathcal{N}(0, 1)$ and $p_1 = \mathcal{N}(\mu, \sigma^2)$.
+Consider one-dimensional distributions $p\_0 = \mathcal{N}(0, 1)$ and $p\_1 = \mathcal{N}(\mu, \sigma^2)$.
 
-1. The optimal transport map from $p_0$ to $p_1$ is $T(x_0) = \sigma x_0 + \mu$. Verify this by checking that if $x_0 \sim \mathcal{N}(0,1)$, then $T(x_0) \sim \mathcal{N}(\mu, \sigma^2)$.
+1. The optimal transport map from $p\_0$ to $p\_1$ is $T(x\_0) = \sigma x\_0 + \mu$. Verify this by checking that if $x\_0 \sim \mathcal{N}(0,1)$, then $T(x\_0) \sim \mathcal{N}(\mu, \sigma^2)$.
 
-2. The OT interpolation path is $x_t = (1-t)x_0 + t \cdot T(x_0) = (1-t)x_0 + t(\sigma x_0 + \mu) = ((1-t) + t\sigma)x_0 + t\mu$. What is the distribution $p_t$ of $x_t$? Show it is Gaussian and compute its mean and variance.
+2. The OT interpolation path is $x\_t = (1-t)x\_0 + t \cdot T(x\_0) = (1-t)x\_0 + t(\sigma x\_0 + \mu) = ((1-t) + t\sigma)x\_0 + t\mu$. What is the distribution $p\_t$ of $x\_t$? Show it is Gaussian and compute its mean and variance.
 
-3. The CFM interpolation path (with random coupling) is $x_t = (1-t)x_0 + tx_1$ where $x_0 \sim p_0$ and $x_1 \sim p_1$ are independent. Compute the distribution of $x_t$. How does it differ from the OT path?
+3. The CFM interpolation path (with random coupling) is $x\_t = (1-t)x\_0 + tx\_1$ where $x\_0 \sim p\_0$ and $x\_1 \sim p\_1$ are independent. Compute the distribution of $x\_t$. How does it differ from the OT path?
 
 ### Part (b): When Does the Difference Matter?
 
-The OT path and the CFM path give the same marginal $p_t$ when the distributions are Gaussian. But for non-Gaussian distributions they can differ significantly.
+The OT path and the CFM path give the same marginal $p\_t$ when the distributions are Gaussian. But for non-Gaussian distributions they can differ significantly.
 
-Consider $p_0 = \mathcal{N}(0, 1)$ and $p_1 = \frac{1}{2}\delta(x - 3) + \frac{1}{2}\delta(x + 3)$ (a mixture of two point masses).
+Consider $p\_0 = \mathcal{N}(0, 1)$ and $p\_1 = \frac{1}{2}\delta(x - 3) + \frac{1}{2}\delta(x + 3)$ (a mixture of two point masses).
 
-1. Sketch (by hand or plot) the CFM interpolation $x_t = (1-t)x_0 + tx_1$ for 20 random pairs. You should see crossing paths.
+1. Sketch (by hand or plot) the CFM interpolation $x\_t = (1-t)x\_0 + tx\_1$ for 20 random pairs. You should see crossing paths.
 
-2. Now consider the OT coupling: $x_0 > 0 \Rightarrow x_1 = 3$, $x_0 < 0 \Rightarrow x_1 = -3$. Sketch these paths. Are there crossings?
+2. Now consider the OT coupling: $x\_0 > 0 \Rightarrow x\_1 = 3$, $x\_0 < 0 \Rightarrow x\_1 = -3$. Sketch these paths. Are there crossings?
 
 3. Explain in 2-3 sentences why the OT coupling produces straighter paths.
 

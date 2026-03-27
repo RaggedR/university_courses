@@ -35,10 +35,10 @@ class TopKSAE(nn.Module):
 ```
 
 Requirements:
-- The encoder should compute pre-activations $\mathbf{h} = \mathbf{W}_e \mathbf{x} + \mathbf{b}_e$.
+- The encoder should compute pre-activations $\mathbf{h} = \mathbf{W}\_e \mathbf{x} + \mathbf{b}\_e$.
 - Apply the TopK operation: keep only the top $K$ values, zero the rest.
 - Use `torch.topk` for the forward pass. For the backward pass, PyTorch's autograd handles the straight-through behavior automatically when you index into the pre-activations.
-- The loss should be reconstruction-only: $\mathcal{L} = \| \mathbf{x} - \hat{\mathbf{x}} \|_2^2$.
+- The loss should be reconstruction-only: $\mathcal{L} = \Vert  \mathbf{x} - \hat{\mathbf{x}} \Vert \_2^2$.
 - Normalize decoder columns to unit norm after each gradient step (as in Week 10).
 
 ### 1b. Comparison Experiment (20 points)

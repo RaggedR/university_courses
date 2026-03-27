@@ -97,75 +97,101 @@ PCA is the oldest and most fundamental dimensionality reduction method. It finds
 
 ### 3.1 Setup
 
-Given $N$ data points $\mathbf{x}_1, \ldots, \mathbf{x}_N \in \mathbb{R}^d$. Assume the data is centered: $\frac{1}{N}\sum_i \mathbf{x}_i = \mathbf{0}$. (If not, subtract the mean first.)
+Given $N$ data points $\mathbf{x}\_1, \ldots, \mathbf{x}\_N \in \mathbb{R}^d$. Assume the data is centered: $\frac{1}{N}\sum\_i \mathbf{x}\_i = \mathbf{0}$. (If not, subtract the mean first.)
 
 The data covariance matrix is:
 
-$$C = \frac{1}{N} \sum_{i=1}^N \mathbf{x}_i \mathbf{x}_i^\top = \frac{1}{N} X^\top X$$
+$$
+C = \frac{1}{N} \sum_{i=1}^N \mathbf{x}_i \mathbf{x}_i^\top = \frac{1}{N} X^\top X
+$$
 
 where $X \in \mathbb{R}^{N \times d}$ is the data matrix (each row is a data point). $C$ is $d \times d$, symmetric, and positive semi-definite.
 
 ### 3.2 Derivation: Maximum Variance Perspective
 
-**Goal:** Find the unit vector $\mathbf{u}_1 \in \mathbb{R}^d$ (with $\|\mathbf{u}_1\| = 1$) such that the variance of the projected data is maximized.
+**Goal:** Find the unit vector $\mathbf{u}\_1 \in \mathbb{R}^d$ (with $\Vert \mathbf{u}\_1\Vert  = 1$) such that the variance of the projected data is maximized.
 
-The projection of $\mathbf{x}_i$ onto $\mathbf{u}$ is the scalar $\mathbf{u}^\top \mathbf{x}_i$. The variance of these projections is:
+The projection of $\mathbf{x}\_i$ onto $\mathbf{u}$ is the scalar $\mathbf{u}^\top \mathbf{x}\_i$. The variance of these projections is:
 
-$$\text{Var} = \frac{1}{N} \sum_{i=1}^N (\mathbf{u}^\top \mathbf{x}_i)^2 = \mathbf{u}^\top \left(\frac{1}{N} \sum_i \mathbf{x}_i \mathbf{x}_i^\top\right) \mathbf{u} = \mathbf{u}^\top C \mathbf{u}$$
+$$
+\text{Var} = \frac{1}{N} \sum_{i=1}^N (\mathbf{u}^\top \mathbf{x}_i)^2 = \mathbf{u}^\top \left(\frac{1}{N} \sum_i \mathbf{x}_i \mathbf{x}_i^\top\right) \mathbf{u} = \mathbf{u}^\top C \mathbf{u}
+$$
 
-We want to maximize $\mathbf{u}^\top C \mathbf{u}$ subject to $\|\mathbf{u}\|^2 = 1$.
+We want to maximize $\mathbf{u}^\top C \mathbf{u}$ subject to $\Vert \mathbf{u}\Vert ^2 = 1$.
 
 **Using Lagrange multipliers:**
 
-$$\mathcal{L}(\mathbf{u}, \lambda) = \mathbf{u}^\top C \mathbf{u} - \lambda(\mathbf{u}^\top \mathbf{u} - 1)$$
+$$
+\mathcal{L}(\mathbf{u}, \lambda) = \mathbf{u}^\top C \mathbf{u} - \lambda(\mathbf{u}^\top \mathbf{u} - 1)
+$$
 
 Setting the gradient to zero:
 
-$$\frac{\partial \mathcal{L}}{\partial \mathbf{u}} = 2C\mathbf{u} - 2\lambda\mathbf{u} = \mathbf{0}$$
+$$
+\frac{\partial \mathcal{L}}{\partial \mathbf{u}} = 2C\mathbf{u} - 2\lambda\mathbf{u} = \mathbf{0}
+$$
 
-$$C\mathbf{u} = \lambda\mathbf{u}$$
+$$
+C\mathbf{u} = \lambda\mathbf{u}
+$$
 
-This is an eigenvalue equation. The optimal $\mathbf{u}_1$ is an eigenvector of $C$, and the variance it captures is:
+This is an eigenvalue equation. The optimal $\mathbf{u}\_1$ is an eigenvector of $C$, and the variance it captures is:
 
-$$\mathbf{u}_1^\top C \mathbf{u}_1 = \mathbf{u}_1^\top (\lambda_1 \mathbf{u}_1) = \lambda_1$$
+$$
+\mathbf{u}_1^\top C \mathbf{u}_1 = \mathbf{u}_1^\top (\lambda_1 \mathbf{u}_1) = \lambda_1
+$$
 
-To maximize variance, choose $\mathbf{u}_1$ as the eigenvector corresponding to the **largest eigenvalue** $\lambda_1$.
+To maximize variance, choose $\mathbf{u}\_1$ as the eigenvector corresponding to the **largest eigenvalue** $\lambda\_1$.
 
-For the second principal component, we maximize variance subject to orthogonality to $\mathbf{u}_1$. This gives the eigenvector for the second-largest eigenvalue $\lambda_2$. And so on.
+For the second principal component, we maximize variance subject to orthogonality to $\mathbf{u}\_1$. This gives the eigenvector for the second-largest eigenvalue $\lambda\_2$. And so on.
 
 **PCA solution:** The $k$ principal components are the eigenvectors of $C$ corresponding to the $k$ largest eigenvalues:
 
-$$\mathbf{u}_1, \mathbf{u}_2, \ldots, \mathbf{u}_k \quad \text{with} \quad \lambda_1 \geq \lambda_2 \geq \cdots \geq \lambda_k$$
+$$
+\mathbf{u}_1, \mathbf{u}_2, \ldots, \mathbf{u}_k \quad \text{with} \quad \lambda_1 \geq \lambda_2 \geq \cdots \geq \lambda_k
+$$
 
 The projection of a data point $\mathbf{x}$ onto these components gives the $k$-dimensional representation:
 
-$$\mathbf{z} = U_k^\top \mathbf{x} \in \mathbb{R}^k$$
+$$
+\mathbf{z} = U_k^\top \mathbf{x} \in \mathbb{R}^k
+$$
 
-where $U_k = [\mathbf{u}_1, \ldots, \mathbf{u}_k] \in \mathbb{R}^{d \times k}$.
+where $U\_k = [\mathbf{u}\_1, \ldots, \mathbf{u}\_k] \in \mathbb{R}^{d \times k}$.
 
 ### 3.3 Derivation: Minimum Reconstruction Error Perspective
 
 **Goal:** Find a $k$-dimensional subspace that minimizes the reconstruction error when data is projected onto it and reconstructed.
 
-The projection of $\mathbf{x}_i$ onto the subspace spanned by $U_k$ is:
+The projection of $\mathbf{x}\_i$ onto the subspace spanned by $U\_k$ is:
 
-$$\hat{\mathbf{x}}_i = U_k U_k^\top \mathbf{x}_i$$
+$$
+\hat{\mathbf{x}}_i = U_k U_k^\top \mathbf{x}_i
+$$
 
-($U_k U_k^\top$ is the projection matrix onto the subspace.) The reconstruction error is:
+($U\_k U\_k^\top$ is the projection matrix onto the subspace.) The reconstruction error is:
 
-$$\mathcal{E} = \frac{1}{N} \sum_{i=1}^N \|\mathbf{x}_i - \hat{\mathbf{x}}_i\|^2 = \frac{1}{N} \sum_i \|\mathbf{x}_i - U_k U_k^\top \mathbf{x}_i\|^2$$
+$$
+\mathcal{E} = \frac{1}{N} \sum_{i=1}^N \|\mathbf{x}_i - \hat{\mathbf{x}}_i\|^2 = \frac{1}{N} \sum_i \|\mathbf{x}_i - U_k U_k^\top \mathbf{x}_i\|^2
+$$
 
 **To minimize this**, decompose the error using the Pythagorean theorem (since projection is orthogonal):
 
-$$\|\mathbf{x}_i\|^2 = \|U_k U_k^\top \mathbf{x}_i\|^2 + \|\mathbf{x}_i - U_k U_k^\top \mathbf{x}_i\|^2$$
+$$
+\|\mathbf{x}_i\|^2 = \|U_k U_k^\top \mathbf{x}_i\|^2 + \|\mathbf{x}_i - U_k U_k^\top \mathbf{x}_i\|^2
+$$
 
 Summing over data and rearranging:
 
-$$\mathcal{E} = \frac{1}{N}\sum_i \|\mathbf{x}_i\|^2 - \frac{1}{N}\sum_i \|U_k U_k^\top \mathbf{x}_i\|^2$$
+$$
+\mathcal{E} = \frac{1}{N}\sum_i \|\mathbf{x}_i\|^2 - \frac{1}{N}\sum_i \|U_k U_k^\top \mathbf{x}_i\|^2
+$$
 
 The first term is constant (total data variance). So minimizing reconstruction error is equivalent to **maximizing the variance captured by the projection** — which is:
 
-$$\frac{1}{N}\sum_i \|U_k^\top \mathbf{x}_i\|^2 = \text{tr}(U_k^\top C \, U_k) = \sum_{j=1}^k \lambda_j$$
+$$
+\frac{1}{N}\sum_i \|U_k^\top \mathbf{x}_i\|^2 = \text{tr}(U_k^\top C \, U_k) = \sum_{j=1}^k \lambda_j
+$$
 
 This is maximized by choosing the top-$k$ eigenvectors, the same solution as before.
 
@@ -185,9 +211,11 @@ PCA is intimately connected to the Singular Value Decomposition from Week 1.
 
 If we compute the SVD of the centered data matrix $X = U \Sigma V^\top$, then:
 
-$$C = \frac{1}{N} X^\top X = \frac{1}{N} V \Sigma^2 V^\top$$
+$$
+C = \frac{1}{N} X^\top X = \frac{1}{N} V \Sigma^2 V^\top
+$$
 
-The right singular vectors $V$ are the eigenvectors of $C$, and the eigenvalues are $\lambda_j = \sigma_j^2 / N$ where $\sigma_j$ are the singular values.
+The right singular vectors $V$ are the eigenvectors of $C$, and the eigenvalues are $\lambda\_j = \sigma\_j^2 / N$ where $\sigma\_j$ are the singular values.
 
 In practice, PCA is often computed via SVD of the data matrix rather than eigendecomposition of the covariance matrix, because SVD is more numerically stable.
 
@@ -197,11 +225,13 @@ How many components $k$ should we keep? Several approaches:
 
 **Explained variance ratio:** The fraction of total variance captured by the top $k$ components:
 
-$$\frac{\sum_{j=1}^k \lambda_j}{\sum_{j=1}^d \lambda_j}$$
+$$
+\frac{\sum_{j=1}^k \lambda_j}{\sum_{j=1}^d \lambda_j}
+$$
 
 A common rule of thumb: keep enough components to explain 95% or 99% of the variance.
 
-**Scree plot:** Plot $\lambda_j$ vs. $j$ (eigenvalue vs. component index). Look for an "elbow" — a sharp drop-off. Components after the elbow contribute little.
+**Scree plot:** Plot $\lambda\_j$ vs. $j$ (eigenvalue vs. component index). Look for an "elbow" — a sharp drop-off. Components after the elbow contribute little.
 
 **Task-dependent:** Choose $k$ by cross-validation on the downstream task (classification accuracy with $k$ components).
 
@@ -235,21 +265,25 @@ This section is the conceptual heart of the week. It connects classical statisti
 
 Consider a neural network with one hidden layer, **no activation functions** (purely linear), and trained to reconstruct its input:
 
-- Encoder: $\mathbf{z} = W_e \mathbf{x}$, where $W_e \in \mathbb{R}^{k \times d}$
-- Decoder: $\hat{\mathbf{x}} = W_d \mathbf{z}$, where $W_d \in \mathbb{R}^{d \times k}$
-- Reconstruction: $\hat{\mathbf{x}} = W_d W_e \mathbf{x}$
+- Encoder: $\mathbf{z} = W\_e \mathbf{x}$, where $W\_e \in \mathbb{R}^{k \times d}$
+- Decoder: $\hat{\mathbf{x}} = W\_d \mathbf{z}$, where $W\_d \in \mathbb{R}^{d \times k}$
+- Reconstruction: $\hat{\mathbf{x}} = W\_d W\_e \mathbf{x}$
 
 The loss is mean squared reconstruction error:
 
-$$\mathcal{L} = \frac{1}{N}\sum_{i=1}^N \|\mathbf{x}_i - W_d W_e \mathbf{x}_i\|^2$$
+$$
+\mathcal{L} = \frac{1}{N}\sum_{i=1}^N \|\mathbf{x}_i - W_d W_e \mathbf{x}_i\|^2
+$$
 
-Note that $W_d W_e$ is a $d \times d$ matrix of rank at most $k$ (since $W_e$ maps to $k$ dimensions). So the autoencoder is finding the rank-$k$ linear map that best reconstructs the data.
+Note that $W\_d W\_e$ is a $d \times d$ matrix of rank at most $k$ (since $W\_e$ maps to $k$ dimensions). So the autoencoder is finding the rank-$k$ linear map that best reconstructs the data.
 
 ### 4.2 The Theorem
 
 **Claim:** A linear autoencoder with MSE loss, at any global minimum, satisfies:
-$$W_d W_e = U_k U_k^\top$$
-where $U_k$ are the top $k$ eigenvectors of the data covariance matrix.
+$$
+W_d W_e = U_k U_k^\top
+$$
+where $U\_k$ are the top $k$ eigenvectors of the data covariance matrix.
 
 In other words: **the optimal linear autoencoder is PCA**.
 
@@ -257,15 +291,19 @@ In other words: **the optimal linear autoencoder is PCA**.
 
 The reconstruction error is:
 
-$$\mathcal{L} = \frac{1}{N}\sum_i \|\mathbf{x}_i - M\mathbf{x}_i\|^2$$
+$$
+\mathcal{L} = \frac{1}{N}\sum_i \|\mathbf{x}_i - M\mathbf{x}_i\|^2
+$$
 
-where $M = W_d W_e$ has rank $\leq k$. This is minimized by the rank-$k$ matrix $M^*$ that best approximates the identity in the Frobenius norm on the data:
+where $M = W\_d W\_e$ has rank $\leq k$. This is minimized by the rank-$k$ matrix $M^*$ that best approximates the identity in the Frobenius norm on the data:
 
-$$M^* = \arg\min_{\text{rank}(M) \leq k} \frac{1}{N}\sum_i \|(\mathbf{I} - M)\mathbf{x}_i\|^2$$
+$$
+M^* = \arg\min_{\text{rank}(M) \leq k} \frac{1}{N}\sum_i \|(\mathbf{I} - M)\mathbf{x}_i\|^2
+$$
 
-By the Eckart-Young-Mirsky theorem (which we met in Week 1 as the connection between SVD and best low-rank approximation), the optimal $M^*$ is the projection onto the top $k$ principal components of the data — i.e., $M^* = U_k U_k^\top$.
+By the Eckart-Young-Mirsky theorem (which we met in Week 1 as the connection between SVD and best low-rank approximation), the optimal $M^*$ is the projection onto the top $k$ principal components of the data — i.e., $M^* = U\_k U\_k^\top$.
 
-**Important subtlety:** The individual matrices $W_e$ and $W_d$ are not uniquely determined — only their product $W_d W_e$ is. The encoder might not directly output the PCA coordinates; it might output a rotated or scaled version. But the subspace spanned by the rows of $W_e$ (and columns of $W_d$) is exactly the PCA subspace.
+**Important subtlety:** The individual matrices $W\_e$ and $W\_d$ are not uniquely determined — only their product $W\_d W\_e$ is. The encoder might not directly output the PCA coordinates; it might output a rotated or scaled version. But the subspace spanned by the rows of $W\_e$ (and columns of $W\_d$) is exactly the PCA subspace.
 
 ### 4.4 Why This Matters
 
@@ -412,18 +450,18 @@ The chain from PCA to sparse autoencoders for interpretability passes through ev
 
 A representation maps each data point to a point in a new space. The *geometry* of this mapping — which points are close, which are far, how the space is organized — determines how useful the representation is.
 
-**Example:** Consider the XOR problem. Two input features, $x_1$ and $x_2$, each 0 or 1. The output is $x_1 \oplus x_2$. In the original space, the positive examples (0,1) and (1,0) are not linearly separable from the negative examples (0,0) and (1,1).
+**Example:** Consider the XOR problem. Two input features, $x\_1$ and $x\_2$, each 0 or 1. The output is $x\_1 \oplus x\_2$. In the original space, the positive examples (0,1) and (1,0) are not linearly separable from the negative examples (0,0) and (1,1).
 
-A hidden layer can learn a representation where they *are* linearly separable. For instance, if the hidden layer computes $h_1 = \text{ReLU}(x_1 + x_2 - 0.5)$ and $h_2 = \text{ReLU}(-x_1 - x_2 + 1.5)$, the four points become:
+A hidden layer can learn a representation where they *are* linearly separable. For instance, if the hidden layer computes $h\_1 = \text{ReLU}(x\_1 + x\_2 - 0.5)$ and $h\_2 = \text{ReLU}(-x\_1 - x\_2 + 1.5)$, the four points become:
 
-| $(x_1, x_2)$ | Label | $(h_1, h_2)$ |
+| $(x\_1, x\_2)$ | Label | $(h\_1, h\_2)$ |
 |---------------|-------|---------------|
 | (0, 0) | 0 | (0, 1.5) |
 | (0, 1) | 1 | (0.5, 0.5) |
 | (1, 0) | 1 | (0.5, 0.5) |
 | (1, 1) | 0 | (1.5, 0) |
 
-In the $(h_1, h_2)$ space, the positive and negative examples are linearly separable. The network has found a representation that makes the classification trivial.
+In the $(h\_1, h\_2)$ space, the positive and negative examples are linearly separable. The network has found a representation that makes the classification trivial.
 
 ### 7.2 Good Representations Disentangle Factors of Variation
 

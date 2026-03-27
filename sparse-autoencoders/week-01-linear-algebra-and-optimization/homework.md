@@ -10,7 +10,9 @@
 
 Consider the matrix:
 
-$$A = \begin{pmatrix} 4 & 2 \\ 1 & 3 \end{pmatrix}$$
+$$
+A = \begin{pmatrix} 4 & 2 \\ 1 & 3 \end{pmatrix}
+$$
 
 **(a)** Find the eigenvalues of $A$ by solving the characteristic equation $\det(A - \lambda I) = 0$.
 
@@ -26,15 +28,17 @@ $$A = \begin{pmatrix} 4 & 2 \\ 1 & 3 \end{pmatrix}$$
 
 Consider the symmetric matrix:
 
-$$S = \begin{pmatrix} 5 & 2 \\ 2 & 2 \end{pmatrix}$$
+$$
+S = \begin{pmatrix} 5 & 2 \\ 2 & 2 \end{pmatrix}
+$$
 
 **(a)** Find the eigenvalues and eigenvectors of $S$. Verify that the eigenvectors are orthogonal (as the spectral theorem guarantees).
 
 **(b)** Normalize the eigenvectors to unit length and write the spectral decomposition $S = Q\Lambda Q^T$ explicitly.
 
-**(c)** **Proof.** Prove the following: if $A$ is a real symmetric matrix and $\mathbf{v}_1, \mathbf{v}_2$ are eigenvectors corresponding to *distinct* eigenvalues $\lambda_1 \neq \lambda_2$, then $\mathbf{v}_1 \perp \mathbf{v}_2$.
+**(c)** **Proof.** Prove the following: if $A$ is a real symmetric matrix and $\mathbf{v}\_1, \mathbf{v}\_2$ are eigenvectors corresponding to *distinct* eigenvalues $\lambda\_1 \neq \lambda\_2$, then $\mathbf{v}\_1 \perp \mathbf{v}\_2$.
 
-*Hint:* Start with $\langle A\mathbf{v}_1, \mathbf{v}_2 \rangle$ and compute it two ways — once using $A\mathbf{v}_1 = \lambda_1 \mathbf{v}_1$, and once by exploiting the symmetry of $A$.
+*Hint:* Start with $\langle A\mathbf{v}\_1, \mathbf{v}\_2 \rangle$ and compute it two ways — once using $A\mathbf{v}\_1 = \lambda\_1 \mathbf{v}\_1$, and once by exploiting the symmetry of $A$.
 
 ---
 
@@ -42,7 +46,9 @@ $$S = \begin{pmatrix} 5 & 2 \\ 2 & 2 \end{pmatrix}$$
 
 Consider the matrix:
 
-$$B = \begin{pmatrix} 3 & 0 \\ 0 & 2 \\ 0 & 0 \end{pmatrix}$$
+$$
+B = \begin{pmatrix} 3 & 0 \\ 0 & 2 \\ 0 & 0 \end{pmatrix}
+$$
 
 **(a)** Compute $B^TB$ and $BB^T$.
 
@@ -50,7 +56,7 @@ $$B = \begin{pmatrix} 3 & 0 \\ 0 & 2 \\ 0 & 0 \end{pmatrix}$$
 
 **(c)** Write out the full SVD $B = U\Sigma V^T$. Verify by multiplying $U\Sigma V^T$.
 
-**(d)** What is the best rank-1 approximation $B_1$ of $B$? What is the Frobenius norm of the error $\|B - B_1\|_F$?
+**(d)** What is the best rank-1 approximation $B\_1$ of $B$? What is the Frobenius norm of the error $\Vert B - B\_1\Vert \_F$?
 
 ---
 
@@ -77,7 +83,7 @@ img = np.sin(X) * np.cos(Y) + 0.5 * np.exp(-(X**2 + Y**2))
 
 **(d)** For each value of $k$, compute:
 - The compression ratio: $\frac{mn}{k(m + n + 1)}$
-- The relative error: $\frac{\|A - A_k\|_F}{\|A\|_F}$
+- The relative error: $\frac{\Vert A - A\_k\Vert \_F}{\Vert A\Vert \_F}$
 
 Plot both as functions of $k$. At what rank does the image become "good enough" (say, < 5% relative error)?
 
@@ -89,7 +95,9 @@ Plot both as functions of $k$. At what rank does the image become "good enough" 
 
 Implement gradient descent in Python/NumPy to minimize the Rosenbrock function:
 
-$$f(x, y) = (1 - x)^2 + 100(y - x^2)^2$$
+$$
+f(x, y) = (1 - x)^2 + 100(y - x^2)^2
+$$
 
 This is a classic test function for optimization algorithms. The global minimum is at $(1, 1)$ where $f = 0$, but the function has a narrow curved valley that makes optimization challenging.
 
@@ -105,8 +113,8 @@ def gradient_descent(grad_fn, x0, y0, learning_rate, num_steps):
 ```
 
 **(c)** Run gradient descent from the starting point $(-1, 1)$ with several learning rates: $\eta = 0.001, 0.0005, 0.0001$. For each:
-- Plot the trajectory $(x_t, y_t)$ overlaid on a contour plot of $f$
-- Plot $f(x_t, y_t)$ vs. step number
+- Plot the trajectory $(x\_t, y\_t)$ overlaid on a contour plot of $f$
+- Plot $f(x\_t, y\_t)$ vs. step number
 
 What happens with $\eta = 0.01$? (Try it and explain.)
 
@@ -114,24 +122,24 @@ What happens with $\eta = 0.01$? (Try it and explain.)
 
 ---
 
-## Problem 6: $L_1$ vs $L_2$ Geometry (Theory + Implementation)
+## Problem 6: $L\_1$ vs $L\_2$ Geometry (Theory + Implementation)
 
 This problem makes the sparsity argument from the notes concrete.
 
-**(a)** Consider the optimization problem: minimize $f(\mathbf{x}) = \|\mathbf{x} - \mathbf{b}\|_2^2$ subject to $\|\mathbf{x}\|_1 \leq 1$, where $\mathbf{b} = (0.8, 0.6)^T$.
+**(a)** Consider the optimization problem: minimize $f(\mathbf{x}) = \Vert \mathbf{x} - \mathbf{b}\Vert \_2^2$ subject to $\Vert \mathbf{x}\Vert \_1 \leq 1$, where $\mathbf{b} = (0.8, 0.6)^T$.
 
-Solve this graphically: sketch the $L_1$ unit ball and the level sets of $f$ (circles centered at $\mathbf{b}$), and identify the point where they first touch. What is the solution?
+Solve this graphically: sketch the $L\_1$ unit ball and the level sets of $f$ (circles centered at $\mathbf{b}$), and identify the point where they first touch. What is the solution?
 
-**(b)** Now solve the same problem with an $L_2$ constraint: minimize $\|\mathbf{x} - \mathbf{b}\|_2^2$ subject to $\|\mathbf{x}\|_2 \leq 1$.
+**(b)** Now solve the same problem with an $L\_2$ constraint: minimize $\Vert \mathbf{x} - \mathbf{b}\Vert \_2^2$ subject to $\Vert \mathbf{x}\Vert \_2 \leq 1$.
 
-This has a closed-form solution. Find it. (Hint: the solution is $\mathbf{b}/\|\mathbf{b}\|_2$ when $\|\mathbf{b}\|_2 > 1$.) Is the solution sparse?
+This has a closed-form solution. Find it. (Hint: the solution is $\mathbf{b}/\Vert \mathbf{b}\Vert \_2$ when $\Vert \mathbf{b}\Vert \_2 > 1$.) Is the solution sparse?
 
 **(c) (Implementation)** Write a Python script that:
 1. Generates 1000 random vectors $\mathbf{b} \in \mathbb{R}^{10}$, each with entries drawn from $\mathcal{N}(0, 1)$.
-2. For each $\mathbf{b}$, solves both the $L_1$-constrained and $L_2$-constrained problems (you may use `scipy.optimize.minimize` with appropriate constraints, or solve the $L_2$ version analytically).
-3. Counts the average number of zero entries (entries with $|x_i| < 10^{-6}$) in each solution.
+2. For each $\mathbf{b}$, solves both the $L\_1$-constrained and $L\_2$-constrained problems (you may use `scipy.optimize.minimize` with appropriate constraints, or solve the $L\_2$ version analytically).
+3. Counts the average number of zero entries (entries with $|x\_i| < 10^{-6}$) in each solution.
 
-Report the average sparsity for $L_1$ vs $L_2$. Does the result match the geometric argument from the notes?
+Report the average sparsity for $L\_1$ vs $L\_2$. Does the result match the geometric argument from the notes?
 
 ---
 
@@ -143,7 +151,7 @@ This is a conceptual problem — no computation required, but think carefully.
 
 **(b)** Suppose you have a weight matrix $W \in \mathbb{R}^{100 \times 784}$ in a neural network that processes 28x28 images. The SVD reveals that only 15 singular values are significantly non-zero (the rest are $< 10^{-6}$). What does this tell you about what the layer is doing? Could you replace this layer with something simpler? What would you lose?
 
-**(c)** We said that the $L_1$ penalty encourages sparsity by creating "corners" in the constraint set. In a sparse autoencoder, the sparsity penalty is applied to the *activations* (hidden layer outputs), not the *weights*. Explain in your own words why we want sparse activations rather than sparse weights, and what interpretive advantage this gives us. (Think about what "a few neurons activate for each input" means vs. "each neuron has few non-zero weights.")
+**(c)** We said that the $L\_1$ penalty encourages sparsity by creating "corners" in the constraint set. In a sparse autoencoder, the sparsity penalty is applied to the *activations* (hidden layer outputs), not the *weights*. Explain in your own words why we want sparse activations rather than sparse weights, and what interpretive advantage this gives us. (Think about what "a few neurons activate for each input" means vs. "each neuron has few non-zero weights.")
 
 **(d)** If a linear autoencoder with a $k$-dimensional bottleneck learns the same representation as rank-$k$ SVD, why do we bother with nonlinear autoencoders? What can they capture that SVD cannot? Give an intuitive example of data that lies on a nonlinear manifold where SVD would fail.
 

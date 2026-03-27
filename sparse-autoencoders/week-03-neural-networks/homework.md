@@ -28,16 +28,22 @@ Consider a neural network with the following architecture:
 
 The parameters are:
 
-$$W_1 = \begin{pmatrix} 1 & -1 \\ -1 & 1 \\ 0.5 & 0.5 \end{pmatrix}, \quad \mathbf{b}_1 = \begin{pmatrix} 0 \\ 0 \\ -0.5 \end{pmatrix}$$
+$$
+W_1 = \begin{pmatrix} 1 & -1 \\ -1 & 1 \\ 0.5 & 0.5 \end{pmatrix}, \quad \mathbf{b}_1 = \begin{pmatrix} 0 \\ 0 \\ -0.5 \end{pmatrix}
+$$
 
-$$W_2 = \begin{pmatrix} 1 & -1 & 0.5 \\ 0.5 & 1 & -0.5 \end{pmatrix}, \quad \mathbf{b}_2 = \begin{pmatrix} 0 \\ 0 \end{pmatrix}$$
+$$
+W_2 = \begin{pmatrix} 1 & -1 & 0.5 \\ 0.5 & 1 & -0.5 \end{pmatrix}, \quad \mathbf{b}_2 = \begin{pmatrix} 0 \\ 0 \end{pmatrix}
+$$
 
-$$W_3 = \begin{pmatrix} 1 & -1 \end{pmatrix}, \quad b_3 = 0$$
+$$
+W_3 = \begin{pmatrix} 1 & -1 \end{pmatrix}, \quad b_3 = 0
+$$
 
 **(a)** Compute the forward pass for input $\mathbf{x} = (1, 0)^T$. Show each intermediate result:
-- Pre-activation $\mathbf{z}_1 = W_1\mathbf{x} + \mathbf{b}_1$ and post-activation $\mathbf{h}_1 = \text{ReLU}(\mathbf{z}_1)$
-- Pre-activation $\mathbf{z}_2 = W_2\mathbf{h}_1 + \mathbf{b}_2$ and post-activation $\mathbf{h}_2 = \text{ReLU}(\mathbf{z}_2)$
-- Pre-activation $z_3 = W_3\mathbf{h}_2 + b_3$ and output $y = \sigma(z_3)$
+- Pre-activation $\mathbf{z}\_1 = W\_1\mathbf{x} + \mathbf{b}\_1$ and post-activation $\mathbf{h}\_1 = \text{ReLU}(\mathbf{z}\_1)$
+- Pre-activation $\mathbf{z}\_2 = W\_2\mathbf{h}\_1 + \mathbf{b}\_2$ and post-activation $\mathbf{h}\_2 = \text{ReLU}(\mathbf{z}\_2)$
+- Pre-activation $z\_3 = W\_3\mathbf{h}\_2 + b\_3$ and output $y = \sigma(z\_3)$
 
 **(b)** Repeat for input $\mathbf{x} = (0, 1)^T$.
 
@@ -132,9 +138,11 @@ def train(X, y, hidden_dim=32, learning_rate=0.1, num_epochs=1000):
 **(e)** Note: You'll need to implement backpropagation for the backward pass. Here are the key gradient formulas for binary cross-entropy with sigmoid output:
 
 For the output layer (sigmoid + BCE):
-$$\frac{\partial \mathcal{L}}{\partial \mathbf{z}_2} = \hat{\mathbf{y}} - \mathbf{y}$$
+$$
+\frac{\partial \mathcal{L}}{\partial \mathbf{z}_2} = \hat{\mathbf{y}} - \mathbf{y}
+$$
 
-This remarkably simple formula (prediction minus truth) is one reason cross-entropy pairs so well with sigmoid. Derive the gradients for $W_2$, $\mathbf{b}_2$, and then propagate back through the hidden layer to get gradients for $W_1$, $\mathbf{b}_1$.
+This remarkably simple formula (prediction minus truth) is one reason cross-entropy pairs so well with sigmoid. Derive the gradients for $W\_2$, $\mathbf{b}\_2$, and then propagate back through the hidden layer to get gradients for $W\_1$, $\mathbf{b}\_1$.
 
 ---
 
@@ -206,7 +214,7 @@ This problem builds intuition for what the universal approximation theorem means
 
 **(b)** Roughly how many ReLU neurons would you need in a single hidden layer to approximate $\sin(2\pi x)$ to within error $\epsilon = 0.01$ on $[0, 1]$? Give a rough estimate with reasoning, not a precise bound. (Hint: think about how many piecewise-linear segments you need.)
 
-**(c)** Now consider the 2D function $f(x_1, x_2) = \sin(2\pi x_1)\sin(2\pi x_2)$ on $[0,1]^2$. How does the number of required neurons scale compared to the 1D case? This is a taste of the **curse of dimensionality** — explain in your own words what this means for neural network width.
+**(c)** Now consider the 2D function $f(x\_1, x\_2) = \sin(2\pi x\_1)\sin(2\pi x\_2)$ on $[0,1]^2$. How does the number of required neurons scale compared to the 1D case? This is a taste of the **curse of dimensionality** — explain in your own words what this means for neural network width.
 
 **(d)** The universal approximation theorem says a single wide layer suffices. But in practice, deep narrow networks often work better than shallow wide ones. Give an intuitive explanation using the example of learning to recognize a handwritten digit. What kind of hierarchical features might a deep network learn that a single wide layer would have to represent "flatly"?
 
@@ -216,17 +224,19 @@ This problem builds intuition for what the universal approximation theorem means
 
 This problem previews the autoencoder idea.
 
-**(a)** In a classifier, the network maps input $\mathbf{x} \in \mathbb{R}^d$ to a label $y \in \{1, \ldots, K\}$, compressing the input down to one of $K$ categories. The hidden layers extract features useful for classification. Explain why features useful for classification might NOT be useful for reconstruction (recovering the original input). Give a concrete example.
+**(a)** In a classifier, the network maps input $\mathbf{x} \in \mathbb{R}^d$ to a label $y \in \lbrace 1, \ldots, K\rbrace $, compressing the input down to one of $K$ categories. The hidden layers extract features useful for classification. Explain why features useful for classification might NOT be useful for reconstruction (recovering the original input). Give a concrete example.
 
 **(b)** Imagine a network architecture that looks like this:
 
-$$\mathbf{x} \in \mathbb{R}^{784} \xrightarrow{} \mathbf{h}_1 \in \mathbb{R}^{256} \xrightarrow{} \mathbf{h}_2 \in \mathbb{R}^{32} \xrightarrow{} \mathbf{h}_3 \in \mathbb{R}^{256} \xrightarrow{} \hat{\mathbf{x}} \in \mathbb{R}^{784}$$
+$$
+\mathbf{x} \in \mathbb{R}^{784} \xrightarrow{} \mathbf{h}_1 \in \mathbb{R}^{256} \xrightarrow{} \mathbf{h}_2 \in \mathbb{R}^{32} \xrightarrow{} \mathbf{h}_3 \in \mathbb{R}^{256} \xrightarrow{} \hat{\mathbf{x}} \in \mathbb{R}^{784}
+$$
 
-This is an autoencoder. The loss is $\|\mathbf{x} - \hat{\mathbf{x}}\|^2$. In this architecture, what is the "bottleneck"? Why does it force the network to learn a compressed representation? What information must be preserved in $\mathbf{h}_2$, and what information can be discarded?
+This is an autoencoder. The loss is $\Vert \mathbf{x} - \hat{\mathbf{x}}\Vert ^2$. In this architecture, what is the "bottleneck"? Why does it force the network to learn a compressed representation? What information must be preserved in $\mathbf{h}\_2$, and what information can be discarded?
 
-**(c)** In the autoencoder above, $\mathbf{h}_2 \in \mathbb{R}^{32}$ is the compressed representation of a $784$-dimensional input (e.g., a $28 \times 28$ image). The **encoder** is the first half of the network ($\mathbf{x} \to \mathbf{h}_2$) and the **decoder** is the second half ($\mathbf{h}_2 \to \hat{\mathbf{x}}$).
+**(c)** In the autoencoder above, $\mathbf{h}\_2 \in \mathbb{R}^{32}$ is the compressed representation of a $784$-dimensional input (e.g., a $28 \times 28$ image). The **encoder** is the first half of the network ($\mathbf{x} \to \mathbf{h}\_2$) and the **decoder** is the second half ($\mathbf{h}\_2 \to \hat{\mathbf{x}}$).
 
-Now suppose we remove all activation functions. From Week 1, what theorem tells us what the optimal linear encoder+decoder will learn? What specific representation will $\mathbf{h}_2$ converge to?
+Now suppose we remove all activation functions. From Week 1, what theorem tells us what the optimal linear encoder+decoder will learn? What specific representation will $\mathbf{h}\_2$ converge to?
 
 **(d)** This is why we need nonlinear activations in autoencoders. Explain, in 2-3 sentences, what advantage a nonlinear autoencoder has over a linear one. Use the concept of a "manifold" if you can: real data (like images of faces) doesn't fill the full $784$-dimensional space uniformly. It lies on or near a lower-dimensional curved surface. What can a nonlinear autoencoder capture that a linear one (i.e., PCA/SVD) cannot?
 

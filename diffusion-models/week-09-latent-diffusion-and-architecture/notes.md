@@ -31,7 +31,7 @@ This week, we will study both stages in depth. We will examine the autoencoder d
 
 Consider training a DDPM on 256x256 RGB images. The denoising network must:
 - Accept a 256x256x3 = 196,608-dimensional input (plus a time embedding)
-- Output a 196,608-dimensional prediction ($\hat{\epsilon}$ or $\hat{x}_0$)
+- Output a 196,608-dimensional prediction ($\hat{\epsilon}$ or $\hat{x}\_0$)
 - Process this at sufficient depth and width to model complex image statistics
 
 A typical U-Net for this resolution has 200-500 million parameters. Training requires computing gradients through this network for millions of (image, noise level) pairs. On 8 A100 GPUs, this takes days to weeks.
@@ -71,42 +71,52 @@ The encoder and decoder are convolutional networks with residual blocks and (opt
 
 ### 2.2 Training Objectives
 
-A plain autoencoder trained with MSE loss $\|x - \mathcal{D}(\mathcal{E}(x))\|^2$ produces blurry reconstructions -- the L2 loss averages over possible reconstructions. Latent diffusion models use a combination of losses:
+A plain autoencoder trained with MSE loss $\Vert x - \mathcal{D}(\mathcal{E}(x))\Vert ^2$ produces blurry reconstructions -- the L2 loss averages over possible reconstructions. Latent diffusion models use a combination of losses:
 
 **Reconstruction loss (L1 or L2):**
-$$\mathcal{L}_{\text{rec}} = \|x - \mathcal{D}(\mathcal{E}(x))\|_1$$
+$$
+\mathcal{L}_{\text{rec}} = \|x - \mathcal{D}(\mathcal{E}(x))\|_1
+$$
 
 L1 is preferred over L2 because it produces sharper results (it penalizes all errors equally, rather than disproportionately penalizing large errors).
 
 **Perceptual loss (LPIPS):**
-$$\mathcal{L}_{\text{perc}} = \sum_l \|F_l(x) - F_l(\hat{x})\|_2^2$$
+$$
+\mathcal{L}_{\text{perc}} = \sum_l \|F_l(x) - F_l(\hat{x})\|_2^2
+$$
 
-where $F_l$ extracts features from layer $l$ of a pretrained VGG network. This loss measures perceptual similarity rather than pixel-wise similarity. Two images can have large pixel-wise differences but small perceptual differences (e.g., a slight spatial shift).
+where $F\_l$ extracts features from layer $l$ of a pretrained VGG network. This loss measures perceptual similarity rather than pixel-wise similarity. Two images can have large pixel-wise differences but small perceptual differences (e.g., a slight spatial shift).
 
 **Adversarial loss:**
-$$\mathcal{L}_{\text{adv}} = -\log D_\psi(\mathcal{D}(\mathcal{E}(x)))$$
+$$
+\mathcal{L}_{\text{adv}} = -\log D_\psi(\mathcal{D}(\mathcal{E}(x)))
+$$
 
-A patch-based discriminator $D_\psi$ distinguishes real images from reconstructions. This encourages the decoder to produce sharp, realistic textures rather than blurry averages.
+A patch-based discriminator $D\_\psi$ distinguishes real images from reconstructions. This encourages the decoder to produce sharp, realistic textures rather than blurry averages.
 
 **KL regularization:**
-$$\mathcal{L}_{\text{KL}} = D_{\text{KL}}(q(z|x) \| \mathcal{N}(0, I))$$
+$$
+\mathcal{L}_{\text{KL}} = D_{\text{KL}}(q(z|x) \| \mathcal{N}(0, I))
+$$
 
 This is the crucial term for latent diffusion. Without it, the latent space can have an arbitrary, pathological distribution. The KL term encourages the latent distribution to be close to a standard Gaussian, making it smooth and well-behaved -- exactly what a diffusion model needs.
 
 The encoder outputs mean $\mu$ and log-variance $\log \sigma^2$ for each latent dimension, and $z$ is sampled via the reparameterization trick: $z = \mu + \sigma \cdot \epsilon$, $\epsilon \sim \mathcal{N}(0, I)$. This makes the autoencoder a VAE.
 
 The total loss:
-$$\mathcal{L} = \mathcal{L}_{\text{rec}} + \lambda_{\text{perc}} \mathcal{L}_{\text{perc}} + \lambda_{\text{adv}} \mathcal{L}_{\text{adv}} + \lambda_{\text{KL}} \mathcal{L}_{\text{KL}}$$
+$$
+\mathcal{L} = \mathcal{L}_{\text{rec}} + \lambda_{\text{perc}} \mathcal{L}_{\text{perc}} + \lambda_{\text{adv}} \mathcal{L}_{\text{adv}} + \lambda_{\text{KL}} \mathcal{L}_{\text{KL}}
+$$
 
 ### 2.3 The KL Weight: A Critical Trade-Off
 
-The KL weight $\lambda_{\text{KL}}$ controls a fundamental trade-off:
+The KL weight $\lambda\_{\text{KL}}$ controls a fundamental trade-off:
 
-- **Large $\lambda_{\text{KL}}$**: The latent space is smooth and Gaussian-like, making the diffusion model's job easy. But reconstruction quality suffers -- the encoder is forced to discard information to match the prior.
+- **Large $\lambda\_{\text{KL}}$**: The latent space is smooth and Gaussian-like, making the diffusion model's job easy. But reconstruction quality suffers -- the encoder is forced to discard information to match the prior.
 
-- **Small $\lambda_{\text{KL}}$**: Reconstruction is excellent, but the latent space can have sharp, irregular structure that is hard for the diffusion model to learn.
+- **Small $\lambda\_{\text{KL}}$**: Reconstruction is excellent, but the latent space can have sharp, irregular structure that is hard for the diffusion model to learn.
 
-In practice, $\lambda_{\text{KL}}$ is set very small (around $10^{-6}$). The latent space is only mildly regularized -- just enough to prevent degenerate behavior (extreme values, dead dimensions) without sacrificing reconstruction quality. This is sometimes called a "KL-regularized autoencoder" rather than a true VAE, because the KL term is so weak that the latents are nearly deterministic.
+In practice, $\lambda\_{\text{KL}}$ is set very small (around $10^{-6}$). The latent space is only mildly regularized -- just enough to prevent degenerate behavior (extreme values, dead dimensions) without sacrificing reconstruction quality. This is sometimes called a "KL-regularized autoencoder" rather than a true VAE, because the KL term is so weak that the latents are nearly deterministic.
 
 ### 2.4 Downsampling Factor
 
@@ -137,20 +147,22 @@ The autoencoder should achieve:
 
 ### 3.2 Stage 2: Train the Diffusion Model in Latent Space
 
-Once the autoencoder is trained and frozen, we encode the entire training set into latents: $z_n = \mathcal{E}(x_n)$. Then we train a diffusion model (DDPM, score-based, etc.) on these latent representations.
+Once the autoencoder is trained and frozen, we encode the entire training set into latents: $z\_n = \mathcal{E}(x\_n)$. Then we train a diffusion model (DDPM, score-based, etc.) on these latent representations.
 
 The training objective is identical to the standard DDPM objective, but applied to latents:
 
-$$\mathcal{L}_{\text{diff}} = \mathbb{E}_{z_0, \epsilon, t} \left[ \|\epsilon - \epsilon_\theta(z_t, t)\|^2 \right]$$
+$$
+\mathcal{L}_{\text{diff}} = \mathbb{E}_{z_0, \epsilon, t} \left[ \|\epsilon - \epsilon_\theta(z_t, t)\|^2 \right]
+$$
 
-where $z_t = \sqrt{\bar{\alpha}_t}\, z_0 + \sqrt{1 - \bar{\alpha}_t}\, \epsilon$ and $z_0 = \mathcal{E}(x)$.
+where $z\_t = \sqrt{\bar{\alpha}\_t}\, z\_0 + \sqrt{1 - \bar{\alpha}\_t}\, \epsilon$ and $z\_0 = \mathcal{E}(x)$.
 
 ### 3.3 Sampling
 
 To generate a new image:
-1. Sample $z_T \sim \mathcal{N}(0, I)$ in the latent space
-2. Run the reverse diffusion process (DDIM, DPM-Solver, etc.) to get $z_0$
-3. Decode: $x = \mathcal{D}(z_0)$
+1. Sample $z\_T \sim \mathcal{N}(0, I)$ in the latent space
+2. Run the reverse diffusion process (DDIM, DPM-Solver, etc.) to get $z\_0$
+3. Decode: $x = \mathcal{D}(z\_0)$
 
 Step 2 is now much cheaper because $z$ is 48x smaller than $x$.
 
@@ -196,7 +208,9 @@ Each resolution level has one or more **ResNet blocks** and (at some resolutions
 
 Each ResNet block has the structure:
 
-$$\text{ResBlock}(h, t_{\text{emb}}) = h + \text{Conv}(\text{SiLU}(\text{GN}(\text{Conv}(\text{SiLU}(\text{GN}(h))) + \text{MLP}(t_{\text{emb}}))))$$
+$$
+\text{ResBlock}(h, t_{\text{emb}}) = h + \text{Conv}(\text{SiLU}(\text{GN}(\text{Conv}(\text{SiLU}(\text{GN}(h))) + \text{MLP}(t_{\text{emb}}))))
+$$
 
 Unpacked:
 1. **Group Normalization (GN)**: Normalizes across groups of channels. Unlike batch normalization, GN works well with small batch sizes (common in high-resolution generation). Typically 32 groups.
@@ -211,20 +225,26 @@ The time embedding addition is crucial: it tells each block *how noisy the input
 
 The timestep $t$ is embedded via sinusoidal positional encoding (borrowed from the Transformer):
 
-$$\text{PE}(t, 2i) = \sin(t / 10000^{2i/d})$$
-$$\text{PE}(t, 2i+1) = \cos(t / 10000^{2i/d})$$
+$$
+\text{PE}(t, 2i) = \sin(t / 10000^{2i/d})
+$$
+$$
+\text{PE}(t, 2i+1) = \cos(t / 10000^{2i/d})
+$$
 
 This produces a vector in $\mathbb{R}^d$ (typically $d = 320$). The sinusoidal encoding has the desirable property that nearby timesteps have similar embeddings, while distant timesteps are easily distinguished.
 
-The positional encoding is then passed through a small MLP (two linear layers with SiLU activation) to produce the final time embedding $t_{\text{emb}} \in \mathbb{R}^{d_{\text{model}}}$, which is injected into every ResNet block.
+The positional encoding is then passed through a small MLP (two linear layers with SiLU activation) to produce the final time embedding $t\_{\text{emb}} \in \mathbb{R}^{d\_{\text{model}}}$, which is injected into every ResNet block.
 
 ### 4.5 Self-Attention
 
 At lower resolutions (typically 32x32, 16x16, and 8x8), the U-Net includes self-attention layers. The feature map $h \in \mathbb{R}^{h \times w \times c}$ is reshaped to a sequence of $hw$ tokens of dimension $c$, and standard multi-head self-attention is applied:
 
-$$\text{Attention}(Q, K, V) = \text{softmax}\left(\frac{QK^\top}{\sqrt{d_k}}\right) V$$
+$$
+\text{Attention}(Q, K, V) = \text{softmax}\left(\frac{QK^\top}{\sqrt{d_k}}\right) V
+$$
 
-where $Q = W_Q h$, $K = W_K h$, $V = W_V h$.
+where $Q = W\_Q h$, $K = W\_K h$, $V = W\_V h$.
 
 Self-attention is computationally expensive ($O(n^2)$ in the number of spatial tokens $n = hw$), which is why it is only used at lower resolutions. At 64x64, there are 4096 tokens, making attention costly. At 16x16, there are only 256 tokens -- quite manageable.
 
@@ -240,7 +260,9 @@ Self-attention allows the network to model long-range spatial dependencies. With
 
 The skip connections are the defining feature of the U-Net. They concatenate the encoder features with the decoder features at matching resolutions:
 
-$$h_{\text{dec}} = \text{Conv}([h_{\text{enc}}; h_{\text{up}}])$$
+$$
+h_{\text{dec}} = \text{Conv}([h_{\text{enc}}; h_{\text{up}}])
+$$
 
 where $[\cdot;\cdot]$ denotes channel-wise concatenation.
 
@@ -255,10 +277,10 @@ Why are skip connections so important for diffusion? Consider the denoising task
 Stable Diffusion consists of:
 
 1. **VAE** (autoencoder): $\mathcal{E}: \mathbb{R}^{512 \times 512 \times 3} \to \mathbb{R}^{64 \times 64 \times 4}$ and $\mathcal{D}: \mathbb{R}^{64 \times 64 \times 4} \to \mathbb{R}^{512 \times 512 \times 3}$
-2. **U-Net** (denoising network): $\epsilon_\theta: \mathbb{R}^{64 \times 64 \times 4} \times \mathbb{R} \times \mathbb{R}^{L \times d} \to \mathbb{R}^{64 \times 64 \times 4}$, where $L \times d$ is the text conditioning
+2. **U-Net** (denoising network): $\epsilon\_\theta: \mathbb{R}^{64 \times 64 \times 4} \times \mathbb{R} \times \mathbb{R}^{L \times d} \to \mathbb{R}^{64 \times 64 \times 4}$, where $L \times d$ is the text conditioning
 3. **Text encoder**: CLIP (or OpenCLIP) maps text prompts to a sequence of embeddings $c \in \mathbb{R}^{L \times d}$
 
-The text conditioning enters the U-Net via cross-attention (which we will study in detail in Week 10). For now, the important point is that the U-Net takes three inputs: the noisy latent $z_t$, the timestep $t$, and the text embedding $c$.
+The text conditioning enters the U-Net via cross-attention (which we will study in detail in Week 10). For now, the important point is that the U-Net takes three inputs: the noisy latent $z\_t$, the timestep $t$, and the text embedding $c$.
 
 ### 5.2 Model Sizes
 
@@ -300,7 +322,9 @@ Peebles and Xie (2023) asked: can we replace the U-Net with a standard vision tr
 
 DiT treats the latent representation $z \in \mathbb{R}^{h \times w \times c}$ as a sequence of patches. Each patch of size $p \times p \times c$ is flattened and linearly projected to a token of dimension $d$:
 
-$$\text{tokens} = \text{PatchEmbed}(z) \in \mathbb{R}^{(hw/p^2) \times d}$$
+$$
+\text{tokens} = \text{PatchEmbed}(z) \in \mathbb{R}^{(hw/p^2) \times d}
+$$
 
 For $z \in \mathbb{R}^{32 \times 32 \times 4}$ and patch size $p = 2$: there are $32 \times 32 / 4 = 256$ tokens.
 
@@ -318,9 +342,13 @@ How does the timestep $t$ (and class label $y$) enter the transformer? DiT uses 
 
 Instead of using fixed layer norm parameters $\gamma, \beta$, DiT computes them from the conditioning:
 
-$$\gamma, \beta, \alpha = \text{MLP}(t_{\text{emb}} + y_{\text{emb}})$$
+$$
+\gamma, \beta, \alpha = \text{MLP}(t_{\text{emb}} + y_{\text{emb}})
+$$
 
-$$\text{adaLN}(h) = \alpha \cdot (\gamma \cdot \text{LayerNorm}(h) + \beta)$$
+$$
+\text{adaLN}(h) = \alpha \cdot (\gamma \cdot \text{LayerNorm}(h) + \beta)
+$$
 
 where $\alpha$ is a per-element scale applied to the residual connection. This allows each transformer block to modulate its behavior based on the noise level and class label.
 
@@ -361,17 +389,17 @@ Let us trace the full pipeline for generating a 512x512 image from the prompt "a
 The CLIP text encoder tokenizes the prompt and produces a sequence of embeddings $c \in \mathbb{R}^{77 \times 768}$ (77 tokens, 768 dimensions per token).
 
 **Step 2: Initial noise.**
-Sample $z_T \sim \mathcal{N}(0, I)$ where $z_T \in \mathbb{R}^{64 \times 64 \times 4}$.
+Sample $z\_T \sim \mathcal{N}(0, I)$ where $z\_T \in \mathbb{R}^{64 \times 64 \times 4}$.
 
 **Step 3: Iterative denoising (e.g., 20 steps of DPM-Solver++).**
 At each step $t$:
-- The U-Net takes $(z_t, t, c)$ and predicts $\hat{\epsilon}$ (or $\hat{x}_0$)
-- The sampler (DPM-Solver++) computes $z_{t-1}$
+- The U-Net takes $(z\_t, t, c)$ and predicts $\hat{\epsilon}$ (or $\hat{x}\_0$)
+- The sampler (DPM-Solver++) computes $z\_{t-1}$
 
 This requires 20 forward passes through the 860M-parameter U-Net.
 
 **Step 4: Decode.**
-The VAE decoder maps $z_0 \in \mathbb{R}^{64 \times 64 \times 4}$ to $x_0 \in \mathbb{R}^{512 \times 512 \times 3}$. One forward pass through the 49M-parameter decoder.
+The VAE decoder maps $z\_0 \in \mathbb{R}^{64 \times 64 \times 4}$ to $x\_0 \in \mathbb{R}^{512 \times 512 \times 3}$. One forward pass through the 49M-parameter decoder.
 
 **Step 5: Post-processing.**
 Clip to $[0, 1]$ and convert to uint8. Done.
@@ -380,13 +408,13 @@ Total neural network evaluations: 1 (text encoder) + 20 (U-Net) + 1 (VAE decoder
 
 ### 7.2 Latent Space Arithmetic
 
-Because DDIM ($\eta = 0$) is deterministic, the mapping from latent noise $z_T$ to image $x_0$ is a fixed function. This enables latent space operations:
+Because DDIM ($\eta = 0$) is deterministic, the mapping from latent noise $z\_T$ to image $x\_0$ is a fixed function. This enables latent space operations:
 
-**Interpolation.** Given two noise vectors $z_T^{(a)}$ and $z_T^{(b)}$ that produce images $a$ and $b$, the interpolation $z_T(\alpha) = \sqrt{\alpha}\, z_T^{(a)} + \sqrt{1-\alpha}\, z_T^{(b)}$ (spherical interpolation) produces a smooth blend between $a$ and $b$.
+**Interpolation.** Given two noise vectors $z\_T^{(a)}$ and $z\_T^{(b)}$ that produce images $a$ and $b$, the interpolation $z\_T(\alpha) = \sqrt{\alpha}\, z\_T^{(a)} + \sqrt{1-\alpha}\, z\_T^{(b)}$ (spherical interpolation) produces a smooth blend between $a$ and $b$.
 
-**Inversion.** Given an image $x$, run the DDIM forward process: $z_0 = \mathcal{E}(x)$, then integrate the probability flow ODE *forward* from $t = 0$ to $t = T$ to find $z_T$. This $z_T$ will reconstruct $x$ when passed through the reverse process.
+**Inversion.** Given an image $x$, run the DDIM forward process: $z\_0 = \mathcal{E}(x)$, then integrate the probability flow ODE *forward* from $t = 0$ to $t = T$ to find $z\_T$. This $z\_T$ will reconstruct $x$ when passed through the reverse process.
 
-**Editing.** Invert an image to $z_T$, modify the text prompt, and run the reverse process with the new prompt. The result is an edited version of the original image.
+**Editing.** Invert an image to $z\_T$, modify the text prompt, and run the reverse process with the new prompt. The result is an edited version of the original image.
 
 ---
 
@@ -398,11 +426,11 @@ The VAE sets a ceiling on the final image quality. If the VAE cannot reconstruct
 
 ### 8.2 Latent Space Distribution
 
-The diffusion model assumes $z_0 \sim p_{\text{data}}$ has roughly unit variance. If the autoencoder produces latents with very different statistics (e.g., mean far from zero, or variance much larger than 1), the diffusion process will not work well. In practice, the latents are scaled by a constant factor to bring their variance close to 1. Stable Diffusion uses a scaling factor of 0.18215.
+The diffusion model assumes $z\_0 \sim p\_{\text{data}}$ has roughly unit variance. If the autoencoder produces latents with very different statistics (e.g., mean far from zero, or variance much larger than 1), the diffusion process will not work well. In practice, the latents are scaled by a constant factor to bring their variance close to 1. Stable Diffusion uses a scaling factor of 0.18215.
 
 ### 8.3 The Reconstruction-Generation Gap
 
-There is a subtle gap between reconstruction quality (how well $\mathcal{D}(\mathcal{E}(x))$ matches $x$) and generation quality (how good $\mathcal{D}(z_0)$ looks for a diffusion-generated $z_0$). The diffusion model may produce latents that are slightly out-of-distribution for the decoder, leading to artifacts. This gap is usually small but can be visible in challenging cases (fine text, highly detailed textures).
+There is a subtle gap between reconstruction quality (how well $\mathcal{D}(\mathcal{E}(x))$ matches $x$) and generation quality (how good $\mathcal{D}(z\_0)$ looks for a diffusion-generated $z\_0$). The diffusion model may produce latents that are slightly out-of-distribution for the decoder, leading to artifacts. This gap is usually small but can be visible in challenging cases (fine text, highly detailed textures).
 
 ---
 
@@ -430,11 +458,11 @@ There is a subtle gap between reconstruction quality (how well $\mathcal{D}(\mat
 |---------|----------|
 | VAE encoding | $z = \mathcal{E}(x), \quad z \in \mathbb{R}^{h \times w \times c}$ |
 | VAE decoding | $\hat{x} = \mathcal{D}(z), \quad \hat{x} \in \mathbb{R}^{H \times W \times 3}$ |
-| KL regularization | $\mathcal{L}_{\text{KL}} = D_{\text{KL}}(q(z|x) \| \mathcal{N}(0,I))$ |
-| Latent diffusion training | $\mathcal{L} = \mathbb{E}_{z_0, \epsilon, t}[\|\epsilon - \epsilon_\theta(z_t, t)\|^2]$ |
-| Latent forward process | $z_t = \sqrt{\bar{\alpha}_t}\, z_0 + \sqrt{1-\bar{\alpha}_t}\, \epsilon$ |
+| KL regularization | $\mathcal{L}\_{\text{KL}} = D\_{\text{KL}}(q(z|x) \Vert  \mathcal{N}(0,I))$ |
+| Latent diffusion training | $\mathcal{L} = \mathbb{E}\_{z\_0, \epsilon, t}[\Vert \epsilon - \epsilon\_\theta(z\_t, t)\Vert ^2]$ |
+| Latent forward process | $z\_t = \sqrt{\bar{\alpha}\_t}\, z\_0 + \sqrt{1-\bar{\alpha}\_t}\, \epsilon$ |
 | Time embedding | $\text{PE}(t, 2i) = \sin(t / 10000^{2i/d})$ |
-| adaLN (DiT) | $\text{adaLN}(h) = \alpha \cdot (\gamma \cdot \text{LN}(h) + \beta)$, $(\gamma,\beta,\alpha)=\text{MLP}(t_{\text{emb}})$ |
+| adaLN (DiT) | $\text{adaLN}(h) = \alpha \cdot (\gamma \cdot \text{LN}(h) + \beta)$, $(\gamma,\beta,\alpha)=\text{MLP}(t\_{\text{emb}})$ |
 
 ---
 

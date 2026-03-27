@@ -202,7 +202,7 @@ export default function UploadPage({ basePath }: { basePath: string }) {
                 onClick={handleGenerate}
                 disabled={generating || !markdown.trim()}
               >
-                {generating ? 'Generating...' : 'Generate Flashcards & Quiz'}
+                {generating ? 'Generating (may take ~30s)...' : 'Generate Flashcards & Quiz'}
               </button>
               <button
                 className={`btn btn-sm ${showCreator ? 'btn-secondary' : 'btn-secondary'}`}

@@ -2,7 +2,6 @@ import { useState, useCallback } from 'react';
 import { createNote, type FlashcardData, type QuizQuestionData } from './note-store';
 import { getApiKey, setApiKey, generateCards } from './ai-generate';
 import MarkdownPreview from './MarkdownPreview';
-import CardCreator from './CardCreator';
 import Flashcard from './Flashcard';
 import Quiz from './Quiz';
 
@@ -15,7 +14,6 @@ export default function UploadPage({ basePath }: { basePath: string }) {
   const [flashcards, setFlashcards] = useState<FlashcardData[]>([]);
   const [quizQuestions, setQuizQuestions] = useState<QuizQuestionData[]>([]);
   const [generating, setGenerating] = useState(false);
-  const [showCreator, setShowCreator] = useState(false);
   const [showKeyInput, setShowKeyInput] = useState(false);
   const [keyInput, setKeyInput] = useState('');
   const [toast, setToast] = useState<{ msg: string; type: 'success' | 'error' } | null>(null);
@@ -128,7 +126,6 @@ export default function UploadPage({ basePath }: { basePath: string }) {
     setMarkdown('');
     setFlashcards([]);
     setQuizQuestions([]);
-    setShowCreator(false);
   }
 
   function handleKeyDown(e: React.KeyboardEvent<HTMLTextAreaElement>) {
@@ -144,6 +141,51 @@ export default function UploadPage({ basePath }: { basePath: string }) {
       });
     }
   }
+
+  const actionButtons = (
+    <>
+      <div className="upload-actions">
+        <button className="btn btn-primary" onClick={handleSave}>
+          Save Note
+        </button>
+        <button
+          className="btn btn-primary"
+          onClick={handleGenerate}
+          disabled={generating || !markdown.trim()}
+        >
+          {generating ? 'Generating (may take ~60s)...' : 'Generate Flashcards & Quiz'}
+        </button>
+        <a className="btn btn-secondary" href={`${basePath}/my-notes/`}>
+          My Notes
+        </a>
+      </div>
+
+      {showKeyInput && (
+        <div className="creator-section" style={{ marginTop: '0.75rem' }}>
+          <label style={{ fontSize: '0.85rem', fontWeight: 500, color: 'var(--app-text-muted)' }}>
+            Anthropic API Key
+          </label>
+          <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.4rem' }}>
+            <input
+              type="password"
+              className="title-input"
+              placeholder="sk-ant-..."
+              value={keyInput}
+              onChange={e => setKeyInput(e.target.value)}
+              onKeyDown={e => { if (e.key === 'Enter' && keyInput.trim()) saveKey(); }}
+              style={{ marginBottom: 0, flex: 1 }}
+            />
+            <button className="btn btn-primary btn-sm" onClick={saveKey} disabled={!keyInput.trim()}>
+              Save & Generate
+            </button>
+          </div>
+          <span style={{ fontSize: '0.8rem', color: 'var(--app-text-muted)', marginTop: '0.3rem', display: 'block' }}>
+            Stored locally in your browser. Only sent to Anthropic's API.
+          </span>
+        </div>
+      )}
+    </>
+  );
 
   return (
     <>
@@ -193,54 +235,6 @@ export default function UploadPage({ basePath }: { basePath: string }) {
               onKeyDown={handleKeyDown}
               spellCheck={false}
             />
-            <div className="upload-actions">
-              <button className="btn btn-primary" onClick={handleSave}>
-                Save Note
-              </button>
-              <button
-                className="btn btn-primary"
-                onClick={handleGenerate}
-                disabled={generating || !markdown.trim()}
-              >
-                {generating ? 'Generating (may take ~30s)...' : 'Generate Flashcards & Quiz'}
-              </button>
-              <button
-                className={`btn btn-sm ${showCreator ? 'btn-secondary' : 'btn-secondary'}`}
-                onClick={() => setShowCreator(!showCreator)}
-                disabled={!markdown.trim()}
-                style={{ fontSize: '0.8rem' }}
-              >
-                {showCreator ? 'Hide Manual' : 'Add Manually'}
-              </button>
-              <a className="btn btn-secondary" href={`${basePath}/my-notes/`}>
-                My Notes
-              </a>
-            </div>
-
-            {showKeyInput && (
-              <div className="creator-section" style={{ marginTop: '0.75rem' }}>
-                <label style={{ fontSize: '0.85rem', fontWeight: 500, color: 'var(--app-text-muted)' }}>
-                  Anthropic API Key
-                </label>
-                <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.4rem' }}>
-                  <input
-                    type="password"
-                    className="title-input"
-                    placeholder="sk-ant-..."
-                    value={keyInput}
-                    onChange={e => setKeyInput(e.target.value)}
-                    onKeyDown={e => { if (e.key === 'Enter' && keyInput.trim()) saveKey(); }}
-                    style={{ marginBottom: 0, flex: 1 }}
-                  />
-                  <button className="btn btn-primary btn-sm" onClick={saveKey} disabled={!keyInput.trim()}>
-                    Save & Generate
-                  </button>
-                </div>
-                <span style={{ fontSize: '0.8rem', color: 'var(--app-text-muted)', marginTop: '0.3rem', display: 'block' }}>
-                  Stored locally in your browser. Only sent to Anthropic's API.
-                </span>
-              </div>
-            )}
           </div>
         )}
 
@@ -255,18 +249,9 @@ export default function UploadPage({ basePath }: { basePath: string }) {
               </p>
             )}
           </div>
+          {actionButtons}
         </div>
       </div>
-
-      {showCreator && markdown.trim() && (
-        <CardCreator
-          flashcards={flashcards}
-          quizQuestions={quizQuestions}
-          noteContent={markdown}
-          onUpdateFlashcards={setFlashcards}
-          onUpdateQuiz={setQuizQuestions}
-        />
-      )}
 
       {flashcards.length > 0 && (
         <div style={{ marginTop: '2rem' }}>

@@ -69,7 +69,7 @@ This question concerns variational autoencoders (VAEs).
 **(a)** [6 marks] Starting from the marginal log-likelihood $\log p\_\theta(\mathbf{x})$, derive the Evidence Lower Bound (ELBO):
 
 $$
-\log p_\theta(\mathbf{x}) \geq \mathbb{E}_{q_\phi(\mathbf{z}|\mathbf{x})}[\log p_\theta(\mathbf{x}|\mathbf{z})] - D_{\text{KL}}(q_\phi(\mathbf{z}|\mathbf{x}) \| p(\mathbf{z}))
+\log p_\theta(\mathbf{x}) \geq \mathbb{E}_{q_\phi(\mathbf{z}|\mathbf{x})}[\log p_\theta(\mathbf{x}|\mathbf{z})] - D_{\text{KL}}(q_\phi(\mathbf{z}|\mathbf{x}) \Vert  p(\mathbf{z}))
 $$
 
 Show each step clearly.
@@ -79,7 +79,7 @@ Show each step clearly.
 **(c)** [3 marks] In a $\beta$-VAE, the objective is:
 
 $$
-\mathcal{L}_{\beta} = \mathbb{E}_{q_\phi(\mathbf{z}|\mathbf{x})}[\log p_\theta(\mathbf{x}|\mathbf{z})] - \beta \cdot D_{\text{KL}}(q_\phi(\mathbf{z}|\mathbf{x}) \| p(\mathbf{z}))
+\mathcal{L}_{\beta} = \mathbb{E}_{q_\phi(\mathbf{z}|\mathbf{x})}[\log p_\theta(\mathbf{x}|\mathbf{z})] - \beta \cdot D_{\text{KL}}(q_\phi(\mathbf{z}|\mathbf{x}) \Vert  p(\mathbf{z}))
 $$
 
 What happens when $\beta \gg 1$? What happens when $\beta \to 0$? Explain the tradeoff in terms of reconstruction quality and latent space structure.

@@ -80,7 +80,7 @@ The student maps $x\_t$ to $\hat{x}\_{t+2\Delta t}$ using one network evaluation
 
 **Distillation loss:**
 $$
-\mathcal{L}_{\text{PD}} = \mathbb{E}_{t, x_t}\left[\|x_{t+2\Delta t}^{\text{teacher}} - x_{t+2\Delta t}^{\text{student}}\|^2\right]
+\mathcal{L}_{\text{PD}} = \mathbb{E}_{t, x_t}\left[\Vert x_{t+2\Delta t}^{\text{teacher}} - x_{t+2\Delta t}^{\text{student}}\Vert ^2\right]
 $$
 
 The student learns to match the teacher's two-step output in a single step.
@@ -345,7 +345,7 @@ The SDS gradient can be derived from the KL divergence between the distribution 
 Consider the rendered image $x = g(\theta, c)$ as a delta distribution $q\_\theta(x) = \delta(x - g(\theta, c))$. We want to minimize:
 
 $$
-\mathcal{L}(\theta) = D_{\text{KL}}(q_t(x_t) \| p_t(x_t | y))
+\mathcal{L}(\theta) = D_{\text{KL}}(q_t(x_t) \Vert  p_t(x_t | y))
 $$
 
 where $q\_t$ is the distribution of noisy rendered images and $p\_t$ is the diffusion model's marginal at noise level $t$.

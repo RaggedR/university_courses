@@ -29,11 +29,11 @@ Consider a neural network with the following architecture:
 The parameters are:
 
 $$
-W_1 = \begin{pmatrix} 1 & -1 \\ -1 & 1 \\ 0.5 & 0.5 \end{pmatrix}, \quad \mathbf{b}_1 = \begin{pmatrix} 0 \\ 0 \\ -0.5 \end{pmatrix}
+W_1 = \begin{pmatrix} 1 & -1 \\\\ -1 & 1 \\\\ 0.5 & 0.5 \end{pmatrix}, \quad \mathbf{b}_1 = \begin{pmatrix} 0 \\\\ 0 \\\\ -0.5 \end{pmatrix}
 $$
 
 $$
-W_2 = \begin{pmatrix} 1 & -1 & 0.5 \\ 0.5 & 1 & -0.5 \end{pmatrix}, \quad \mathbf{b}_2 = \begin{pmatrix} 0 \\ 0 \end{pmatrix}
+W_2 = \begin{pmatrix} 1 & -1 & 0.5 \\\\ 0.5 & 1 & -0.5 \end{pmatrix}, \quad \mathbf{b}_2 = \begin{pmatrix} 0 \\\\ 0 \end{pmatrix}
 $$
 
 $$

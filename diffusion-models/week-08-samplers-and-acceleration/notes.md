@@ -164,7 +164,7 @@ Heun's method is a second-order method that makes two function evaluations per s
 
 $$
 \begin{aligned}
-\tilde{x}_s &= x_t + (s - t) \cdot v_\theta(x_t, t) & \text{(predictor: Euler step)} \\
+\tilde{x}_s &= x_t + (s - t) \cdot v_\theta(x_t, t) & \text{(predictor: Euler step)} \\\\
 x_s &= x_t + \frac{s - t}{2} \left[ v_\theta(x_t, t) + v_\theta(\tilde{x}_s, s) \right] & \text{(corrector: average slopes)}
 \end{aligned}
 $$
@@ -179,10 +179,10 @@ The classical RK4 method uses 4 evaluations per step:
 
 $$
 \begin{aligned}
-k_1 &= v_\theta(x_t, t) \\
-k_2 &= v_\theta\!\left(x_t + \tfrac{h}{2} k_1,\; t + \tfrac{h}{2}\right) \\
-k_3 &= v_\theta\!\left(x_t + \tfrac{h}{2} k_2,\; t + \tfrac{h}{2}\right) \\
-k_4 &= v_\theta(x_t + h \cdot k_3,\; t + h) \\
+k_1 &= v_\theta(x_t, t) \\\\
+k_2 &= v_\theta\!\left(x_t + \tfrac{h}{2} k_1,\; t + \tfrac{h}{2}\right) \\\\
+k_3 &= v_\theta\!\left(x_t + \tfrac{h}{2} k_2,\; t + \tfrac{h}{2}\right) \\\\
+k_4 &= v_\theta(x_t + h \cdot k_3,\; t + h) \\\\
 x_{t+h} &= x_t + \frac{h}{6}(k_1 + 2k_2 + 2k_3 + k_4)
 \end{aligned}
 $$
@@ -229,7 +229,7 @@ Use a linear approximation of $\hat{\epsilon}\_\theta$ over the interval. This r
 
 $$
 \begin{aligned}
-u &= \frac{\alpha_{s_{1/2}}}{\alpha_t} x_{\lambda_t} - \sigma_{s_{1/2}} (e^{h/2} - 1) \hat{\epsilon}_\theta(x_{\lambda_t}, \lambda_t) \\
+u &= \frac{\alpha_{s_{1/2}}}{\alpha_t} x_{\lambda_t} - \sigma_{s_{1/2}} (e^{h/2} - 1) \hat{\epsilon}_\theta(x_{\lambda_t}, \lambda_t) \\\\
 x_{\lambda_s} &= \frac{\alpha_s}{\alpha_t} x_{\lambda_t} - \sigma_s (e^h - 1) \hat{\epsilon}_\theta(x_{\lambda_t}, \lambda_t) - \frac{\sigma_s}{2h}(e^h - 1) \left[\hat{\epsilon}_\theta(u, \lambda_{s_{1/2}}) - \hat{\epsilon}_\theta(x_{\lambda_t}, \lambda_t)\right]
 \end{aligned}
 $$
@@ -312,7 +312,7 @@ DPM-Solver uses this by default, which is one reason for its effectiveness.
 More sophisticated approaches estimate the local truncation error and adjust the step size to keep it below a tolerance. Given an estimate $\hat{x}\_s$ from a $p$-th order method and $\hat{x}\_s'$ from a $(p+1)$-th order method, the local error estimate is:
 
 $$
-\text{err} = \|\hat{x}_s - \hat{x}_s'\|
+\text{err} = \Vert \hat{x}_s - \hat{x}_s'\Vert 
 $$
 
 If $\text{err} > \text{tol}$, reject the step and retry with a smaller $h$. If $\text{err} \ll \text{tol}$, accept and increase $h$ for the next step. The optimal step size update is:

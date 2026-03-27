@@ -34,7 +34,7 @@ $$
 Use $p\_\theta(x, z) = p\_\theta(x|z) p(z)$ to decompose this into:
 
 $$
-\mathcal{L} = \mathbb{E}_{z \sim q_\phi}[\log p_\theta(x|z)] - D_{\text{KL}}(q_\phi(z|x) \| p(z))
+\mathcal{L} = \mathbb{E}_{z \sim q_\phi}[\log p_\theta(x|z)] - D_{\text{KL}}(q_\phi(z|x) \Vert  p(z))
 $$
 
 Show every step of the algebra.
@@ -44,7 +44,7 @@ Show every step of the algebra.
 Prove that:
 
 $$
-\log p_\theta(x) = \mathcal{L}(\theta, \phi; x) + D_{\text{KL}}(q_\phi(z|x) \| p_\theta(z|x))
+\log p_\theta(x) = \mathcal{L}(\theta, \phi; x) + D_{\text{KL}}(q_\phi(z|x) \Vert  p_\theta(z|x))
 $$
 
 *Hint: Start from the definition of $D\_{\text{KL}}(q\_\phi(z|x) \Vert  p\_\theta(z|x))$ and use Bayes' rule to substitute for $p\_\theta(z|x)$.*
@@ -64,13 +64,13 @@ $$
 Derive the KL divergence between two multivariate Gaussians:
 
 $$
-D_{\text{KL}}(\mathcal{N}(\mu_1, \Sigma_1) \| \mathcal{N}(\mu_2, \Sigma_2))
+D_{\text{KL}}(\mathcal{N}(\mu_1, \Sigma_1) \Vert  \mathcal{N}(\mu_2, \Sigma_2))
 $$
 
 Start from the definition:
 
 $$
-D_{\text{KL}}(p \| q) = \mathbb{E}_{x \sim p}\left[\log p(x) - \log q(x)\right]
+D_{\text{KL}}(p \Vert  q) = \mathbb{E}_{x \sim p}\left[\log p(x) - \log q(x)\right]
 $$
 
 Write out the Gaussian log-densities, expand, and simplify. You will need these identities:
@@ -197,7 +197,7 @@ Select two test images of different digits (e.g., a "2" and a "7"). Encode both 
 
 Create a sequence of 10 interpolated latent vectors:
 $$
-z_t = (1-t)\mu_1 + t\mu_2, \quad t \in \{0, 0.11, 0.22, \ldots, 1.0\}
+z_t = (1-t)\mu_1 + t\mu_2, \quad t \in \lbrace 0, 0.11, 0.22, \ldots, 1.0\rbrace 
 $$
 
 Decode each $z\_t$ and display the sequence. The transition should be smooth.

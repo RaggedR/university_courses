@@ -46,7 +46,7 @@ At a mode of the distribution ($\nabla\_x p(x) = 0$), the score is zero. Moving 
 For an isotropic Gaussian $p(x) = \mathcal{N}(x; \mu, \sigma^2 I)$:
 
 $$
-\log p(x) = -\frac{d}{2}\log(2\pi\sigma^2) - \frac{\|x - \mu\|^2}{2\sigma^2}
+\log p(x) = -\frac{d}{2}\log(2\pi\sigma^2) - \frac{\Vert x - \mu\Vert ^2}{2\sigma^2}
 $$
 
 $$
@@ -131,7 +131,7 @@ Suppose we want to learn the score function of an unknown data distribution $p\_
 We parameterize a score model $s\_\theta(x) \approx \nabla\_x \log p\_{\text{data}}(x)$ and want to minimize:
 
 $$
-J(\theta) = \frac{1}{2}\mathbb{E}_{p_{\text{data}}}\left[\|s_\theta(x) - \nabla_x \log p_{\text{data}}(x)\|^2\right]
+J(\theta) = \frac{1}{2}\mathbb{E}_{p_{\text{data}}}\left[\Vert s_\theta(x) - \nabla_x \log p_{\text{data}}(x)\Vert ^2\right]
 $$
 
 But we cannot compute this objective! It requires the true score $\nabla\_x \log p\_{\text{data}}(x)$, which we do not know.
@@ -141,7 +141,7 @@ But we cannot compute this objective! It requires the true score $\nabla\_x \log
 Hyvarinen's remarkable result: the objective $J(\theta)$ can be rewritten, up to a constant independent of $\theta$, as:
 
 $$
-\boxed{J_{\text{SM}}(\theta) = \mathbb{E}_{p_{\text{data}}}\left[\text{tr}(\nabla_x s_\theta(x)) + \frac{1}{2}\|s_\theta(x)\|^2\right]}
+\boxed{J_{\text{SM}}(\theta) = \mathbb{E}_{p_{\text{data}}}\left[\text{tr}(\nabla_x s_\theta(x)) + \frac{1}{2}\Vert s_\theta(x)\Vert ^2\right]}
 $$
 
 where $\nabla\_x s\_\theta(x) = \frac{\partial s\_\theta(x)\_i}{\partial x\_j}$ is the Jacobian of the score model, and $\text{tr}(\nabla\_x s\_\theta(x)) = \sum\_i \frac{\partial s\_\theta(x)\_i}{\partial x\_i}$ is its trace (the divergence of $s\_\theta$).
@@ -153,13 +153,13 @@ This objective involves only the model $s\_\theta$ and the data samples -- no kn
 The derivation uses integration by parts. We start by expanding $J(\theta)$:
 
 $$
-J(\theta) = \frac{1}{2}\mathbb{E}_{p_{\text{data}}}\left[\|s_\theta(x)\|^2 - 2 s_\theta(x)^\top \nabla_x \log p_{\text{data}}(x) + \|\nabla_x \log p_{\text{data}}(x)\|^2\right]
+J(\theta) = \frac{1}{2}\mathbb{E}_{p_{\text{data}}}\left[\Vert s_\theta(x)\Vert ^2 - 2 s_\theta(x)^\top \nabla_x \log p_{\text{data}}(x) + \Vert \nabla_x \log p_{\text{data}}(x)\Vert ^2\right]
 $$
 
 The last term is a constant (independent of $\theta$), so minimizing $J(\theta)$ is equivalent to minimizing:
 
 $$
-J'(\theta) = \frac{1}{2}\mathbb{E}_{p_{\text{data}}}\left[\|s_\theta(x)\|^2\right] - \mathbb{E}_{p_{\text{data}}}\left[s_\theta(x)^\top \nabla_x \log p_{\text{data}}(x)\right]
+J'(\theta) = \frac{1}{2}\mathbb{E}_{p_{\text{data}}}\left[\Vert s_\theta(x)\Vert ^2\right] - \mathbb{E}_{p_{\text{data}}}\left[s_\theta(x)^\top \nabla_x \log p_{\text{data}}(x)\right]
 $$
 
 The key step is handling the cross-term. Using $\nabla\_x \log p(x) = \nabla\_x p(x) / p(x)$:
@@ -187,7 +187,7 @@ $$
 Substituting back:
 
 $$
-J'(\theta) = \frac{1}{2}\mathbb{E}_{p_{\text{data}}}\left[\|s_\theta(x)\|^2\right] + \mathbb{E}_{p_{\text{data}}}\left[\text{tr}(\nabla_x s_\theta(x))\right] = J_{\text{SM}}(\theta)
+J'(\theta) = \frac{1}{2}\mathbb{E}_{p_{\text{data}}}\left[\Vert s_\theta(x)\Vert ^2\right] + \mathbb{E}_{p_{\text{data}}}\left[\text{tr}(\nabla_x s_\theta(x))\right] = J_{\text{SM}}(\theta)
 $$
 
 This completes the derivation. $\square$
@@ -225,7 +225,7 @@ $$
 The denoising score matching objective is:
 
 $$
-J_{\text{DSM}}(\theta) = \frac{1}{2}\mathbb{E}_{p_{\text{data}}(x_0)}\mathbb{E}_{\mathcal{N}(\epsilon; 0, I)}\left[\left\|s_\theta(x_0 + \sigma\epsilon) + \frac{\epsilon}{\sigma}\right\|^2\right]
+J_{\text{DSM}}(\theta) = \frac{1}{2}\mathbb{E}_{p_{\text{data}}(x_0)}\mathbb{E}_{\mathcal{N}(\epsilon; 0, I)}\left[\left\Vert s_\theta(x_0 + \sigma\epsilon) + \frac{\epsilon}{\sigma}\right\Vert ^2\right]
 $$
 
 This is equivalent to the original score matching objective up to a constant, but it is trivial to compute: sample a data point $x\_0$, add noise $\sigma\epsilon$ to get $x = x\_0 + \sigma\epsilon$, and train $s\_\theta(x)$ to predict $-\epsilon/\sigma$.
@@ -422,7 +422,7 @@ Common approaches:
 Combining denoising score matching with the diffusion forward process, the training objective is:
 
 $$
-\mathcal{L}(\theta) = \mathbb{E}_{t \sim \mathcal{U}\{1,T\}} \mathbb{E}_{x_0 \sim p_{\text{data}}} \mathbb{E}_{\epsilon \sim \mathcal{N}(0,I)} \left[\|\epsilon_\theta(x_t, t) - \epsilon\|^2\right]
+\mathcal{L}(\theta) = \mathbb{E}_{t \sim \mathcal{U}\lbrace 1,T\rbrace } \mathbb{E}_{x_0 \sim p_{\text{data}}} \mathbb{E}_{\epsilon \sim \mathcal{N}(0,I)} \left[\Vert \epsilon_\theta(x_t, t) - \epsilon\Vert ^2\right]
 $$
 
 where $x\_t = \sqrt{\bar{\alpha}\_t} x\_0 + \sqrt{1-\bar{\alpha}\_t} \epsilon$.

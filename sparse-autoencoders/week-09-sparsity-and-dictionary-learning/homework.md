@@ -30,7 +30,7 @@ Now consider $\beta \in \mathbb{R}^{10}$ with the unconstrained minimum at $\hat
 Solve the LASSO problem:
 
 $$
-\min_\beta \frac{1}{2}\|\hat{\beta} - \beta\|^2 + \lambda \|\beta\|_1
+\min_\beta \frac{1}{2}\Vert \hat{\beta} - \beta\Vert ^2 + \lambda \Vert \beta\Vert _1
 $$
 
 for $\lambda \in \lbrace 0.01, 0.1, 0.5, 1.0, 2.0, 5.0\rbrace $.
@@ -53,7 +53,7 @@ Plot the number of nonzero entries vs. $\lambda$. How does sparsity increase wit
 The proximal operator for $h(z) = \lambda |z|$ (scalar case) is defined as:
 
 $$
-\text{prox}_h(v) = \arg\min_z \left\{\frac{1}{2}(z - v)^2 + \lambda |z|\right\}
+\text{prox}_h(v) = \arg\min_z \left\lbrace \frac{1}{2}(z - v)^2 + \lambda |z|\right\rbrace 
 $$
 
 Derive the solution by considering three cases: $z > 0$, $z < 0$, and $z = 0$.
@@ -92,7 +92,7 @@ Implement the Iterative Shrinkage-Thresholding Algorithm from scratch in PyTorch
 Write a function `ista(x, D, lambda_, alpha, num_iters)` that solves:
 
 $$
-\min_z \frac{1}{2}\|x - Dz\|^2 + \lambda \|z\|_1
+\min_z \frac{1}{2}\Vert x - Dz\Vert ^2 + \lambda \Vert z\Vert _1
 $$
 
 Your implementation should:
@@ -197,11 +197,11 @@ y = X @ beta_true + 0.5 * np.random.randn(n)
 Solve the regularized regression problem for a range of $\lambda$ values:
 
 $$
-\hat{\beta}_{\text{L1}} = \arg\min_\beta \frac{1}{2n}\|y - X\beta\|^2 + \lambda \|\beta\|_1
+\hat{\beta}_{\text{L1}} = \arg\min_\beta \frac{1}{2n}\Vert y - X\beta\Vert ^2 + \lambda \Vert \beta\Vert _1
 $$
 
 $$
-\hat{\beta}_{\text{L2}} = \arg\min_\beta \frac{1}{2n}\|y - X\beta\|^2 + \lambda \|\beta\|_2^2
+\hat{\beta}_{\text{L2}} = \arg\min_\beta \frac{1}{2n}\Vert y - X\beta\Vert ^2 + \lambda \Vert \beta\Vert _2^2
 $$
 
 For the L1 problem, use your ISTA implementation (with appropriate modifications for the regression setting). For the L2 problem, use the closed-form solution $\hat{\beta}\_{\text{L2}} = (X^\top X + 2n\lambda I)^{-1} X^\top y$.

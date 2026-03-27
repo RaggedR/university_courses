@@ -211,7 +211,7 @@ All three parameterizations are mathematically identical. The choice affects num
 We want to train a neural network $s\_\theta(x)$ to approximate $\nabla\_x \log p(x)$. The natural loss function is:
 
 $$
-\mathcal{L}_{\text{SM}}(\theta) = \frac{1}{2}\mathbb{E}_{x \sim p}\left[\|s_\theta(x) - \nabla_x \log p(x)\|^2\right]
+\mathcal{L}_{\text{SM}}(\theta) = \frac{1}{2}\mathbb{E}_{x \sim p}\left[\Vert s_\theta(x) - \nabla_x \log p(x)\Vert ^2\right]
 $$
 
 But we do not know $\nabla\_x \log p(x)$ -- that is what we are trying to estimate! This loss is not computable.
@@ -221,7 +221,7 @@ But we do not know $\nabla\_x \log p(x)$ -- that is what we are trying to estima
 Hyvarinen (2005) showed that the loss above can be rewritten as:
 
 $$
-\mathcal{L}_{\text{SM}}(\theta) = \mathbb{E}_{x \sim p}\left[\frac{1}{2}\|s_\theta(x)\|^2 + \nabla_x \cdot s_\theta(x)\right] + \text{const}
+\mathcal{L}_{\text{SM}}(\theta) = \mathbb{E}_{x \sim p}\left[\frac{1}{2}\Vert s_\theta(x)\Vert ^2 + \nabla_x \cdot s_\theta(x)\right] + \text{const}
 $$
 
 where $\nabla\_x \cdot s\_\theta = \sum\_i \frac{\partial [s\_\theta]\_i}{\partial x\_i}$ is the divergence of the score model, and the constant does not depend on $\theta$.
@@ -260,7 +260,7 @@ Its score $\nabla\_{\tilde{x}} \log p\_\sigma(\tilde{x})$ is well-defined (unlik
 Train $s\_\theta(\tilde{x})$ to minimize:
 
 $$
-\mathcal{L}_{\text{DSM}}(\theta) = \frac{1}{2}\mathbb{E}_{x \sim p, \, \epsilon \sim \mathcal{N}(0, I)}\left[\left\|s_\theta(x + \sigma\epsilon) - \nabla_{\tilde{x}} \log p(\tilde{x} \mid x)\right\|^2\right]
+\mathcal{L}_{\text{DSM}}(\theta) = \frac{1}{2}\mathbb{E}_{x \sim p, \, \epsilon \sim \mathcal{N}(0, I)}\left[\left\Vert s_\theta(x + \sigma\epsilon) - \nabla_{\tilde{x}} \log p(\tilde{x} \mid x)\right\Vert ^2\right]
 $$
 
 The key: we replaced the intractable $\nabla\_{\tilde{x}} \log p\_\sigma(\tilde{x})$ with the **tractable** $\nabla\_{\tilde{x}} \log p(\tilde{x} \mid x)$.
@@ -274,7 +274,7 @@ $$
 So the loss becomes:
 
 $$
-\boxed{\mathcal{L}_{\text{DSM}}(\theta) = \frac{1}{2}\mathbb{E}_{x \sim p, \, \epsilon \sim \mathcal{N}(0,I)}\left[\left\|s_\theta(x + \sigma\epsilon) + \frac{\epsilon}{\sigma}\right\|^2\right]}
+\boxed{\mathcal{L}_{\text{DSM}}(\theta) = \frac{1}{2}\mathbb{E}_{x \sim p, \, \epsilon \sim \mathcal{N}(0,I)}\left[\left\Vert s_\theta(x + \sigma\epsilon) + \frac{\epsilon}{\sigma}\right\Vert ^2\right]}
 $$
 
 This is stunning in its simplicity:
@@ -289,7 +289,7 @@ That is it. No knowledge of $p(x)$. No divergence computation. Just noise predic
 **Theorem (Vincent, 2011).** The denoising score matching loss $\mathcal{L}\_{\text{DSM}}(\theta)$ differs from the score matching loss $\mathcal{L}\_{\text{SM}}(\theta)$ by a constant independent of $\theta$:
 
 $$
-\mathcal{L}_{\text{DSM}}(\theta) = \frac{1}{2}\mathbb{E}_{\tilde{x} \sim p_\sigma}\left[\|s_\theta(\tilde{x}) - \nabla_{\tilde{x}} \log p_\sigma(\tilde{x})\|^2\right] + C
+\mathcal{L}_{\text{DSM}}(\theta) = \frac{1}{2}\mathbb{E}_{\tilde{x} \sim p_\sigma}\left[\Vert s_\theta(\tilde{x}) - \nabla_{\tilde{x}} \log p_\sigma(\tilde{x})\Vert ^2\right] + C
 $$
 
 where $C$ does not depend on $\theta$.
@@ -301,11 +301,11 @@ In other words: **minimizing the denoising score matching loss finds the score o
 Expand the score matching loss for the noised distribution:
 
 $$
-\mathcal{L}_{\text{SM}}(\theta) = \frac{1}{2}\mathbb{E}_{\tilde{x} \sim p_\sigma}\left[\|s_\theta(\tilde{x}) - \nabla_{\tilde{x}} \log p_\sigma(\tilde{x})\|^2\right]
+\mathcal{L}_{\text{SM}}(\theta) = \frac{1}{2}\mathbb{E}_{\tilde{x} \sim p_\sigma}\left[\Vert s_\theta(\tilde{x}) - \nabla_{\tilde{x}} \log p_\sigma(\tilde{x})\Vert ^2\right]
 $$
 
 $$
-= \frac{1}{2}\mathbb{E}_{\tilde{x}}\left[\|s_\theta(\tilde{x})\|^2 - 2 s_\theta(\tilde{x})^\top \nabla_{\tilde{x}} \log p_\sigma(\tilde{x}) + \|\nabla_{\tilde{x}} \log p_\sigma(\tilde{x})\|^2\right]
+= \frac{1}{2}\mathbb{E}_{\tilde{x}}\left[\Vert s_\theta(\tilde{x})\Vert ^2 - 2 s_\theta(\tilde{x})^\top \nabla_{\tilde{x}} \log p_\sigma(\tilde{x}) + \Vert \nabla_{\tilde{x}} \log p_\sigma(\tilde{x})\Vert ^2\right]
 $$
 
 The last term is a constant (does not depend on $\theta$). Focus on the cross term:
@@ -341,17 +341,17 @@ $$
 Substituting back into $\mathcal{L}\_{\text{SM}}$:
 
 $$
-\mathcal{L}_{\text{SM}}(\theta) = \frac{1}{2}\mathbb{E}_{\tilde{x}}\|s_\theta(\tilde{x})\|^2 - \mathbb{E}_{x, \tilde{x}}\left[s_\theta(\tilde{x})^\top \nabla_{\tilde{x}} \log p(\tilde{x}|x)\right] + C
+\mathcal{L}_{\text{SM}}(\theta) = \frac{1}{2}\mathbb{E}_{\tilde{x}}\Vert s_\theta(\tilde{x})\Vert ^2 - \mathbb{E}_{x, \tilde{x}}\left[s_\theta(\tilde{x})^\top \nabla_{\tilde{x}} \log p(\tilde{x}|x)\right] + C
 $$
 
 Now expand the denoising score matching loss:
 
 $$
-\mathcal{L}_{\text{DSM}}(\theta) = \frac{1}{2}\mathbb{E}_{x, \tilde{x}}\left[\|s_\theta(\tilde{x}) - \nabla_{\tilde{x}} \log p(\tilde{x}|x)\|^2\right]
+\mathcal{L}_{\text{DSM}}(\theta) = \frac{1}{2}\mathbb{E}_{x, \tilde{x}}\left[\Vert s_\theta(\tilde{x}) - \nabla_{\tilde{x}} \log p(\tilde{x}|x)\Vert ^2\right]
 $$
 
 $$
-= \frac{1}{2}\mathbb{E}\|s_\theta(\tilde{x})\|^2 - \mathbb{E}\left[s_\theta(\tilde{x})^\top \nabla_{\tilde{x}} \log p(\tilde{x}|x)\right] + \frac{1}{2}\mathbb{E}\|\nabla_{\tilde{x}} \log p(\tilde{x}|x)\|^2
+= \frac{1}{2}\mathbb{E}\Vert s_\theta(\tilde{x})\Vert ^2 - \mathbb{E}\left[s_\theta(\tilde{x})^\top \nabla_{\tilde{x}} \log p(\tilde{x}|x)\right] + \frac{1}{2}\mathbb{E}\Vert \nabla_{\tilde{x}} \log p(\tilde{x}|x)\Vert ^2
 $$
 
 The first two terms are identical to $\mathcal{L}\_{\text{SM}}$ (after noting that $\mathbb{E}\_{\tilde{x}}\Vert s\_\theta\Vert ^2 = \mathbb{E}\_{x, \tilde{x}}\Vert s\_\theta\Vert ^2$ since $s\_\theta$ depends only on $\tilde{x}$). The last term is a constant. Therefore:
@@ -367,13 +367,13 @@ where $C' = \frac{1}{2}\mathbb{E}\Vert \nabla\_{\tilde{x}} \log p(\tilde{x}|x)\V
 Substituting $\nabla\_{\tilde{x}} \log p(\tilde{x}|x) = -\epsilon/\sigma$, the DSM loss is:
 
 $$
-\mathcal{L}_{\text{DSM}}(\theta) = \frac{1}{2}\mathbb{E}_{x, \epsilon}\left[\left\|s_\theta(x + \sigma\epsilon) + \frac{\epsilon}{\sigma}\right\|^2\right]
+\mathcal{L}_{\text{DSM}}(\theta) = \frac{1}{2}\mathbb{E}_{x, \epsilon}\left[\left\Vert s_\theta(x + \sigma\epsilon) + \frac{\epsilon}{\sigma}\right\Vert ^2\right]
 $$
 
 If we reparameterize the network as $s\_\theta(\tilde{x}, \sigma) = -\epsilon\_\theta(\tilde{x}, \sigma)/\sigma$, the loss becomes:
 
 $$
-\mathcal{L}(\theta) = \frac{1}{2\sigma^2}\mathbb{E}_{x, \epsilon}\left[\|\epsilon_\theta(x + \sigma\epsilon, \sigma) - \epsilon\|^2\right]
+\mathcal{L}(\theta) = \frac{1}{2\sigma^2}\mathbb{E}_{x, \epsilon}\left[\Vert \epsilon_\theta(x + \sigma\epsilon, \sigma) - \epsilon\Vert ^2\right]
 $$
 
 This is the **noise prediction loss**: train the network to predict the noise that was added. DDPM (Ho et al. 2020) uses exactly this loss (without the $1/\sigma^2$ weighting, as we discuss below).
@@ -401,7 +401,7 @@ This is a **noise-conditional score network** (NCSN), introduced by Song and Erm
 Choose a set of noise levels $\sigma\_1 < \sigma\_2 < \cdots < \sigma\_L$ (or sample them continuously from some distribution). The multi-scale denoising score matching loss is:
 
 $$
-\boxed{\mathcal{L}(\theta) = \sum_{\ell=1}^{L} \lambda(\sigma_\ell) \, \mathbb{E}_{x \sim p, \, \epsilon \sim \mathcal{N}(0,I)}\left[\left\|s_\theta(x + \sigma_\ell \epsilon, \sigma_\ell) + \frac{\epsilon}{\sigma_\ell}\right\|^2\right]}
+\boxed{\mathcal{L}(\theta) = \sum_{\ell=1}^{L} \lambda(\sigma_\ell) \, \mathbb{E}_{x \sim p, \, \epsilon \sim \mathcal{N}(0,I)}\left[\left\Vert s_\theta(x + \sigma_\ell \epsilon, \sigma_\ell) + \frac{\epsilon}{\sigma_\ell}\right\Vert ^2\right]}
 $$
 
 where $\lambda(\sigma\_\ell)$ are **loss weights** that balance the contributions from different noise levels.
@@ -409,7 +409,7 @@ where $\lambda(\sigma\_\ell)$ are **loss weights** that balance the contribution
 In the continuous-time formulation (Song et al. 2021), the sum over $\ell$ becomes an integral over $t$, and the noise level $\sigma(t)$ is determined by the forward SDE:
 
 $$
-\mathcal{L}(\theta) = \mathbb{E}_{t \sim \mathcal{U}[0,T]} \left[\lambda(t) \, \mathbb{E}_{x_0, x_t}\left[\|s_\theta(x_t, t) - \nabla_{x_t} \log p(x_t | x_0)\|^2\right]\right]
+\mathcal{L}(\theta) = \mathbb{E}_{t \sim \mathcal{U}[0,T]} \left[\lambda(t) \, \mathbb{E}_{x_0, x_t}\left[\Vert s_\theta(x_t, t) - \nabla_{x_t} \log p(x_t | x_0)\Vert ^2\right]\right]
 $$
 
 ### 5.4 Choosing the Loss Weights
@@ -421,7 +421,7 @@ The choice of $\lambda(\sigma)$ significantly affects training. Several schemes 
 **$\sigma^2$ weighting:** $\lambda(\sigma) = \sigma^2$. This gives:
 
 $$
-\lambda(\sigma) \cdot \|s_\theta + \epsilon/\sigma\|^2 = \|\sigma s_\theta + \epsilon\|^2 = \|\epsilon_\theta - \epsilon\|^2
+\lambda(\sigma) \cdot \Vert s_\theta + \epsilon/\sigma\Vert ^2 = \Vert \sigma s_\theta + \epsilon\Vert ^2 = \Vert \epsilon_\theta - \epsilon\Vert ^2
 $$
 
 which is the noise prediction loss without any $\sigma$-dependent weighting. This is the DDPM weighting (Ho et al. 2020), and it works surprisingly well in practice.
@@ -483,13 +483,13 @@ where we used $X\_t - \alpha\_t X\_0 = \sigma\_t \epsilon$.
 The denoising score matching loss for the forward process is therefore:
 
 $$
-\mathcal{L}(\theta) = \mathbb{E}_{t, x_0, \epsilon}\left[\lambda(t) \left\|s_\theta(\alpha_t x_0 + \sigma_t \epsilon, \; t) + \frac{\epsilon}{\sigma_t}\right\|^2\right]
+\mathcal{L}(\theta) = \mathbb{E}_{t, x_0, \epsilon}\left[\lambda(t) \left\Vert s_\theta(\alpha_t x_0 + \sigma_t \epsilon, \; t) + \frac{\epsilon}{\sigma_t}\right\Vert ^2\right]
 $$
 
 With $\lambda(t) = \sigma\_t^2$, this simplifies to:
 
 $$
-\mathcal{L}(\theta) = \mathbb{E}_{t, x_0, \epsilon}\left[\|\epsilon_\theta(\alpha_t x_0 + \sigma_t \epsilon, \; t) - \epsilon\|^2\right]
+\mathcal{L}(\theta) = \mathbb{E}_{t, x_0, \epsilon}\left[\Vert \epsilon_\theta(\alpha_t x_0 + \sigma_t \epsilon, \; t) - \epsilon\Vert ^2\right]
 $$
 
 This is the DDPM training objective. The training algorithm is:

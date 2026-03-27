@@ -221,7 +221,7 @@ Several modifications address the dying ReLU problem:
 
 **Leaky ReLU:**
 $$
-\text{LeakyReLU}(z) = \begin{cases} z & z > 0 \\ \alpha z & z \leq 0 \end{cases}
+\text{LeakyReLU}(z) = \begin{cases} z & z > 0 \\\\ \alpha z & z \leq 0 \end{cases}
 $$
 where $\alpha$ is a small positive constant (typically $0.01$). The small negative slope ensures the gradient is never exactly zero.
 
@@ -334,7 +334,7 @@ Let's trace a complete forward pass through a small network with actual numbers.
 
 **Parameters:**
 $$
-W_1 = \begin{pmatrix} 0.5 & -0.3 & 0.8 \\ -0.2 & 0.7 & 0.1 \end{pmatrix}, \quad \mathbf{b}_1 = \begin{pmatrix} 0.1 \\ -0.1 \end{pmatrix}
+W_1 = \begin{pmatrix} 0.5 & -0.3 & 0.8 \\\\ -0.2 & 0.7 & 0.1 \end{pmatrix}, \quad \mathbf{b}_1 = \begin{pmatrix} 0.1 \\\\ -0.1 \end{pmatrix}
 $$
 
 $$
@@ -345,16 +345,16 @@ $$
 
 **Layer 1 (pre-activation):**
 $$
-\mathbf{z}_1 = W_1\mathbf{x} + \mathbf{b}_1 = \begin{pmatrix} 0.5(1) + (-0.3)(0.5) + 0.8(-1) \\ (-0.2)(1) + 0.7(0.5) + 0.1(-1) \end{pmatrix} + \begin{pmatrix} 0.1 \\ -0.1 \end{pmatrix}
+\mathbf{z}_1 = W_1\mathbf{x} + \mathbf{b}_1 = \begin{pmatrix} 0.5(1) + (-0.3)(0.5) + 0.8(-1) \\\\ (-0.2)(1) + 0.7(0.5) + 0.1(-1) \end{pmatrix} + \begin{pmatrix} 0.1 \\\\ -0.1 \end{pmatrix}
 $$
 
 $$
-= \begin{pmatrix} 0.5 - 0.15 - 0.8 \\ -0.2 + 0.35 - 0.1 \end{pmatrix} + \begin{pmatrix} 0.1 \\ -0.1 \end{pmatrix} = \begin{pmatrix} -0.45 \\ 0.05 \end{pmatrix} + \begin{pmatrix} 0.1 \\ -0.1 \end{pmatrix} = \begin{pmatrix} -0.35 \\ -0.05 \end{pmatrix}
+= \begin{pmatrix} 0.5 - 0.15 - 0.8 \\\\ -0.2 + 0.35 - 0.1 \end{pmatrix} + \begin{pmatrix} 0.1 \\\\ -0.1 \end{pmatrix} = \begin{pmatrix} -0.45 \\\\ 0.05 \end{pmatrix} + \begin{pmatrix} 0.1 \\\\ -0.1 \end{pmatrix} = \begin{pmatrix} -0.35 \\\\ -0.05 \end{pmatrix}
 $$
 
 **Layer 1 (post-activation, ReLU):**
 $$
-\mathbf{h}_1 = \text{ReLU}(\mathbf{z}_1) = \begin{pmatrix} \max(0, -0.35) \\ \max(0, -0.05) \end{pmatrix} = \begin{pmatrix} 0 \\ 0 \end{pmatrix}
+\mathbf{h}_1 = \text{ReLU}(\mathbf{z}_1) = \begin{pmatrix} \max(0, -0.35) \\\\ \max(0, -0.05) \end{pmatrix} = \begin{pmatrix} 0 \\\\ 0 \end{pmatrix}
 $$
 
 Both neurons are dead for this input! ReLU clipped both pre-activations to zero.
@@ -398,7 +398,7 @@ The choice of loss function is not arbitrary — it encodes our assumptions abou
 For regression (predicting continuous values):
 
 $$
-\mathcal{L}_{\text{MSE}} = \frac{1}{N}\sum_{i=1}^N \|\mathbf{y}_i - \hat{\mathbf{y}}_i\|^2
+\mathcal{L}_{\text{MSE}} = \frac{1}{N}\sum_{i=1}^N \Vert \mathbf{y}_i - \hat{\mathbf{y}}_i\Vert ^2
 $$
 
 where $\mathbf{y}\_i$ is the true value and $\hat{\mathbf{y}}\_i = f\_\theta(\mathbf{x}\_i)$ is the prediction.

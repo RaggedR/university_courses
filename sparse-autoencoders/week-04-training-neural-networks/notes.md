@@ -186,7 +186,7 @@ Let us work through a tiny network with actual numbers. Consider a 1-hidden-laye
 **Parameters:**
 
 $$
-W^{(1)} = \begin{pmatrix} 0.1 & 0.2 \\ 0.3 & 0.4 \end{pmatrix}, \quad \mathbf{b}^{(1)} = \begin{pmatrix} 0.1 \\ 0.1 \end{pmatrix}
+W^{(1)} = \begin{pmatrix} 0.1 & 0.2 \\\\ 0.3 & 0.4 \end{pmatrix}, \quad \mathbf{b}^{(1)} = \begin{pmatrix} 0.1 \\\\ 0.1 \end{pmatrix}
 $$
 
 $$
@@ -198,11 +198,11 @@ Input $\mathbf{x} = (1, 2)^\top$, target $y = 1$.
 **Forward pass:**
 
 $$
-\mathbf{a}^{(1)} = W^{(1)}\mathbf{x} + \mathbf{b}^{(1)} = \begin{pmatrix} 0.1 \cdot 1 + 0.2 \cdot 2 + 0.1 \\ 0.3 \cdot 1 + 0.4 \cdot 2 + 0.1 \end{pmatrix} = \begin{pmatrix} 0.6 \\ 1.2 \end{pmatrix}
+\mathbf{a}^{(1)} = W^{(1)}\mathbf{x} + \mathbf{b}^{(1)} = \begin{pmatrix} 0.1 \cdot 1 + 0.2 \cdot 2 + 0.1 \\\\ 0.3 \cdot 1 + 0.4 \cdot 2 + 0.1 \end{pmatrix} = \begin{pmatrix} 0.6 \\\\ 1.2 \end{pmatrix}
 $$
 
 $$
-\mathbf{h} = \sigma(\mathbf{a}^{(1)}) = \begin{pmatrix} \sigma(0.6) \\ \sigma(1.2) \end{pmatrix} = \begin{pmatrix} 0.6457 \\ 0.7685 \end{pmatrix}
+\mathbf{h} = \sigma(\mathbf{a}^{(1)}) = \begin{pmatrix} \sigma(0.6) \\\\ \sigma(1.2) \end{pmatrix} = \begin{pmatrix} 0.6457 \\\\ 0.7685 \end{pmatrix}
 $$
 
 $$
@@ -228,23 +228,23 @@ $$
 $$
 
 $$
-\frac{\partial \mathcal{L}}{\partial \mathbf{h}} = (W^{(2)})^\top \delta^{(2)} = \begin{pmatrix} 0.5 \\ 0.6 \end{pmatrix} \times (-0.116) = \begin{pmatrix} -0.058 \\ -0.0696 \end{pmatrix}
+\frac{\partial \mathcal{L}}{\partial \mathbf{h}} = (W^{(2)})^\top \delta^{(2)} = \begin{pmatrix} 0.5 \\\\ 0.6 \end{pmatrix} \times (-0.116) = \begin{pmatrix} -0.058 \\\\ -0.0696 \end{pmatrix}
 $$
 
 $$
-\sigma'(\mathbf{a}^{(1)}) = \mathbf{h} \odot (1 - \mathbf{h}) = \begin{pmatrix} 0.6457 \times 0.3543 \\ 0.7685 \times 0.2315 \end{pmatrix} = \begin{pmatrix} 0.2288 \\ 0.1779 \end{pmatrix}
+\sigma'(\mathbf{a}^{(1)}) = \mathbf{h} \odot (1 - \mathbf{h}) = \begin{pmatrix} 0.6457 \times 0.3543 \\\\ 0.7685 \times 0.2315 \end{pmatrix} = \begin{pmatrix} 0.2288 \\\\ 0.1779 \end{pmatrix}
 $$
 
 $$
-\boldsymbol{\delta}^{(1)} = \frac{\partial \mathcal{L}}{\partial \mathbf{h}} \odot \sigma'(\mathbf{a}^{(1)}) = \begin{pmatrix} -0.058 \times 0.2288 \\ -0.0696 \times 0.1779 \end{pmatrix} = \begin{pmatrix} -0.01327 \\ -0.01238 \end{pmatrix}
+\boldsymbol{\delta}^{(1)} = \frac{\partial \mathcal{L}}{\partial \mathbf{h}} \odot \sigma'(\mathbf{a}^{(1)}) = \begin{pmatrix} -0.058 \times 0.2288 \\\\ -0.0696 \times 0.1779 \end{pmatrix} = \begin{pmatrix} -0.01327 \\\\ -0.01238 \end{pmatrix}
 $$
 
 $$
-\frac{\partial \mathcal{L}}{\partial W^{(1)}} = \boldsymbol{\delta}^{(1)} \mathbf{x}^\top = \begin{pmatrix} -0.01327 \\ -0.01238 \end{pmatrix} \begin{pmatrix} 1 & 2 \end{pmatrix} = \begin{pmatrix} -0.01327 & -0.02654 \\ -0.01238 & -0.02476 \end{pmatrix}
+\frac{\partial \mathcal{L}}{\partial W^{(1)}} = \boldsymbol{\delta}^{(1)} \mathbf{x}^\top = \begin{pmatrix} -0.01327 \\\\ -0.01238 \end{pmatrix} \begin{pmatrix} 1 & 2 \end{pmatrix} = \begin{pmatrix} -0.01327 & -0.02654 \\\\ -0.01238 & -0.02476 \end{pmatrix}
 $$
 
 $$
-\frac{\partial \mathcal{L}}{\partial \mathbf{b}^{(1)}} = \begin{pmatrix} -0.01327 \\ -0.01238 \end{pmatrix}
+\frac{\partial \mathcal{L}}{\partial \mathbf{b}^{(1)}} = \begin{pmatrix} -0.01327 \\\\ -0.01238 \end{pmatrix}
 $$
 
 You now have gradients for every parameter in the network, computed with exactly one forward pass and one backward pass.
@@ -735,7 +735,7 @@ This is especially important when using large batch sizes (the gradient estimate
 A simple defense against exploding gradients: if the gradient norm exceeds a threshold $c$, rescale the entire gradient vector to have norm $c$:
 
 $$
-\mathbf{g} \leftarrow \begin{cases} \mathbf{g} & \text{if } \|\mathbf{g}\| \leq c \\ \frac{c}{\|\mathbf{g}\|} \mathbf{g} & \text{if } \|\mathbf{g}\| > c \end{cases}
+\mathbf{g} \leftarrow \begin{cases} \mathbf{g} & \text{if } \Vert \mathbf{g}\Vert  \leq c \\\\ \frac{c}{\Vert \mathbf{g}\Vert } \mathbf{g} & \text{if } \Vert \mathbf{g}\Vert  > c \end{cases}
 $$
 
 This preserves the gradient *direction* while capping its magnitude. Typical values: $c \in [1, 5]$.

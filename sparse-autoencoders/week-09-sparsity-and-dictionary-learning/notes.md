@@ -82,7 +82,7 @@ The crucial difference: the L1 ball has **corners on the coordinate axes**. The 
 The LASSO (Least Absolute Shrinkage and Selection Operator, Tibshirani 1996) adds an L1 penalty to the least squares objective:
 
 $$
-\min_{\beta} \frac{1}{2} \|y - X\beta\|_2^2 + \lambda \|\beta\|_1
+\min_{\beta} \frac{1}{2} \Vert y - X\beta\Vert _2^2 + \lambda \Vert \beta\Vert _1
 $$
 
 where $y \in \mathbb{R}^n$ is the response, $X \in \mathbb{R}^{n \times p}$ is the design matrix, and $\beta \in \mathbb{R}^p$ are the coefficients.
@@ -90,7 +90,7 @@ where $y \in \mathbb{R}^n$ is the response, $X \in \mathbb{R}^{n \times p}$ is t
 Compare to **Ridge regression** (L2 penalty):
 
 $$
-\min_{\beta} \frac{1}{2} \|y - X\beta\|_2^2 + \lambda \|\beta\|_2^2
+\min_{\beta} \frac{1}{2} \Vert y - X\beta\Vert _2^2 + \lambda \Vert \beta\Vert _2^2
 $$
 
 ### 2.3 Why L1 Produces Exact Zeros: The Geometric Argument
@@ -98,7 +98,7 @@ $$
 Consider the constrained form of the LASSO:
 
 $$
-\min_{\beta} \frac{1}{2}\|y - X\beta\|_2^2 \quad \text{subject to} \quad \|\beta\|_1 \leq t
+\min_{\beta} \frac{1}{2}\Vert y - X\beta\Vert _2^2 \quad \text{subject to} \quad \Vert \beta\Vert _1 \leq t
 $$
 
 Geometrically, we are finding the point in the L1 ball that is closest to the unconstrained optimum $\hat{\beta}\_{\text{OLS}}$. Equivalently, we are shrinking the elliptical contours of the quadratic loss until they touch the constraint set.
@@ -147,13 +147,13 @@ The LASSO objective is not differentiable at zero (because $|\beta\_j|$ has a ki
 For the L1 norm, the proximal operator is the **soft-thresholding** function:
 
 $$
-\text{prox}_{\lambda \|\cdot\|_1}(v) = S_\lambda(v) = \text{sign}(v) \cdot \max(|v| - \lambda, 0)
+\text{prox}_{\lambda \Vert \cdot\Vert _1}(v) = S_\lambda(v) = \text{sign}(v) \cdot \max(|v| - \lambda, 0)
 $$
 
 Applied element-wise, this means:
 
 $$
-[S_\lambda(v)]_j = \begin{cases} v_j - \lambda & \text{if } v_j > \lambda \\ 0 & \text{if } |v_j| \leq \lambda \\ v_j + \lambda & \text{if } v_j < -\lambda \end{cases}
+[S_\lambda(v)]_j = \begin{cases} v_j - \lambda & \text{if } v_j > \lambda \\\\ 0 & \text{if } |v_j| \leq \lambda \\\\ v_j + \lambda & \text{if } v_j < -\lambda \end{cases}
 $$
 
 The soft-thresholding operator does two things:
@@ -167,13 +167,13 @@ Compare to **hard thresholding**: $H\_\lambda(v)\_j = v\_j \cdot \mathbf{1}[|v\_
 The proximal operator of $h(x) = \lambda \Vert x\Vert \_1$ is defined as:
 
 $$
-\text{prox}_h(v) = \arg\min_x \left\{ \frac{1}{2}\|x - v\|^2 + \lambda \|x\|_1 \right\}
+\text{prox}_h(v) = \arg\min_x \left\lbrace  \frac{1}{2}\Vert x - v\Vert ^2 + \lambda \Vert x\Vert _1 \right\rbrace 
 $$
 
 Since $\Vert x\Vert \_1 = \sum\_j |x\_j|$, this separates across dimensions:
 
 $$
-[\text{prox}_h(v)]_j = \arg\min_{x_j} \left\{ \frac{1}{2}(x_j - v_j)^2 + \lambda |x_j| \right\}
+[\text{prox}_h(v)]_j = \arg\min_{x_j} \left\lbrace  \frac{1}{2}(x_j - v_j)^2 + \lambda |x_j| \right\rbrace 
 $$
 
 For a single dimension, define $g(x) = \frac{1}{2}(x - v)^2 + \lambda |x|$.
@@ -216,7 +216,7 @@ Typically $d\_z > d\_x$ -- the dictionary is **overcomplete**. There are more di
 The optimization problem:
 
 $$
-\min_{D, z_1, \ldots, z_N} \sum_{n=1}^{N} \left[ \frac{1}{2}\|x_n - D z_n\|_2^2 + \lambda \|z_n\|_1 \right]
+\min_{D, z_1, \ldots, z_N} \sum_{n=1}^{N} \left[ \frac{1}{2}\Vert x_n - D z_n\Vert _2^2 + \lambda \Vert z_n\Vert _1 \right]
 $$
 
 subject to $\Vert d\_j\Vert \_2 \leq 1$ for all $j$ (the dictionary atoms are normalized to prevent a trivial solution where $D$ grows large and $z$ shrinks).
@@ -228,7 +228,7 @@ This is a joint optimization over both $D$ and all $z\_n$. It is not jointly con
 **Sparse coding step (fix $D$, optimize $z\_n$ for each input):**
 
 $$
-\min_{z_n} \frac{1}{2}\|x_n - Dz_n\|_2^2 + \lambda \|z_n\|_1
+\min_{z_n} \frac{1}{2}\Vert x_n - Dz_n\Vert _2^2 + \lambda \Vert z_n\Vert _1
 $$
 
 This is a LASSO problem! It is convex and can be solved efficiently.
@@ -236,7 +236,7 @@ This is a LASSO problem! It is convex and can be solved efficiently.
 **Dictionary update step (fix all $z\_n$, optimize $D$):**
 
 $$
-\min_{D} \sum_{n=1}^{N} \frac{1}{2}\|x_n - Dz_n\|_2^2 \quad \text{s.t.} \quad \|d_j\|_2 \leq 1
+\min_{D} \sum_{n=1}^{N} \frac{1}{2}\Vert x_n - Dz_n\Vert _2^2 \quad \text{s.t.} \quad \Vert d_j\Vert _2 \leq 1
 $$
 
 This is a constrained least squares problem, also convex.
@@ -248,7 +248,7 @@ We alternate between these two steps. This is an instance of **block coordinate 
 Suppose $d\_x = 2$ (signals in the plane) and $d\_z = 4$ (overcomplete dictionary with 4 atoms). The dictionary is:
 
 $$
-D = \begin{pmatrix} 1 & 0 & 0.707 & -0.707 \\ 0 & 1 & 0.707 & 0.707 \end{pmatrix}
+D = \begin{pmatrix} 1 & 0 & 0.707 & -0.707 \\\\ 0 & 1 & 0.707 & 0.707 \end{pmatrix}
 $$
 
 These are the horizontal, vertical, and two diagonal directions.
@@ -270,7 +270,7 @@ The sparsity-reconstruction trade-off, controlled by $\lambda$, determines how m
 The sparse coding sub-problem for a single input:
 
 $$
-\min_z F(z) = \underbrace{\frac{1}{2}\|x - Dz\|_2^2}_{f(z)} + \underbrace{\lambda \|z\|_1}_{h(z)}
+\min_z F(z) = \underbrace{\frac{1}{2}\Vert x - Dz\Vert _2^2}_{f(z)} + \underbrace{\lambda \Vert z\Vert _1}_{h(z)}
 $$
 
 This is a composite optimization problem: $f(z)$ is smooth and differentiable, $h(z)$ is convex but non-differentiable.
@@ -367,7 +367,7 @@ The only difference from ISTA is the extrapolation step that computes $y^{(t+1)}
 So far we assumed the dictionary $D$ is given. In practice, we learn it from data. This is **dictionary learning**: given a collection of signals $\lbrace x\_1, \ldots, x\_N\rbrace $, find the dictionary $D$ and sparse codes $\lbrace z\_1, \ldots, z\_N\rbrace $ that best represent them:
 
 $$
-\min_{D, \{z_n\}} \sum_{n=1}^{N} \left[\frac{1}{2}\|x_n - Dz_n\|_2^2 + \lambda \|z_n\|_1 \right] \quad \text{s.t.} \quad \|d_j\|_2 \leq 1 \; \forall j
+\min_{D, \lbrace z_n\rbrace } \sum_{n=1}^{N} \left[\frac{1}{2}\Vert x_n - Dz_n\Vert _2^2 + \lambda \Vert z_n\Vert _1 \right] \quad \text{s.t.} \quad \Vert d_j\Vert _2 \leq 1 \; \forall j
 $$
 
 ### 6.2 Alternating Optimization
@@ -377,13 +377,13 @@ The standard approach alternates between two steps:
 **Step 1: Sparse Coding.** Fix $D$, solve for each $z\_n$ using ISTA (or FISTA, or any LASSO solver):
 
 $$
-z_n^* = \arg\min_{z} \frac{1}{2}\|x_n - Dz\|_2^2 + \lambda \|z\|_1
+z_n^* = \arg\min_{z} \frac{1}{2}\Vert x_n - Dz\Vert _2^2 + \lambda \Vert z\Vert _1
 $$
 
 **Step 2: Dictionary Update.** Fix all $z\_n$, update $D$. This is a constrained least squares problem:
 
 $$
-D^* = \arg\min_{D} \sum_n \frac{1}{2}\|x_n - Dz_n\|_2^2 \quad \text{s.t.} \quad \|d_j\|_2 \leq 1
+D^* = \arg\min_{D} \sum_n \frac{1}{2}\Vert x_n - Dz_n\Vert _2^2 \quad \text{s.t.} \quad \Vert d_j\Vert _2 \leq 1
 $$
 
 Without the constraint, the solution is $D = XZ^\top(ZZ^\top)^{-1}$ where $X = [x\_1, \ldots, x\_N]$ and $Z = [z\_1, \ldots, z\_N]$. With the constraint, we project each column of $D$ onto the unit ball: $d\_j \leftarrow d\_j / \max(1, \Vert d\_j\Vert \_2)$.
@@ -424,7 +424,7 @@ For MNIST digits, learned dictionary atoms tend to be parts of digits: short str
 There is a fundamental practical limitation of sparse coding: at test time, given a new signal $x$, you must solve an optimization problem to find its sparse code:
 
 $$
-z^* = \arg\min_z \frac{1}{2}\|x - Dz\|_2^2 + \lambda \|z\|_1
+z^* = \arg\min_z \frac{1}{2}\Vert x - Dz\Vert _2^2 + \lambda \Vert z\Vert _1
 $$
 
 Even with FISTA, this requires many iterations (typically 50-500). This is slow. Every new input requires a fresh optimization.
@@ -449,13 +449,13 @@ A sparse autoencoder is an autoencoder where:
 The objective:
 
 $$
-\min_{\phi, \theta} \mathbb{E}_x \left[ \|x - g_\theta(f_\phi(x))\|^2 + \lambda \|f_\phi(x)\|_1 \right]
+\min_{\phi, \theta} \mathbb{E}_x \left[ \Vert x - g_\theta(f_\phi(x))\Vert ^2 + \lambda \Vert f_\phi(x)\Vert _1 \right]
 $$
 
 Compare this to the sparse coding objective:
 
 $$
-\min_{D, \{z_n\}} \sum_n \left[ \|x_n - Dz_n\|^2 + \lambda \|z_n\|_1 \right]
+\min_{D, \lbrace z_n\rbrace } \sum_n \left[ \Vert x_n - Dz_n\Vert ^2 + \lambda \Vert z_n\Vert _1 \right]
 $$
 
 The structure is identical! The only difference is that instead of optimizing each $z\_n$ independently, we learn a function $f\_\phi$ that produces $z\_n$ from $x\_n$ in a single forward pass.
@@ -507,7 +507,7 @@ The sparse autoencoder trades optimality for speed. The encoder's prediction may
 The most natural measure of sparsity is the L0 "norm": the number of nonzero entries.
 
 $$
-\|z\|_0 = |\{j : z_j \neq 0\}|
+\Vert z\Vert _0 = |\lbrace j : z_j \neq 0\rbrace |
 $$
 
 Strictly speaking, this is not a norm (it violates homogeneity). Minimizing $\Vert z\Vert \_0$ directly leads to an NP-hard combinatorial problem. L1 is the tightest convex relaxation of L0 -- this is why we use L1 as a proxy for sparsity.
@@ -519,7 +519,7 @@ Andrew Ng's influential course notes popularized a different sparsity penalty fo
 Let $\hat{\rho}\_j = \frac{1}{N}\sum\_{n=1}^{N} f\_j(x\_n)$ be the average activation of unit $j$ over the dataset, and let $\rho$ be the target (e.g., $\rho = 0.05$, meaning we want each unit active about 5% of the time). The penalty is:
 
 $$
-\Omega = \sum_j D_{\text{KL}}(\rho \| \hat{\rho}_j) = \sum_j \left[\rho \log \frac{\rho}{\hat{\rho}_j} + (1-\rho) \log \frac{1-\rho}{1-\hat{\rho}_j}\right]
+\Omega = \sum_j D_{\text{KL}}(\rho \Vert  \hat{\rho}_j) = \sum_j \left[\rho \log \frac{\rho}{\hat{\rho}_j} + (1-\rho) \log \frac{1-\rho}{1-\hat{\rho}_j}\right]
 $$
 
 This is minimized when $\hat{\rho}\_j = \rho$ for all $j$, which means each unit is active for exactly a $\rho$ fraction of inputs.

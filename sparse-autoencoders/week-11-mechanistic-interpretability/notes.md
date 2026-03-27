@@ -125,7 +125,7 @@ $$
 When we try to read out feature A's activation, we get:
 
 $$
-\mathbf{h} \cdot \mathbf{v}_A = a \|\mathbf{v}_A\|^2 + b (\mathbf{v}_B \cdot \mathbf{v}_A) = a + b\epsilon
+\mathbf{h} \cdot \mathbf{v}_A = a \Vert \mathbf{v}_A\Vert ^2 + b (\mathbf{v}_B \cdot \mathbf{v}_A) = a + b\epsilon
 $$
 
 The term $b\epsilon$ is interference from feature B. If features A and B are rarely active simultaneously (sparse), this interference is usually zero (because $b = 0$ most of the time). When it does occur, it is small (because $\epsilon$ is small).

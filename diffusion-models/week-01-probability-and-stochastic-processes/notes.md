@@ -42,7 +42,7 @@ The term $(x - \mu)^\top \Sigma^{-1} (x - \mu)$ is the **Mahalanobis distance** 
 **Marginalization.** If $(x\_1, x\_2)^\top \sim \mathcal{N}(\mu, \Sigma)$ with
 
 $$
-\mu = \begin{pmatrix} \mu_1 \\ \mu_2 \end{pmatrix}, \quad \Sigma = \begin{pmatrix} \Sigma_{11} & \Sigma_{12} \\ \Sigma_{21} & \Sigma_{22} \end{pmatrix}
+\mu = \begin{pmatrix} \mu_1 \\\\ \mu_2 \end{pmatrix}, \quad \Sigma = \begin{pmatrix} \Sigma_{11} & \Sigma_{12} \\\\ \Sigma_{21} & \Sigma_{22} \end{pmatrix}
 $$
 
 then the marginal distributions are also Gaussian:
@@ -196,7 +196,7 @@ For continuous state spaces, the analogous conditions are more technical, but th
 **The mixing time** is how long it takes for the chain to get close to $\pi$. Formally, for any starting distribution $p\_0$:
 
 $$
-t_{\text{mix}}(\epsilon) = \min\left\{t : \|p_t - \pi\|_{\text{TV}} \leq \epsilon\right\}
+t_{\text{mix}}(\epsilon) = \min\left\lbrace t : \Vert p_t - \pi\Vert _{\text{TV}} \leq \epsilon\right\rbrace 
 $$
 
 where $\Vert \cdot\Vert \_{\text{TV}}$ is the total variation distance. In diffusion models, the number of forward steps $T$ must be large enough that the forward process has approximately mixed -- that $p(x\_T) \approx \mathcal{N}(0, I)$.
@@ -204,7 +204,7 @@ where $\Vert \cdot\Vert \_{\text{TV}}$ is the total variation distance. In diffu
 **Convergence rate.** For finite-state reversible chains, the convergence rate is governed by the **spectral gap** -- the difference between the largest and second-largest eigenvalues of the transition matrix. If $P$ has eigenvalues $1 = \lambda\_1 > \lambda\_2 \geq \cdots \geq \lambda\_n > -1$, then:
 
 $$
-\|p_t - \pi\|_{\text{TV}} \leq \frac{1}{2}\sqrt{\frac{1-\pi_{\min}}{\pi_{\min}}} \cdot |\lambda_2|^t
+\Vert p_t - \pi\Vert _{\text{TV}} \leq \frac{1}{2}\sqrt{\frac{1-\pi_{\min}}{\pi_{\min}}} \cdot |\lambda_2|^t
 $$
 
 The convergence is exponential in $t$, with rate determined by $|\lambda\_2|$. The closer $\lambda\_2$ is to 1, the slower the mixing.

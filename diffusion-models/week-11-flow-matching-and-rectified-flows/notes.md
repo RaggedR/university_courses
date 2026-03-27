@@ -77,7 +77,7 @@ $$
 The **flow matching objective** trains $v\_\theta$ to match this target velocity field:
 
 $$
-\mathcal{L}_{\text{FM}}(\theta) = \mathbb{E}_{t \sim U[0,1]} \mathbb{E}_{x \sim p_t(x)} \left[\|v_\theta(x, t) - u_t(x)\|^2\right]
+\mathcal{L}_{\text{FM}}(\theta) = \mathbb{E}_{t \sim U[0,1]} \mathbb{E}_{x \sim p_t(x)} \left[\Vert v_\theta(x, t) - u_t(x)\Vert ^2\right]
 $$
 
 This is a simple regression loss -- no ODE simulation needed! The problem is that we generally cannot compute $u\_t(x)$ or sample from the marginal $p\_t(x)$. We know $p\_0$ and $p\_1$ but not the intermediate densities.
@@ -111,7 +111,7 @@ $$
 **Step 4: The loss equivalence.** Lipman et al. proved that the **conditional flow matching (CFM) loss**:
 
 $$
-\mathcal{L}_{\text{CFM}}(\theta) = \mathbb{E}_{t \sim U[0,1]} \mathbb{E}_{x_1 \sim p_{\text{data}}} \mathbb{E}_{x \sim p_t(x|x_1)} \left[\|v_\theta(x, t) - u_t(x | x_1)\|^2\right]
+\mathcal{L}_{\text{CFM}}(\theta) = \mathbb{E}_{t \sim U[0,1]} \mathbb{E}_{x_1 \sim p_{\text{data}}} \mathbb{E}_{x \sim p_t(x|x_1)} \left[\Vert v_\theta(x, t) - u_t(x | x_1)\Vert ^2\right]
 $$
 
 has the same gradients as the intractable flow matching loss $\mathcal{L}\_{\text{FM}}(\theta)$.
@@ -131,19 +131,19 @@ The proof relies on expanding the squared norm and showing that the cross terms 
 The FM loss is:
 
 $$
-\mathcal{L}_{\text{FM}} = \mathbb{E}_t \mathbb{E}_{x \sim p_t} \|v_\theta(x,t) - u_t(x)\|^2
+\mathcal{L}_{\text{FM}} = \mathbb{E}_t \mathbb{E}_{x \sim p_t} \Vert v_\theta(x,t) - u_t(x)\Vert ^2
 $$
 
 Expanding:
 
 $$
-= \mathbb{E}_t \mathbb{E}_{x \sim p_t} \left[\|v_\theta(x,t)\|^2 - 2 v_\theta(x,t)^\top u_t(x) + \|u_t(x)\|^2\right]
+= \mathbb{E}_t \mathbb{E}_{x \sim p_t} \left[\Vert v_\theta(x,t)\Vert ^2 - 2 v_\theta(x,t)^\top u_t(x) + \Vert u_t(x)\Vert ^2\right]
 $$
 
 The CFM loss is:
 
 $$
-\mathcal{L}_{\text{CFM}} = \mathbb{E}_t \mathbb{E}_{x_1} \mathbb{E}_{x \sim p_t(\cdot|x_1)} \|v_\theta(x,t) - u_t(x|x_1)\|^2
+\mathcal{L}_{\text{CFM}} = \mathbb{E}_t \mathbb{E}_{x_1} \mathbb{E}_{x \sim p_t(\cdot|x_1)} \Vert v_\theta(x,t) - u_t(x|x_1)\Vert ^2
 $$
 
 Expanding similarly and using the marginalization $p\_t(x) = \int p\_t(x|x\_1) p\_{\text{data}}(x\_1) dx\_1$, one can show that:
@@ -187,7 +187,7 @@ This is constant in time! The velocity at every point along the path is simply t
 Substituting into the CFM loss:
 
 $$
-\boxed{\mathcal{L}_{\text{CFM}}(\theta) = \mathbb{E}_{t \sim U[0,1]} \mathbb{E}_{x_0 \sim \mathcal{N}(0,I)} \mathbb{E}_{x_1 \sim p_{\text{data}}} \left[\|v_\theta(x_t, t) - (x_1 - x_0)\|^2\right]}
+\boxed{\mathcal{L}_{\text{CFM}}(\theta) = \mathbb{E}_{t \sim U[0,1]} \mathbb{E}_{x_0 \sim \mathcal{N}(0,I)} \mathbb{E}_{x_1 \sim p_{\text{data}}} \left[\Vert v_\theta(x_t, t) - (x_1 - x_0)\Vert ^2\right]}
 $$
 
 where $x\_t = (1 - t)x\_0 + tx\_1$.
@@ -405,7 +405,7 @@ Let us collect the advantages of flow matching over classical diffusion:
 The training loss is arguably the simplest in all of generative modeling:
 
 $$
-\mathcal{L} = \mathbb{E}\left[\|v_\theta((1-t)x_0 + tx_1, t) - (x_1 - x_0)\|^2\right]
+\mathcal{L} = \mathbb{E}\left[\Vert v_\theta((1-t)x_0 + tx_1, t) - (x_1 - x_0)\Vert ^2\right]
 $$
 
 Sample noise, sample data, interpolate, regress velocity. That is the entire algorithm.

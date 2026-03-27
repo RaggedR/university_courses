@@ -46,7 +46,7 @@ $$
 The training objective is the same as unconditional DDPM, but with $y$ as an additional input:
 
 $$
-\mathcal{L} = \mathbb{E}_{x_0, y, \epsilon, t}\left[\|\epsilon - \epsilon_\theta(x_t, t, y)\|^2\right]
+\mathcal{L} = \mathbb{E}_{x_0, y, \epsilon, t}\left[\Vert \epsilon - \epsilon_\theta(x_t, t, y)\Vert ^2\right]
 $$
 
 where $(x\_0, y)$ are paired training examples (e.g., image-caption pairs).
@@ -144,7 +144,7 @@ Ho and Salimans (2022) eliminated the need for an external classifier entirely. 
 During training, randomly drop the conditioning $y$ with some probability $p\_{\text{uncond}}$ (typically 10-20%):
 
 $$
-\epsilon_\theta(x_t, t, y) = \begin{cases} \epsilon_\theta(x_t, t, y) & \text{with probability } 1 - p_{\text{uncond}} \\ \epsilon_\theta(x_t, t, \varnothing) & \text{with probability } p_{\text{uncond}} \end{cases}
+\epsilon_\theta(x_t, t, y) = \begin{cases} \epsilon_\theta(x_t, t, y) & \text{with probability } 1 - p_{\text{uncond}} \\\\ \epsilon_\theta(x_t, t, \varnothing) & \text{with probability } p_{\text{uncond}} \end{cases}
 $$
 
 where $\varnothing$ is a null/empty condition (e.g., a zero vector, an empty string embedding, or a learned "null" token).

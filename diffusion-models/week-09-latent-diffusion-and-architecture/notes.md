@@ -75,14 +75,14 @@ A plain autoencoder trained with MSE loss $\Vert x - \mathcal{D}(\mathcal{E}(x))
 
 **Reconstruction loss (L1 or L2):**
 $$
-\mathcal{L}_{\text{rec}} = \|x - \mathcal{D}(\mathcal{E}(x))\|_1
+\mathcal{L}_{\text{rec}} = \Vert x - \mathcal{D}(\mathcal{E}(x))\Vert _1
 $$
 
 L1 is preferred over L2 because it produces sharper results (it penalizes all errors equally, rather than disproportionately penalizing large errors).
 
 **Perceptual loss (LPIPS):**
 $$
-\mathcal{L}_{\text{perc}} = \sum_l \|F_l(x) - F_l(\hat{x})\|_2^2
+\mathcal{L}_{\text{perc}} = \sum_l \Vert F_l(x) - F_l(\hat{x})\Vert _2^2
 $$
 
 where $F\_l$ extracts features from layer $l$ of a pretrained VGG network. This loss measures perceptual similarity rather than pixel-wise similarity. Two images can have large pixel-wise differences but small perceptual differences (e.g., a slight spatial shift).
@@ -96,7 +96,7 @@ A patch-based discriminator $D\_\psi$ distinguishes real images from reconstruct
 
 **KL regularization:**
 $$
-\mathcal{L}_{\text{KL}} = D_{\text{KL}}(q(z|x) \| \mathcal{N}(0, I))
+\mathcal{L}_{\text{KL}} = D_{\text{KL}}(q(z|x) \Vert  \mathcal{N}(0, I))
 $$
 
 This is the crucial term for latent diffusion. Without it, the latent space can have an arbitrary, pathological distribution. The KL term encourages the latent distribution to be close to a standard Gaussian, making it smooth and well-behaved -- exactly what a diffusion model needs.
@@ -152,7 +152,7 @@ Once the autoencoder is trained and frozen, we encode the entire training set in
 The training objective is identical to the standard DDPM objective, but applied to latents:
 
 $$
-\mathcal{L}_{\text{diff}} = \mathbb{E}_{z_0, \epsilon, t} \left[ \|\epsilon - \epsilon_\theta(z_t, t)\|^2 \right]
+\mathcal{L}_{\text{diff}} = \mathbb{E}_{z_0, \epsilon, t} \left[ \Vert \epsilon - \epsilon_\theta(z_t, t)\Vert ^2 \right]
 $$
 
 where $z\_t = \sqrt{\bar{\alpha}\_t}\, z\_0 + \sqrt{1 - \bar{\alpha}\_t}\, \epsilon$ and $z\_0 = \mathcal{E}(x)$.

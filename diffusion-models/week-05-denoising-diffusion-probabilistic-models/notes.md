@@ -205,7 +205,7 @@ $$
 The variational lower bound can be decomposed as:
 
 $$
-L_{\text{VLB}} = \underbrace{D_{\text{KL}}\!\left(q(x_T \mid x_0) \,\|\, p(x_T)\right)}_{L_T} + \sum_{t=2}^{T} \underbrace{D_{\text{KL}}\!\left(q(x_{t-1} \mid x_t, x_0) \,\|\, p_\theta(x_{t-1} \mid x_t)\right)}_{L_{t-1}} - \underbrace{\log p_\theta(x_0 \mid x_1)}_{L_0}
+L_{\text{VLB}} = \underbrace{D_{\text{KL}}\!\left(q(x_T \mid x_0) \,\Vert \, p(x_T)\right)}_{L_T} + \sum_{t=2}^{T} \underbrace{D_{\text{KL}}\!\left(q(x_{t-1} \mid x_t, x_0) \,\Vert \, p_\theta(x_{t-1} \mid x_t)\right)}_{L_{t-1}} - \underbrace{\log p_\theta(x_0 \mid x_1)}_{L_0}
 $$
 
 Let us understand each term:
@@ -221,7 +221,7 @@ Let us understand each term:
 Since both $q(x\_{t-1} \mid x\_t, x\_0)$ and $p\_\theta(x\_{t-1} \mid x\_t)$ are Gaussians with the same (fixed) covariance $\sigma\_t^2 I$, the KL divergence simplifies to:
 
 $$
-L_{t-1} = \frac{1}{2\sigma_t^2} \left\|\tilde{\mu}_t(x_t, x_0) - \mu_\theta(x_t, t)\right\|^2 + C
+L_{t-1} = \frac{1}{2\sigma_t^2} \left\Vert \tilde{\mu}_t(x_t, x_0) - \mu_\theta(x_t, t)\right\Vert ^2 + C
 $$
 
 where $C$ is a constant independent of $\theta$. Minimizing $L\_{t-1}$ amounts to making $\mu\_\theta(x\_t, t)$ match the true posterior mean $\tilde{\mu}\_t(x\_t, x\_0)$.
@@ -263,7 +263,7 @@ $$
 The loss becomes:
 
 $$
-L_{t-1} = \frac{\beta_t^2}{2\sigma_t^2 \alpha_t (1 - \bar{\alpha}_t)} \left\|\varepsilon - \varepsilon_\theta(x_t, t)\right\|^2
+L_{t-1} = \frac{\beta_t^2}{2\sigma_t^2 \alpha_t (1 - \bar{\alpha}_t)} \left\Vert \varepsilon - \varepsilon_\theta(x_t, t)\right\Vert ^2
 $$
 
 The neural network's job is to look at a noisy image $x\_t$ and predict the noise $\varepsilon$ that was added. This is a **denoising** task -- exactly the setting we studied in Week 4.
@@ -305,7 +305,7 @@ Noise prediction *is* score estimation. This connection, which we will explore i
 The full variational bound loss is:
 
 $$
-L_{\text{VLB}} = \sum_{t=1}^{T} w_t \left\|\varepsilon - \varepsilon_\theta(x_t, t)\right\|^2
+L_{\text{VLB}} = \sum_{t=1}^{T} w_t \left\Vert \varepsilon - \varepsilon_\theta(x_t, t)\right\Vert ^2
 $$
 
 where $w\_t = \frac{\beta\_t^2}{2\sigma\_t^2 \alpha\_t (1 - \bar{\alpha}\_t)}$ are timestep-dependent weights that arise from the KL divergence computation.
@@ -313,7 +313,7 @@ where $w\_t = \frac{\beta\_t^2}{2\sigma\_t^2 \alpha\_t (1 - \bar{\alpha}\_t)}$ a
 Ho et al. found that *ignoring* these weights and using a simple unweighted loss works better in practice:
 
 $$
-\boxed{L_{\text{simple}} = \mathbb{E}_{t, x_0, \varepsilon}\!\left[\left\|\varepsilon - \varepsilon_\theta\!\left(\sqrt{\bar{\alpha}_t}\, x_0 + \sqrt{1 - \bar{\alpha}_t}\, \varepsilon,\; t\right)\right\|^2\right]}
+\boxed{L_{\text{simple}} = \mathbb{E}_{t, x_0, \varepsilon}\!\left[\left\Vert \varepsilon - \varepsilon_\theta\!\left(\sqrt{\bar{\alpha}_t}\, x_0 + \sqrt{1 - \bar{\alpha}_t}\, \varepsilon,\; t\right)\right\Vert ^2\right]}
 $$
 
 where $t \sim \text{Uniform}\lbrace 1, \ldots, T\rbrace $, $x\_0 \sim q(x\_0)$, and $\varepsilon \sim \mathcal{N}(0, I)$.

@@ -120,7 +120,7 @@ As $t$ increases, the distribution converges to the uniform distribution over al
 **Absorbing state diffusion**: Each token transitions to a special [MASK] token with probability $\beta\_t$:
 
 $$
-[Q_t]_{ij} = \begin{cases} 1 - \beta_t & \text{if } i = j \neq [\text{MASK}] \\ \beta_t & \text{if } j = [\text{MASK}], i \neq [\text{MASK}] \\ 1 & \text{if } i = j = [\text{MASK}] \end{cases}
+[Q_t]_{ij} = \begin{cases} 1 - \beta_t & \text{if } i = j \neq [\text{MASK}] \\\\ \beta_t & \text{if } j = [\text{MASK}], i \neq [\text{MASK}] \\\\ 1 & \text{if } i = j = [\text{MASK}] \end{cases}
 $$
 
 The fully corrupted state is all [MASK] tokens. The reverse process "fills in" the masks.
@@ -175,7 +175,7 @@ Audio is a natural fit for diffusion models -- it is continuous, high-dimensiona
 The **Schrödinger bridge problem** (1932) asks: given two distributions $p\_0$ and $p\_1$ and a reference stochastic process $Q$ (typically Brownian motion), find the stochastic process $P^*$ that is closest to $Q$ (in KL divergence) while having marginals $p\_0$ at time 0 and $p\_1$ at time 1:
 
 $$
-P^* = \arg\min_{P : P_0 = p_0, P_1 = p_1} D_{\text{KL}}(P \| Q)
+P^* = \arg\min_{P : P_0 = p_0, P_1 = p_1} D_{\text{KL}}(P \Vert  Q)
 $$
 
 This is a generalization of optimal transport to stochastic processes. When the reference process $Q$ has zero diffusion (pure ODE), the Schrödinger bridge reduces to the Monge optimal transport problem.

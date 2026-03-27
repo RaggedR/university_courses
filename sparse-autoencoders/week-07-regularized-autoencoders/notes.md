@@ -25,7 +25,7 @@ This week we confront that question and discover that the answer leads us to som
 In Week 6, we studied autoencoders with a bottleneck: the latent dimension $d\_z$ is smaller than the input dimension $d\_x$. The encoder $f: \mathbb{R}^{d\_x} \to \mathbb{R}^{d\_z}$ compresses, and the decoder $g: \mathbb{R}^{d\_z} \to \mathbb{R}^{d\_x}$ reconstructs:
 
 $$
-\min_{\theta_f, \theta_g} \mathbb{E}_{x \sim p_{\text{data}}} \left[ \| x - g(f(x)) \|^2 \right]
+\min_{\theta_f, \theta_g} \mathbb{E}_{x \sim p_{\text{data}}} \left[ \Vert  x - g(f(x)) \Vert ^2 \right]
 $$
 
 Because $d\_z < d\_x$, the network *must* discard some information. If the network is smart about what it discards, it keeps the important structure and throws away noise. This is why undercomplete autoencoders learn useful representations.
@@ -57,7 +57,7 @@ So we *want* overcomplete representations, but we need to prevent the identity m
 The general form of a regularized autoencoder's objective is:
 
 $$
-\mathcal{L} = \underbrace{\mathbb{E}_{x \sim p_{\text{data}}} \left[ \| x - g(f(x)) \|^2 \right]}_{\text{reconstruction}} + \underbrace{\lambda \cdot \Omega(f, g, x)}_{\text{regularization}}
+\mathcal{L} = \underbrace{\mathbb{E}_{x \sim p_{\text{data}}} \left[ \Vert  x - g(f(x)) \Vert ^2 \right]}_{\text{reconstruction}} + \underbrace{\lambda \cdot \Omega(f, g, x)}_{\text{regularization}}
 $$
 
 Different choices of $\Omega$ give different autoencoder variants:
@@ -88,7 +88,7 @@ The training procedure:
 The objective:
 
 $$
-\mathcal{L}_{\text{DAE}} = \mathbb{E}_{x \sim p_{\text{data}}} \mathbb{E}_{\tilde{x} \sim q(\tilde{x}|x)} \left[ \| x - g(f(\tilde{x})) \|^2 \right]
+\mathcal{L}_{\text{DAE}} = \mathbb{E}_{x \sim p_{\text{data}}} \mathbb{E}_{\tilde{x} \sim q(\tilde{x}|x)} \left[ \Vert  x - g(f(\tilde{x})) \Vert ^2 \right]
 $$
 
 Notice: the input is $\tilde{x}$ but the target is $x$. The network sees a corrupted version and must reconstruct the original. This means it cannot simply learn the identity -- even if $d\_z > d\_x$ -- because the identity maps $\tilde{x}$ to $\tilde{x}$, not to $x$.
@@ -106,14 +106,14 @@ This is the most common choice. The noise level $\sigma$ is a hyperparameter tha
 
 **Masking noise (dropout):**
 $$
-\tilde{x}_i = \begin{cases} 0 & \text{with probability } p \\ x_i & \text{with probability } 1-p \end{cases}
+\tilde{x}_i = \begin{cases} 0 & \text{with probability } p \\\\ x_i & \text{with probability } 1-p \end{cases}
 $$
 
 Each input dimension is independently set to zero with probability $p$. This forces the network to learn to infer missing values from context -- if pixel $(i,j)$ is masked out, the network must reconstruct it from neighbouring pixels.
 
 **Salt-and-pepper noise:**
 $$
-\tilde{x}_i = \begin{cases} 0 & \text{with probability } p/2 \\ 1 & \text{with probability } p/2 \\ x_i & \text{with probability } 1-p \end{cases}
+\tilde{x}_i = \begin{cases} 0 & \text{with probability } p/2 \\\\ 1 & \text{with probability } p/2 \\\\ x_i & \text{with probability } 1-p \end{cases}
 $$
 
 This replaces random values with extreme values (for inputs normalized to $[0,1]$).
@@ -200,7 +200,7 @@ where $[J\_f(x)]\_{ij} = \frac{\partial f\_i(x)}{\partial x\_j}$. This matrix de
 The CAE objective is:
 
 $$
-\mathcal{L}_{\text{CAE}} = \mathbb{E}_{x \sim p_{\text{data}}} \left[ \| x - g(f(x)) \|^2 + \lambda \| J_f(x) \|_F^2 \right]
+\mathcal{L}_{\text{CAE}} = \mathbb{E}_{x \sim p_{\text{data}}} \left[ \Vert  x - g(f(x)) \Vert ^2 + \lambda \Vert  J_f(x) \Vert _F^2 \right]
 $$
 
 where $\Vert J\_f(x)\Vert \_F^2 = \sum\_{i,j} \left( \frac{\partial f\_i(x)}{\partial x\_j} \right)^2$ is the squared Frobenius norm of the Jacobian.
@@ -242,11 +242,11 @@ where $h'$ is the derivative of the activation function applied element-wise, an
 The Frobenius norm squared is then:
 
 $$
-\| J_f(x) \|_F^2 = \sum_{i=1}^{d_z} \sum_{j=1}^{d_x} \left( h'(w_i^\top x + b_i) \cdot w_{ij} \right)^2 = \sum_{i=1}^{d_z} h'(w_i^\top x + b_i)^2 \sum_{j=1}^{d_x} w_{ij}^2
+\Vert  J_f(x) \Vert _F^2 = \sum_{i=1}^{d_z} \sum_{j=1}^{d_x} \left( h'(w_i^\top x + b_i) \cdot w_{ij} \right)^2 = \sum_{i=1}^{d_z} h'(w_i^\top x + b_i)^2 \sum_{j=1}^{d_x} w_{ij}^2
 $$
 
 $$
-= \sum_{i=1}^{d_z} h'(a_i)^2 \| w_i \|^2
+= \sum_{i=1}^{d_z} h'(a_i)^2 \Vert  w_i \Vert ^2
 $$
 
 where $a\_i = w\_i^\top x + b\_i$ is the pre-activation value and $w\_i$ is the $i$-th row of $W$.
@@ -254,7 +254,7 @@ where $a\_i = w\_i^\top x + b\_i$ is the pre-activation value and $w\_i$ is the 
 **For sigmoid activation** $h(a) = \sigma(a)$, we have $h'(a) = \sigma(a)(1 - \sigma(a))$, so:
 
 $$
-\| J_f(x) \|_F^2 = \sum_{i=1}^{d_z} [\sigma(a_i)(1 - \sigma(a_i))]^2 \| w_i \|^2
+\Vert  J_f(x) \Vert _F^2 = \sum_{i=1}^{d_z} [\sigma(a_i)(1 - \sigma(a_i))]^2 \Vert  w_i \Vert ^2
 $$
 
 This is cheap to compute -- it is a function of the activations $f(x)$ and the weight matrix $W$, both of which we already have during the forward pass.
@@ -266,7 +266,7 @@ This is cheap to compute -- it is a function of the activations $f(x)$ and the w
 Suppose we have a tiny encoder with $d\_x = 3$, $d\_z = 2$, sigmoid activation, and:
 
 $$
-W = \begin{pmatrix} 1 & 0 & 0 \\ 0 & 1 & 0 \end{pmatrix}, \quad b = \begin{pmatrix} 0 \\ 0 \end{pmatrix}
+W = \begin{pmatrix} 1 & 0 & 0 \\\\ 0 & 1 & 0 \end{pmatrix}, \quad b = \begin{pmatrix} 0 \\\\ 0 \end{pmatrix}
 $$
 
 For input $x = (0, 0, 0)^\top$:
@@ -277,13 +277,13 @@ For input $x = (0, 0, 0)^\top$:
 - $\Vert  w\_2 \Vert ^2 = 0^2 + 1^2 + 0^2 = 1$
 
 $$
-\| J_f(x) \|_F^2 = 0.25^2 \cdot 1 + 0.25^2 \cdot 1 = 0.0625 + 0.0625 = 0.125
+\Vert  J_f(x) \Vert _F^2 = 0.25^2 \cdot 1 + 0.25^2 \cdot 1 = 0.0625 + 0.0625 = 0.125
 $$
 
 Now consider an encoder where the weights are 10 times larger: $W' = 10W$. The pre-activations are $a = (0, 0)^\top$ (same for this input), but the norms are $\Vert w'\_i\Vert ^2 = 100$. So:
 
 $$
-\| J_{f'}(x) \|_F^2 = 0.25^2 \cdot 100 + 0.25^2 \cdot 100 = 12.5
+\Vert  J_{f'}(x) \Vert _F^2 = 0.25^2 \cdot 100 + 0.25^2 \cdot 100 = 12.5
 $$
 
 The contractive penalty would strongly discourage these large weights. Note, however, that the effect is input-dependent: for inputs where the sigmoid is saturated ($\sigma'(a) \approx 0$), even large weights produce small Jacobian norms. The penalty is truly about *local* sensitivity.
@@ -303,7 +303,7 @@ One of the most satisfying results in autoencoder theory is the connection betwe
 **Theorem.** For a denoising autoencoder with small Gaussian noise $\tilde{x} = x + \epsilon$, $\epsilon \sim \mathcal{N}(0, \sigma^2 I)$, the expected DAE reconstruction error (as a function of the learned reconstruction $r(x) = g(f(x))$) is, to first order in $\sigma^2$:
 
 $$
-\mathcal{L}_{\text{DAE}} \approx \mathbb{E}_x \left[ \| x - r(x) \|^2 + \sigma^2 \| J_r(x) \|_F^2 \right]
+\mathcal{L}_{\text{DAE}} \approx \mathbb{E}_x \left[ \Vert  x - r(x) \Vert ^2 + \sigma^2 \Vert  J_r(x) \Vert _F^2 \right]
 $$
 
 where $J\_r(x) = \frac{\partial r(x)}{\partial x}$ is the Jacobian of the full reconstruction function.
@@ -315,19 +315,19 @@ This means that **training a DAE with small noise implicitly penalizes the Jacob
 We expand $r(\tilde{x}) = r(x + \epsilon)$ in a Taylor series around $x$:
 
 $$
-r(x + \epsilon) = r(x) + J_r(x) \epsilon + O(\|\epsilon\|^2)
+r(x + \epsilon) = r(x) + J_r(x) \epsilon + O(\Vert \epsilon\Vert ^2)
 $$
 
 Now substitute into the DAE loss:
 
 $$
-\| x - r(x + \epsilon) \|^2 = \| x - r(x) - J_r(x)\epsilon \|^2 + O(\|\epsilon\|^3)
+\Vert  x - r(x + \epsilon) \Vert ^2 = \Vert  x - r(x) - J_r(x)\epsilon \Vert ^2 + O(\Vert \epsilon\Vert ^3)
 $$
 
 Expanding:
 
 $$
-= \|x - r(x)\|^2 - 2(x - r(x))^\top J_r(x)\epsilon + \|J_r(x)\epsilon\|^2 + O(\|\epsilon\|^3)
+= \Vert x - r(x)\Vert ^2 - 2(x - r(x))^\top J_r(x)\epsilon + \Vert J_r(x)\epsilon\Vert ^2 + O(\Vert \epsilon\Vert ^3)
 $$
 
 Taking the expectation over $\epsilon \sim \mathcal{N}(0, \sigma^2 I)$:
@@ -338,7 +338,7 @@ Taking the expectation over $\epsilon \sim \mathcal{N}(0, \sigma^2 I)$:
 Therefore:
 
 $$
-\mathbb{E}_\epsilon \left[ \| x - r(\tilde{x}) \|^2 \right] = \|x - r(x)\|^2 + \sigma^2 \|J_r(x)\|_F^2 + O(\sigma^4)
+\mathbb{E}_\epsilon \left[ \Vert  x - r(\tilde{x}) \Vert ^2 \right] = \Vert x - r(x)\Vert ^2 + \sigma^2 \Vert J_r(x)\Vert _F^2 + O(\sigma^4)
 $$
 
 Taking the expectation over $x$ gives us the result. $\square$
@@ -373,7 +373,7 @@ Denoising and contractive autoencoders regularize by controlling *how the encode
 The idea: instead of penalizing how much the representation *changes*, penalize how *dense* it is. Encourage most latent units to be zero (or near zero) for any given input.
 
 $$
-\mathcal{L}_{\text{SAE}} = \mathbb{E}_x \left[ \| x - g(f(x)) \|^2 + \lambda \| f(x) \|_1 \right]
+\mathcal{L}_{\text{SAE}} = \mathbb{E}_x \left[ \Vert  x - g(f(x)) \Vert ^2 + \lambda \Vert  f(x) \Vert _1 \right]
 $$
 
 Here $\Vert f(x)\Vert \_1 = \sum\_{i} |f\_i(x)|$ is the L1 norm of the activations, not the weights.

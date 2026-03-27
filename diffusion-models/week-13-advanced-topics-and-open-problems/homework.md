@@ -16,7 +16,7 @@ Consider binary sequences $x \in \lbrace 0, 1\rbrace ^L$ of length $L = 16$.
 Define an absorbing-state forward process where each bit independently transitions to a [MASK] state (represented as 2) with probability $\beta\_t$ at each step:
 
 $$
-q(x_t^{(i)} | x_{t-1}^{(i)}) = \begin{cases} 1 - \beta_t & \text{if } x_t^{(i)} = x_{t-1}^{(i)} \text{ and } x_{t-1}^{(i)} \neq [\text{MASK}] \\ \beta_t & \text{if } x_t^{(i)} = [\text{MASK}] \text{ and } x_{t-1}^{(i)} \neq [\text{MASK}] \\ 1 & \text{if } x_t^{(i)} = x_{t-1}^{(i)} = [\text{MASK}] \end{cases}
+q(x_t^{(i)} | x_{t-1}^{(i)}) = \begin{cases} 1 - \beta_t & \text{if } x_t^{(i)} = x_{t-1}^{(i)} \text{ and } x_{t-1}^{(i)} \neq [\text{MASK}] \\\\ \beta_t & \text{if } x_t^{(i)} = [\text{MASK}] \text{ and } x_{t-1}^{(i)} \neq [\text{MASK}] \\\\ 1 & \text{if } x_t^{(i)} = x_{t-1}^{(i)} = [\text{MASK}] \end{cases}
 $$
 
 Use a linear schedule $\beta\_t = t/T$ for $T = 100$ steps.
@@ -120,7 +120,7 @@ For a vocabulary of size $K$ plus one absorbing state [MASK], write the $(K+1) \
 Show that the cumulative transition matrix $\bar{Q}\_t = Q\_1 Q\_2 \cdots Q\_t$ has a simple form:
 
 $$
-[\bar{Q}_t]_{ij} = \begin{cases} \bar{\alpha}_t & \text{if } i = j \neq [\text{MASK}] \\ 1 - \bar{\alpha}_t & \text{if } j = [\text{MASK}], i \neq [\text{MASK}] \\ 1 & \text{if } i = j = [\text{MASK}] \end{cases}
+[\bar{Q}_t]_{ij} = \begin{cases} \bar{\alpha}_t & \text{if } i = j \neq [\text{MASK}] \\\\ 1 - \bar{\alpha}_t & \text{if } j = [\text{MASK}], i \neq [\text{MASK}] \\\\ 1 & \text{if } i = j = [\text{MASK}] \end{cases}
 $$
 
 where $\bar{\alpha}\_t = \prod\_{s=1}^t (1 - \beta\_s)$.
@@ -130,7 +130,7 @@ where $\bar{\alpha}\_t = \prod\_{s=1}^t (1 - \beta\_s)$.
 The discrete diffusion ELBO is:
 
 $$
-\log p(x_0) \geq \mathbb{E}\left[-D_{\text{KL}}(q(x_T | x_0) \| p(x_T)) - \sum_{t=1}^T D_{\text{KL}}(q(x_{t-1} | x_t, x_0) \| p_\theta(x_{t-1} | x_t))\right]
+\log p(x_0) \geq \mathbb{E}\left[-D_{\text{KL}}(q(x_T | x_0) \Vert  p(x_T)) - \sum_{t=1}^T D_{\text{KL}}(q(x_{t-1} | x_t, x_0) \Vert  p_\theta(x_{t-1} | x_t))\right]
 $$
 
 For the absorbing-state process, show that the posterior $q(x\_{t-1} | x\_t, x\_0)$ has a simple form:

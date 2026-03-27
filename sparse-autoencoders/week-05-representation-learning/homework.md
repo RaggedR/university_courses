@@ -31,7 +31,7 @@ This problem set connects PCA theory to practice, establishes the bridge between
 Consider a linear autoencoder with encoder $W\_e \in \mathbb{R}^{k \times d}$ and decoder $W\_d \in \mathbb{R}^{d \times k}$, trained to minimize:
 
 $$
-\mathcal{L} = \frac{1}{N} \sum_{i=1}^N \|\mathbf{x}_i - W_d W_e \mathbf{x}_i\|^2
+\mathcal{L} = \frac{1}{N} \sum_{i=1}^N \Vert \mathbf{x}_i - W_d W_e \mathbf{x}_i\Vert ^2
 $$
 
 Assume the data is centered ($\bar{\mathbf{x}} = \mathbf{0}$) and has covariance $C$ with eigendecomposition $C = V \Lambda V^\top$.

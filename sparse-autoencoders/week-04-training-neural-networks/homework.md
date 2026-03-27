@@ -21,7 +21,7 @@ Consider a neural network with the following architecture:
 The parameters are:
 
 $$
-W^{(1)} = \begin{pmatrix} 0.5 & -0.3 \\ 0.2 & 0.8 \\ -0.1 & 0.4 \end{pmatrix}, \quad \mathbf{b}^{(1)} = \begin{pmatrix} 0.1 \\ -0.2 \\ 0.0 \end{pmatrix}
+W^{(1)} = \begin{pmatrix} 0.5 & -0.3 \\\\ 0.2 & 0.8 \\\\ -0.1 & 0.4 \end{pmatrix}, \quad \mathbf{b}^{(1)} = \begin{pmatrix} 0.1 \\\\ -0.2 \\\\ 0.0 \end{pmatrix}
 $$
 
 $$

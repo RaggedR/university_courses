@@ -12,7 +12,7 @@
 Consider a joint Gaussian over $(x\_1, x\_2) \in \mathbb{R}^2$:
 
 $$
-\begin{pmatrix} x_1 \\ x_2 \end{pmatrix} \sim \mathcal{N}\left(\begin{pmatrix} 1 \\ 3 \end{pmatrix}, \begin{pmatrix} 4 & 2 \\ 2 & 5 \end{pmatrix}\right)
+\begin{pmatrix} x_1 \\\\ x_2 \end{pmatrix} \sim \mathcal{N}\left(\begin{pmatrix} 1 \\\\ 3 \end{pmatrix}, \begin{pmatrix} 4 & 2 \\\\ 2 & 5 \end{pmatrix}\right)
 $$
 
 1. Write down the marginal distributions $p(x\_1)$ and $p(x\_2)$ by reading off the relevant entries. State the rule you are using.
@@ -82,7 +82,7 @@ Run for 200 steps with learning rate 0.05 and batch size 64 (average the loss ov
 Consider a Markov chain on three states $\lbrace 1, 2, 3\rbrace $ with transition matrix:
 
 $$
-P = \begin{pmatrix} 0.5 & 0.3 & 0.2 \\ 0.15 & 0.7 & 0.15 \\ 0.2 & 0.3 & 0.5 \end{pmatrix}
+P = \begin{pmatrix} 0.5 & 0.3 & 0.2 \\\\ 0.15 & 0.7 & 0.15 \\\\ 0.2 & 0.3 & 0.5 \end{pmatrix}
 $$
 
 1. Verify that $\pi = (0.2, 0.5, 0.3)$ is a stationary distribution by showing $\pi P = \pi$.

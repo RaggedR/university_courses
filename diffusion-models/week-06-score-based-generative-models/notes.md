@@ -45,7 +45,7 @@ For small enough step size $\eta$ and enough iterations, $x\_k$ converges in dis
 In Week 4, we learned how to estimate the score from data using **score matching** (Hyvarinen, 2005) or **denoising score matching** (Vincent, 2011). We train a network $s\_\theta(x)$ to approximate $\nabla\_x \log p(x)$ by minimizing:
 
 $$
-\mathcal{L}_{\text{SM}} = \mathbb{E}_{p(x)}\!\left[\frac{1}{2}\|s_\theta(x) - \nabla_x \log p(x)\|^2\right]
+\mathcal{L}_{\text{SM}} = \mathbb{E}_{p(x)}\!\left[\frac{1}{2}\Vert s_\theta(x) - \nabla_x \log p(x)\Vert ^2\right]
 $$
 
 or its tractable denoising variant.
@@ -131,7 +131,7 @@ The network takes both $x$ and $\sigma$ (or an index $i$ corresponding to $\sigm
 From Week 4, we know that denoising score matching provides a tractable loss for score estimation. For a single noise level $\sigma$:
 
 $$
-\mathcal{L}_{\text{DSM}}(\sigma) = \mathbb{E}_{p(x)}\, \mathbb{E}_{\tilde{x} \sim \mathcal{N}(x, \sigma^2 I)}\!\left[\frac{1}{2}\left\|s_\theta(\tilde{x}, \sigma) - \nabla_{\tilde{x}} \log p(\tilde{x} \mid x)\right\|^2\right]
+\mathcal{L}_{\text{DSM}}(\sigma) = \mathbb{E}_{p(x)}\, \mathbb{E}_{\tilde{x} \sim \mathcal{N}(x, \sigma^2 I)}\!\left[\frac{1}{2}\left\Vert s_\theta(\tilde{x}, \sigma) - \nabla_{\tilde{x}} \log p(\tilde{x} \mid x)\right\Vert ^2\right]
 $$
 
 Since $p(\tilde{x} \mid x) = \mathcal{N}(\tilde{x}; x, \sigma^2 I)$, the target score is:
@@ -145,7 +145,7 @@ where $\tilde{x} = x + \sigma \varepsilon$ and $\varepsilon \sim \mathcal{N}(0, 
 So the per-noise-level loss is:
 
 $$
-\mathcal{L}_{\text{DSM}}(\sigma) = \mathbb{E}_{p(x)}\, \mathbb{E}_{\varepsilon \sim \mathcal{N}(0,I)}\!\left[\frac{1}{2}\left\|s_\theta(x + \sigma\varepsilon, \sigma) + \frac{\varepsilon}{\sigma}\right\|^2\right]
+\mathcal{L}_{\text{DSM}}(\sigma) = \mathbb{E}_{p(x)}\, \mathbb{E}_{\varepsilon \sim \mathcal{N}(0,I)}\!\left[\frac{1}{2}\left\Vert s_\theta(x + \sigma\varepsilon, \sigma) + \frac{\varepsilon}{\sigma}\right\Vert ^2\right]
 $$
 
 ### 3.3 The Combined Objective
@@ -161,7 +161,7 @@ Song and Ermon (2019) use $\lambda(\sigma) = \sigma^2$, which ensures that the l
 With $\lambda(\sigma) = \sigma^2$, the loss for a single noise level becomes:
 
 $$
-\lambda(\sigma)\,\mathcal{L}_{\text{DSM}}(\sigma) = \frac{1}{2}\,\mathbb{E}\!\left[\|\sigma\, s_\theta(x + \sigma\varepsilon, \sigma) + \varepsilon\|^2\right]
+\lambda(\sigma)\,\mathcal{L}_{\text{DSM}}(\sigma) = \frac{1}{2}\,\mathbb{E}\!\left[\Vert \sigma\, s_\theta(x + \sigma\varepsilon, \sigma) + \varepsilon\Vert ^2\right]
 $$
 
 This is strikingly similar to the DDPM loss. We will make this precise in Section 6.
@@ -303,21 +303,21 @@ They are the *same function* up to a known, timestep-dependent scaling factor. A
 The DDPM simplified loss:
 
 $$
-L_{\text{DDPM}} = \mathbb{E}_{t, x_0, \varepsilon}\!\left[\|\varepsilon - \varepsilon_\theta(x_t, t)\|^2\right]
+L_{\text{DDPM}} = \mathbb{E}_{t, x_0, \varepsilon}\!\left[\Vert \varepsilon - \varepsilon_\theta(x_t, t)\Vert ^2\right]
 $$
 
 Substituting $\varepsilon\_\theta = -\sqrt{1 - \bar{\alpha}\_t}\, s\_\theta$:
 
 $$
-L_{\text{DDPM}} = \mathbb{E}\!\left[\left\|\varepsilon + \sqrt{1 - \bar{\alpha}_t}\, s_\theta(x_t, t)\right\|^2\right]
+L_{\text{DDPM}} = \mathbb{E}\!\left[\left\Vert \varepsilon + \sqrt{1 - \bar{\alpha}_t}\, s_\theta(x_t, t)\right\Vert ^2\right]
 $$
 
 $$
-= (1 - \bar{\alpha}_t)\,\mathbb{E}\!\left[\left\|\frac{\varepsilon}{\sqrt{1 - \bar{\alpha}_t}} + s_\theta(x_t, t)\right\|^2\right]
+= (1 - \bar{\alpha}_t)\,\mathbb{E}\!\left[\left\Vert \frac{\varepsilon}{\sqrt{1 - \bar{\alpha}_t}} + s_\theta(x_t, t)\right\Vert ^2\right]
 $$
 
 $$
-= (1 - \bar{\alpha}_t)\,\mathbb{E}\!\left[\left\|s_\theta(x_t, t) - \nabla_{x_t}\log q(x_t \mid x_0)\right\|^2\right]
+= (1 - \bar{\alpha}_t)\,\mathbb{E}\!\left[\left\Vert s_\theta(x_t, t) - \nabla_{x_t}\log q(x_t \mid x_0)\right\Vert ^2\right]
 $$
 
 This is exactly the NCSN denoising score matching loss with weight $\lambda(\sigma) = 1 - \bar{\alpha}\_t$ (which is the noise variance, playing the role of $\sigma^2$ in the NCSN weighting).

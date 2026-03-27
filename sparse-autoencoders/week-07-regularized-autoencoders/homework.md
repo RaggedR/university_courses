@@ -156,7 +156,7 @@ Take the expectation $\mathbb{E}\_{\epsilon \sim \mathcal{N}(0, \sigma^2 I)}$ of
 Show that:
 
 $$
-\mathbb{E}_\epsilon \left[ \|x - r(x + \epsilon)\|^2 \right] = \|x - r(x)\|^2 + \sigma^2 \|J_r(x)\|_F^2 + O(\sigma^4)
+\mathbb{E}_\epsilon \left[ \Vert x - r(x + \epsilon)\Vert ^2 \right] = \Vert x - r(x)\Vert ^2 + \sigma^2 \Vert J_r(x)\Vert _F^2 + O(\sigma^4)
 $$
 
 ### Part (d)

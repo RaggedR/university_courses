@@ -264,7 +264,7 @@ This is a weighted combination of $\mathbf{x}\_0$ and $\mathbf{x}\_t$, with weig
 Both $q(\mathbf{x}\_{t-1} | \mathbf{x}\_t, \mathbf{x}\_0)$ and $p\_\theta(\mathbf{x}\_{t-1} | \mathbf{x}\_t)$ are Gaussians with the same variance $\sigma\_t^2 = \tilde{\beta}\_t$. The KL divergence between two Gaussians with equal covariance simplifies to:
 
 $$
-D_{\text{KL}}(q \| p_\theta) = \frac{1}{2\sigma_t^2} \left\|\tilde{\boldsymbol{\mu}}_t(\mathbf{x}_t, \mathbf{x}_0) - \boldsymbol{\mu}_\theta(\mathbf{x}_t, t)\right\|^2
+D_{\text{KL}}(q \Vert  p_\theta) = \frac{1}{2\sigma_t^2} \left\Vert \tilde{\boldsymbol{\mu}}_t(\mathbf{x}_t, \mathbf{x}_0) - \boldsymbol{\mu}_\theta(\mathbf{x}_t, t)\right\Vert ^2
 $$
 
 Now substitute $\mathbf{x}\_0 = \frac{1}{\sqrt{\bar{\alpha}\_t}}(\mathbf{x}\_t - \sqrt{1 - \bar{\alpha}\_t}\,\boldsymbol{\epsilon})$ into $\tilde{\boldsymbol{\mu}}\_t$:
@@ -288,11 +288,11 @@ $$
 Substituting both into the KL:
 
 $$
-D_{\text{KL}} = \frac{1}{2\sigma_t^2} \left\|\frac{1}{\sqrt{\alpha_t}} \cdot \frac{\beta_t}{\sqrt{1-\bar{\alpha}_t}}\left(\boldsymbol{\epsilon} - \boldsymbol{\epsilon}_\theta(\mathbf{x}_t, t)\right)\right\|^2
+D_{\text{KL}} = \frac{1}{2\sigma_t^2} \left\Vert \frac{1}{\sqrt{\alpha_t}} \cdot \frac{\beta_t}{\sqrt{1-\bar{\alpha}_t}}\left(\boldsymbol{\epsilon} - \boldsymbol{\epsilon}_\theta(\mathbf{x}_t, t)\right)\right\Vert ^2
 $$
 
 $$
-= \frac{\beta_t^2}{2\sigma_t^2 \alpha_t (1 - \bar{\alpha}_t)} \left\|\boldsymbol{\epsilon} - \boldsymbol{\epsilon}_\theta(\mathbf{x}_t, t)\right\|^2
+= \frac{\beta_t^2}{2\sigma_t^2 \alpha_t (1 - \bar{\alpha}_t)} \left\Vert \boldsymbol{\epsilon} - \boldsymbol{\epsilon}_\theta(\mathbf{x}_t, t)\right\Vert ^2
 $$
 
 The prefactor $w\_t = \frac{\beta\_t^2}{2\sigma\_t^2 \alpha\_t (1 - \bar{\alpha}\_t)}$ is a time-dependent weighting. Up to this constant, minimizing the KL reduces to minimizing $\Vert \boldsymbol{\epsilon} - \boldsymbol{\epsilon}\_\theta(\mathbf{x}\_t, t)\Vert ^2$. $\square$

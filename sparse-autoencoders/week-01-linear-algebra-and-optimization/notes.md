@@ -23,7 +23,7 @@ In this course, vectors will most often represent **neural network activations**
 We write vectors as bold lowercase: $\mathbf{x} \in \mathbb{R}^n$. By convention, vectors are column vectors:
 
 $$
-\mathbf{x} = \begin{pmatrix} x_1 \\ x_2 \\ \vdots \\ x_n \end{pmatrix}
+\mathbf{x} = \begin{pmatrix} x_1 \\\\ x_2 \\\\ \vdots \\\\ x_n \end{pmatrix}
 $$
 
 ### 1.2 Vector Spaces: The Abstract View
@@ -39,7 +39,7 @@ A **subspace** of $V$ is a subset that is itself a vector space (closed under ad
 Given vectors $\mathbf{v}\_1, \ldots, \mathbf{v}\_k$, their **span** is the set of all linear combinations:
 
 $$
-\text{span}(\mathbf{v}_1, \ldots, \mathbf{v}_k) = \left\{ \sum_{i=1}^k \alpha_i \mathbf{v}_i \;\middle|\; \alpha_i \in \mathbb{R} \right\}
+\text{span}(\mathbf{v}_1, \ldots, \mathbf{v}_k) = \left\lbrace  \sum_{i=1}^k \alpha_i \mathbf{v}_i \;\middle|\; \alpha_i \in \mathbb{R} \right\rbrace 
 $$
 
 Vectors $\mathbf{v}\_1, \ldots, \mathbf{v}\_k$ are **linearly independent** if the only solution to $\sum\_{i=1}^k \alpha\_i \mathbf{v}\_i = \mathbf{0}$ is $\alpha\_1 = \cdots = \alpha\_k = 0$. Intuitively: no vector in the set is redundant.
@@ -95,7 +95,7 @@ Our geometric intuition is built in 2D and 3D, and it fails spectacularly in hig
 The **orthogonal projection** of $\mathbf{x}$ onto a subspace $W$ is the vector $\hat{\mathbf{x}} \in W$ that is closest to $\mathbf{x}$:
 
 $$
-\hat{\mathbf{x}} = \arg\min_{\mathbf{w} \in W} \|\mathbf{x} - \mathbf{w}\|
+\hat{\mathbf{x}} = \arg\min_{\mathbf{w} \in W} \Vert \mathbf{x} - \mathbf{w}\Vert 
 $$
 
 If $\lbrace \mathbf{u}\_1, \ldots, \mathbf{u}\_k\rbrace $ is an orthonormal basis for $W$, the projection is:
@@ -111,7 +111,7 @@ This is exactly what low-rank approximation (SVD) does: it finds the best $k$-di
 **Concrete example.** Project $\mathbf{x} = (3, 4, 1)^T$ onto the subspace spanned by $\mathbf{u}\_1 = \frac{1}{\sqrt{2}}(1, 1, 0)^T$:
 
 $$
-\hat{\mathbf{x}} = \langle \mathbf{x}, \mathbf{u}_1 \rangle \mathbf{u}_1 = \frac{3 + 4}{\sqrt{2}} \cdot \frac{1}{\sqrt{2}}\begin{pmatrix}1\\1\\0\end{pmatrix} = \frac{7}{2}\begin{pmatrix}1\\1\\0\end{pmatrix} = \begin{pmatrix}3.5\\3.5\\0\end{pmatrix}
+\hat{\mathbf{x}} = \langle \mathbf{x}, \mathbf{u}_1 \rangle \mathbf{u}_1 = \frac{3 + 4}{\sqrt{2}} \cdot \frac{1}{\sqrt{2}}\begin{pmatrix}1\\\\1\\\\0\end{pmatrix} = \frac{7}{2}\begin{pmatrix}1\\\\1\\\\0\end{pmatrix} = \begin{pmatrix}3.5\\\\3.5\\\\0\end{pmatrix}
 $$
 
 The residual is $(3, 4, 1)^T - (3.5, 3.5, 0)^T = (-0.5, 0.5, 1)^T$. You can verify: $\langle (-0.5, 0.5, 1), (1, 1, 0)/\sqrt{2} \rangle = 0$.
@@ -305,7 +305,7 @@ This theorem is why SVD is the backbone of data compression. If the singular val
 The **Frobenius norm** of a matrix is:
 
 $$
-\|A\|_F = \sqrt{\sum_{i,j} a_{ij}^2} = \sqrt{\sum_{i=1}^r \sigma_i^2}
+\Vert A\Vert _F = \sqrt{\sum_{i,j} a_{ij}^2} = \sqrt{\sum_{i=1}^r \sigma_i^2}
 $$
 
 The second equality (sum of squared singular values) gives us an "energy" interpretation. The rank-$k$ approximation captures a fraction $\frac{\sum\_{i=1}^k \sigma\_i^2}{\sum\_{i=1}^r \sigma\_i^2}$ of the total energy. In image compression, we often target 95% or 99% energy retention and choose $k$ accordingly.
@@ -332,7 +332,7 @@ A function $f: \mathbb{R}^n \to \mathbb{R}$ maps a vector to a scalar. In machin
 The **gradient** of $f$ at $\mathbf{x}$ is the vector of partial derivatives:
 
 $$
-\nabla f(\mathbf{x}) = \begin{pmatrix} \partial f / \partial x_1 \\ \partial f / \partial x_2 \\ \vdots \\ \partial f / \partial x_n \end{pmatrix}
+\nabla f(\mathbf{x}) = \begin{pmatrix} \partial f / \partial x_1 \\\\ \partial f / \partial x_2 \\\\ \vdots \\\\ \partial f / \partial x_n \end{pmatrix}
 $$
 
 The gradient points in the direction of steepest ascent. Its magnitude tells you how steep the slope is. At a local minimum, $\nabla f = \mathbf{0}$.
@@ -446,7 +446,7 @@ We'll implement these in Week 4. For now, know that they exist and that Adam is 
 For $p \geq 1$, the $L\_p$ norm of $\mathbf{x} \in \mathbb{R}^n$ is:
 
 $$
-\|\mathbf{x}\|_p = \left(\sum_{i=1}^n |x_i|^p\right)^{1/p}
+\Vert \mathbf{x}\Vert _p = \left(\sum_{i=1}^n |x_i|^p\right)^{1/p}
 $$
 
 The three most important cases:
@@ -481,7 +481,7 @@ The corners of the $L\_1$ ball are the key: they're the points $(0, \ldots, 0, \
 In practice, we don't use hard constraints. Instead, we add a penalty term to the loss:
 
 $$
-\mathcal{L}_{\text{regularized}}(\theta) = \mathcal{L}_{\text{data}}(\theta) + \lambda \|\theta\|_p^p
+\mathcal{L}_{\text{regularized}}(\theta) = \mathcal{L}_{\text{data}}(\theta) + \lambda \Vert \theta\Vert _p^p
 $$
 
 - **$L\_2$ regularization (Ridge/weight decay):** $\lambda \Vert \theta\Vert \_2^2 = \lambda \sum\_i \theta\_i^2$. Pushes weights to be small but not exactly zero. The gradient of $L\_2$ is $2\lambda\theta\_i$, which is proportional to $\theta\_i$ — large weights are penalized more.
@@ -494,7 +494,7 @@ The hyperparameter $\lambda$ controls the trade-off: larger $\lambda$ means more
 The $L\_1$ norm is not differentiable at zero, which complicates gradient descent. The **proximal operator** handles this cleanly. For the $L\_1$ penalty, the proximal operator is the **soft thresholding** function:
 
 $$
-\text{prox}_{\lambda \|\cdot\|_1}(x_i) = \text{sign}(x_i) \max(|x_i| - \lambda, 0)
+\text{prox}_{\lambda \Vert \cdot\Vert _1}(x_i) = \text{sign}(x_i) \max(|x_i| - \lambda, 0)
 $$
 
 This shrinks each coordinate toward zero by $\lambda$, and if the coordinate is already within $\lambda$ of zero, it sets it to exactly zero. The **ISTA (Iterative Shrinkage-Thresholding Algorithm)** alternates gradient steps (for the data term) with proximal steps (for the $L\_1$ term). We'll encounter ISTA in Week 9 when we study sparse coding.

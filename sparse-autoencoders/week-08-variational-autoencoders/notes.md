@@ -105,7 +105,7 @@ Since we cannot compute $p\_\theta(z|x)$, we will approximate it with a parametr
 We want $q\_\phi(z|x)$ to be close to $p\_\theta(z|x)$. The natural measure of closeness between distributions is the KL divergence (from Week 2):
 
 $$
-D_{\text{KL}}(q_\phi(z|x) \| p_\theta(z|x)) = \mathbb{E}_{z \sim q_\phi} \left[ \log \frac{q_\phi(z|x)}{p_\theta(z|x)} \right]
+D_{\text{KL}}(q_\phi(z|x) \Vert  p_\theta(z|x)) = \mathbb{E}_{z \sim q_\phi} \left[ \log \frac{q_\phi(z|x)}{p_\theta(z|x)} \right]
 $$
 
 We would like to minimize this KL divergence. But it involves $p\_\theta(z|x)$, which we cannot compute! We seem stuck. The way out is one of the most important derivations in modern machine learning.
@@ -141,7 +141,7 @@ $$
 **Step 4.** Identify the two terms:
 
 $$
-\log p_\theta(x) = \underbrace{\mathbb{E}_{z \sim q_\phi} \left[ \log \frac{p_\theta(x, z)}{q_\phi(z|x)} \right]}_{\text{ELBO: } \mathcal{L}(\theta, \phi; x)} + \underbrace{D_{\text{KL}}(q_\phi(z|x) \| p_\theta(z|x))}_{\geq 0}
+\log p_\theta(x) = \underbrace{\mathbb{E}_{z \sim q_\phi} \left[ \log \frac{p_\theta(x, z)}{q_\phi(z|x)} \right]}_{\text{ELBO: } \mathcal{L}(\theta, \phi; x)} + \underbrace{D_{\text{KL}}(q_\phi(z|x) \Vert  p_\theta(z|x))}_{\geq 0}
 $$
 
 Since KL divergence is always non-negative, we have:
@@ -165,7 +165,7 @@ $$
 $$
 
 $$
-\boxed{\mathcal{L}(\theta, \phi; x) = \underbrace{\mathbb{E}_{z \sim q_\phi(z|x)} [\log p_\theta(x|z)]}_{\text{Reconstruction term}} - \underbrace{D_{\text{KL}}(q_\phi(z|x) \| p(z))}_{\text{Regularization term}}}
+\boxed{\mathcal{L}(\theta, \phi; x) = \underbrace{\mathbb{E}_{z \sim q_\phi(z|x)} [\log p_\theta(x|z)]}_{\text{Reconstruction term}} - \underbrace{D_{\text{KL}}(q_\phi(z|x) \Vert  p(z))}_{\text{Regularization term}}}
 $$
 
 This decomposition is the heart of the VAE. Let us understand each term:
@@ -183,7 +183,7 @@ This penalizes the approximate posterior for being different from the prior. It 
 Recall that:
 
 $$
-\log p_\theta(x) = \mathcal{L}(\theta, \phi; x) + D_{\text{KL}}(q_\phi(z|x) \| p_\theta(z|x))
+\log p_\theta(x) = \mathcal{L}(\theta, \phi; x) + D_{\text{KL}}(q_\phi(z|x) \Vert  p_\theta(z|x))
 $$
 
 The gap between the true log-likelihood and the ELBO is exactly $D\_{\text{KL}}(q\_\phi(z|x) \Vert  p\_\theta(z|x))$. This gap is zero if and only if $q\_\phi(z|x) = p\_\theta(z|x)$ -- i.e., the approximate posterior matches the true posterior exactly.
@@ -286,7 +286,7 @@ $$
 The KL divergence is:
 
 $$
-D_{\text{KL}}(p \| q) = \frac{1}{2} \left[ \log \frac{|\Sigma_2|}{|\Sigma_1|} - d + \text{tr}(\Sigma_2^{-1} \Sigma_1) + (\mu_2 - \mu_1)^\top \Sigma_2^{-1} (\mu_2 - \mu_1) \right]
+D_{\text{KL}}(p \Vert  q) = \frac{1}{2} \left[ \log \frac{|\Sigma_2|}{|\Sigma_1|} - d + \text{tr}(\Sigma_2^{-1} \Sigma_1) + (\mu_2 - \mu_1)^\top \Sigma_2^{-1} (\mu_2 - \mu_1) \right]
 $$
 
 where $d$ is the dimensionality. This is a standard result you will derive in the homework.
@@ -306,7 +306,7 @@ $$
 Since $|I| = 1$, $|\text{diag}(\sigma^2)| = \prod\_j \sigma\_j^2$, and $\text{tr}(\text{diag}(\sigma^2)) = \sum\_j \sigma\_j^2$:
 
 $$
-\boxed{D_{\text{KL}}(q_\phi(z|x) \| p(z)) = \frac{1}{2} \sum_{j=1}^{d_z} \left( \mu_j^2 + \sigma_j^2 - \log \sigma_j^2 - 1 \right)}
+\boxed{D_{\text{KL}}(q_\phi(z|x) \Vert  p(z)) = \frac{1}{2} \sum_{j=1}^{d_z} \left( \mu_j^2 + \sigma_j^2 - \log \sigma_j^2 - 1 \right)}
 $$
 
 Or equivalently, using log-variance $\gamma\_j = \log \sigma\_j^2$:
@@ -401,7 +401,7 @@ During training, we sample $\epsilon$ fresh for each forward pass. During evalua
 The VAE training objective is to maximize the ELBO. Equivalently, we minimize the negative ELBO:
 
 $$
-\mathcal{L}_{\text{VAE}} = -\mathcal{L}(\theta, \phi; x) = \underbrace{-\mathbb{E}_{z \sim q_\phi}[\log p_\theta(x|z)]}_{\text{Reconstruction loss}} + \underbrace{D_{\text{KL}}(q_\phi(z|x) \| p(z))}_{\text{KL regularization}}
+\mathcal{L}_{\text{VAE}} = -\mathcal{L}(\theta, \phi; x) = \underbrace{-\mathbb{E}_{z \sim q_\phi}[\log p_\theta(x|z)]}_{\text{Reconstruction loss}} + \underbrace{D_{\text{KL}}(q_\phi(z|x) \Vert  p(z))}_{\text{KL regularization}}
 $$
 
 With a Bernoulli decoder (for binary data):
@@ -415,7 +415,7 @@ where $\hat{x} = g\_\theta(z)$ with sigmoid output.
 With a Gaussian decoder (MSE):
 
 $$
-\text{Reconstruction loss} = \frac{1}{2\sigma^2} \|x - g_\theta(z)\|^2 + \text{const}
+\text{Reconstruction loss} = \frac{1}{2\sigma^2} \Vert x - g_\theta(z)\Vert ^2 + \text{const}
 $$
 
 The KL term (closed form):
@@ -576,7 +576,7 @@ GANs (Generative Adversarial Networks) avoid this problem by using a different t
 The $\beta$-VAE (Higgins et al., 2017) modifies the VAE objective:
 
 $$
-\mathcal{L}_{\beta\text{-VAE}} = \mathbb{E}_{z \sim q_\phi}[\log p_\theta(x|z)] - \beta \cdot D_{\text{KL}}(q_\phi(z|x) \| p(z))
+\mathcal{L}_{\beta\text{-VAE}} = \mathbb{E}_{z \sim q_\phi}[\log p_\theta(x|z)] - \beta \cdot D_{\text{KL}}(q_\phi(z|x) \Vert  p(z))
 $$
 
 where $\beta > 1$ increases the pressure to match the prior, encouraging more disentangled representations at the cost of reconstruction quality. When $\beta = 1$, this is the standard VAE.

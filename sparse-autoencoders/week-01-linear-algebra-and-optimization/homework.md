@@ -11,7 +11,7 @@
 Consider the matrix:
 
 $$
-A = \begin{pmatrix} 4 & 2 \\ 1 & 3 \end{pmatrix}
+A = \begin{pmatrix} 4 & 2 \\\\ 1 & 3 \end{pmatrix}
 $$
 
 **(a)** Find the eigenvalues of $A$ by solving the characteristic equation $\det(A - \lambda I) = 0$.
@@ -29,7 +29,7 @@ $$
 Consider the symmetric matrix:
 
 $$
-S = \begin{pmatrix} 5 & 2 \\ 2 & 2 \end{pmatrix}
+S = \begin{pmatrix} 5 & 2 \\\\ 2 & 2 \end{pmatrix}
 $$
 
 **(a)** Find the eigenvalues and eigenvectors of $S$. Verify that the eigenvectors are orthogonal (as the spectral theorem guarantees).
@@ -47,7 +47,7 @@ $$
 Consider the matrix:
 
 $$
-B = \begin{pmatrix} 3 & 0 \\ 0 & 2 \\ 0 & 0 \end{pmatrix}
+B = \begin{pmatrix} 3 & 0 \\\\ 0 & 2 \\\\ 0 & 0 \end{pmatrix}
 $$
 
 **(a)** Compute $B^TB$ and $BB^T$.

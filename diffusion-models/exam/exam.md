@@ -97,7 +97,7 @@ $$
 **(a)** [3 marks] The variational lower bound (VLB) on $-\log p\_\theta(\mathbf{x}\_0)$ decomposes as:
 
 $$
-\mathcal{L}_{\text{VLB}} = D_{\text{KL}}(q(\mathbf{x}_T | \mathbf{x}_0) \| p(\mathbf{x}_T)) + \sum_{t=2}^{T} D_{\text{KL}}(q(\mathbf{x}_{t-1} | \mathbf{x}_t, \mathbf{x}_0) \| p_\theta(\mathbf{x}_{t-1} | \mathbf{x}_t)) + \mathcal{L}_0
+\mathcal{L}_{\text{VLB}} = D_{\text{KL}}(q(\mathbf{x}_T | \mathbf{x}_0) \Vert  p(\mathbf{x}_T)) + \sum_{t=2}^{T} D_{\text{KL}}(q(\mathbf{x}_{t-1} | \mathbf{x}_t, \mathbf{x}_0) \Vert  p_\theta(\mathbf{x}_{t-1} | \mathbf{x}_t)) + \mathcal{L}_0
 $$
 
 The key term is $q(\mathbf{x}\_{t-1} | \mathbf{x}\_t, \mathbf{x}\_0)$, the forward process posterior. Show that this is Gaussian and derive its mean $\tilde{\boldsymbol{\mu}}\_t(\mathbf{x}\_t, \mathbf{x}\_0)$ and variance $\tilde{\beta}\_t$.
@@ -119,7 +119,7 @@ The Noise Conditional Score Network (NCSN, Song & Ermon 2019) trains a score net
 **(a)** [3 marks] The NCSN training objective is denoising score matching:
 
 $$
-\mathcal{L}_{\text{DSM}} = \frac{1}{L}\sum_{i=1}^{L} \lambda(\sigma_i)\,\mathbb{E}_{\mathbf{x}_0, \tilde{\mathbf{x}}}\left[\left\|\mathbf{s}_\theta(\tilde{\mathbf{x}}, \sigma_i) + \frac{\tilde{\mathbf{x}} - \mathbf{x}_0}{\sigma_i^2}\right\|^2\right]
+\mathcal{L}_{\text{DSM}} = \frac{1}{L}\sum_{i=1}^{L} \lambda(\sigma_i)\,\mathbb{E}_{\mathbf{x}_0, \tilde{\mathbf{x}}}\left[\left\Vert \mathbf{s}_\theta(\tilde{\mathbf{x}}, \sigma_i) + \frac{\tilde{\mathbf{x}} - \mathbf{x}_0}{\sigma_i^2}\right\Vert ^2\right]
 $$
 
 Explain the term $-\frac{\tilde{\mathbf{x}} - \mathbf{x}\_0}{\sigma\_i^2}$. What is this quantity, and why is it the target for the score network?
@@ -234,7 +234,7 @@ Derive the conditional velocity field $\mathbf{v}\_t(\mathbf{x}\_t | \mathbf{x}\
 **(b)** [5 marks] The flow matching training loss is:
 
 $$
-\mathcal{L}_{\text{FM}} = \mathbb{E}_{t, \mathbf{x}_1, \boldsymbol{\epsilon}}\left[\left\|\mathbf{v}_\theta(\mathbf{x}_t, t) - \mathbf{v}_t(\mathbf{x}_t | \mathbf{x}_1)\right\|^2\right]
+\mathcal{L}_{\text{FM}} = \mathbb{E}_{t, \mathbf{x}_1, \boldsymbol{\epsilon}}\left[\left\Vert \mathbf{v}_\theta(\mathbf{x}_t, t) - \mathbf{v}_t(\mathbf{x}_t | \mathbf{x}_1)\right\Vert ^2\right]
 $$
 
 Compare this to the DDPM loss $\mathcal{L}\_{\text{simple}} = \mathbb{E}\_{t, \mathbf{x}\_0, \boldsymbol{\epsilon}}[\Vert \boldsymbol{\epsilon} - \boldsymbol{\epsilon}\_\theta(\mathbf{x}\_t, t)\Vert ^2]$ along three dimensions: (i) what is being predicted, (ii) the geometry of the transport paths, and (iii) one practical advantage of flow matching.

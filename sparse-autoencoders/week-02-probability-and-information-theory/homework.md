@@ -127,13 +127,13 @@ Verify both give the same answer.
 Start from the definition:
 
 $$
-D_{\text{KL}}(p \| q) = \mathbb{E}_{x \sim p}\left[\log\frac{p(x)}{q(x)}\right]
+D_{\text{KL}}(p \Vert  q) = \mathbb{E}_{x \sim p}\left[\log\frac{p(x)}{q(x)}\right]
 $$
 
 Substitute the Gaussian PDFs, expand the logarithm, and use the facts $\mathbb{E}\_p[x] = \mu\_1$, $\mathbb{E}\_p[x^2] = \sigma\_1^2 + \mu\_1^2$. You should arrive at:
 
 $$
-D_{\text{KL}}(p \| q) = \log\frac{\sigma_2}{\sigma_1} + \frac{\sigma_1^2 + (\mu_1 - \mu_2)^2}{2\sigma_2^2} - \frac{1}{2}
+D_{\text{KL}}(p \Vert  q) = \log\frac{\sigma_2}{\sigma_1} + \frac{\sigma_1^2 + (\mu_1 - \mu_2)^2}{2\sigma_2^2} - \frac{1}{2}
 $$
 
 **(b) (Implementation)** Write a Python function `kl_gaussian(mu1, sigma1, mu2, sigma2)` that computes this formula. Verify your implementation by:

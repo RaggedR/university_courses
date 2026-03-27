@@ -60,7 +60,7 @@ $$
 Show that the expression from Part (a) equals:
 
 $$
--L_{\text{VLB}} = -D_{\text{KL}}(q(x_T \mid x_0) \| p(x_T)) - \sum_{t=2}^{T} D_{\text{KL}}(q(x_{t-1} \mid x_t, x_0) \| p_\theta(x_{t-1} \mid x_t)) + \mathbb{E}_q[\log p_\theta(x_0 \mid x_1)]
+-L_{\text{VLB}} = -D_{\text{KL}}(q(x_T \mid x_0) \Vert  p(x_T)) - \sum_{t=2}^{T} D_{\text{KL}}(q(x_{t-1} \mid x_t, x_0) \Vert  p_\theta(x_{t-1} \mid x_t)) + \mathbb{E}_q[\log p_\theta(x_0 \mid x_1)]
 $$
 
 ### Part (c): The Reverse Posterior
@@ -84,7 +84,7 @@ and derive the expressions for $\tilde{\mu}\_t$ and $\tilde{\beta}\_t$ given in 
 Starting from the KL term $L\_{t-1} = \frac{1}{2\sigma\_t^2}\Vert \tilde{\mu}\_t - \mu\_\theta(x\_t, t)\Vert ^2$, substitute $x\_0 = \frac{1}{\sqrt{\bar{\alpha}\_t}}(x\_t - \sqrt{1-\bar{\alpha}\_t}\,\varepsilon)$ into $\tilde{\mu}\_t$ and show that the loss can be written as:
 
 $$
-L_{t-1} = \frac{\beta_t^2}{2\sigma_t^2 \alpha_t(1 - \bar{\alpha}_t)} \|\varepsilon - \varepsilon_\theta(x_t, t)\|^2
+L_{t-1} = \frac{\beta_t^2}{2\sigma_t^2 \alpha_t(1 - \bar{\alpha}_t)} \Vert \varepsilon - \varepsilon_\theta(x_t, t)\Vert ^2
 $$
 
 where $\varepsilon\_\theta$ is the noise-prediction network.

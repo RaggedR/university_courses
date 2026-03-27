@@ -53,13 +53,13 @@ Starting from $p\_\sigma(\tilde{x}) = \int p(x) \mathcal{N}(\tilde{x}; x, \sigma
 Prove that the denoising score matching loss:
 
 $$
-\mathcal{L}_{\text{DSM}}(\theta) = \frac{1}{2}\mathbb{E}_{x \sim p, \, \epsilon \sim \mathcal{N}(0,I)}\left[\left\|s_\theta(x + \sigma\epsilon) + \frac{\epsilon}{\sigma}\right\|^2\right]
+\mathcal{L}_{\text{DSM}}(\theta) = \frac{1}{2}\mathbb{E}_{x \sim p, \, \epsilon \sim \mathcal{N}(0,I)}\left[\left\Vert s_\theta(x + \sigma\epsilon) + \frac{\epsilon}{\sigma}\right\Vert ^2\right]
 $$
 
 equals the true score matching loss:
 
 $$
-\mathcal{L}_{\text{SM}}(\theta) = \frac{1}{2}\mathbb{E}_{\tilde{x} \sim p_\sigma}\left[\|s_\theta(\tilde{x}) - \nabla_{\tilde{x}} \log p_\sigma(\tilde{x})\|^2\right]
+\mathcal{L}_{\text{SM}}(\theta) = \frac{1}{2}\mathbb{E}_{\tilde{x} \sim p_\sigma}\left[\Vert s_\theta(\tilde{x}) - \nabla_{\tilde{x}} \log p_\sigma(\tilde{x})\Vert ^2\right]
 $$
 
 up to a constant independent of $\theta$.
@@ -136,7 +136,7 @@ with $K = 32$ and $\omega\_k = 2^{k/4}$.
 Train the score network using the denoising score matching loss:
 
 $$
-\mathcal{L} = \mathbb{E}_{\sigma, x_0, \epsilon}\left[\sigma^2 \left\|s_\theta(x_0 + \sigma\epsilon, \sigma) + \frac{\epsilon}{\sigma}\right\|^2\right]
+\mathcal{L} = \mathbb{E}_{\sigma, x_0, \epsilon}\left[\sigma^2 \left\Vert s_\theta(x_0 + \sigma\epsilon, \sigma) + \frac{\epsilon}{\sigma}\right\Vert ^2\right]
 $$
 
 Note the $\sigma^2$ weighting (so the loss is equivalent to $\Vert \epsilon\_\theta - \epsilon\Vert ^2$).

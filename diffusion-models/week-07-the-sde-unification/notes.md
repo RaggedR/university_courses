@@ -318,7 +318,7 @@ ODE solvers can use adaptive step sizes, taking large steps when the dynamics ar
 The training objective generalizes naturally to continuous time:
 
 $$
-\mathcal{L}(\theta) = \mathbb{E}_{t \sim \mathcal{U}(0,T)}\, \mathbb{E}_{x(0) \sim p_0}\, \mathbb{E}_{x(t) \sim q(x(t) \mid x(0))}\!\left[\lambda(t)\, \left\|s_\theta(x(t), t) - \nabla_{x(t)} \log q(x(t) \mid x(0))\right\|^2\right]
+\mathcal{L}(\theta) = \mathbb{E}_{t \sim \mathcal{U}(0,T)}\, \mathbb{E}_{x(0) \sim p_0}\, \mathbb{E}_{x(t) \sim q(x(t) \mid x(0))}\!\left[\lambda(t)\, \left\Vert s_\theta(x(t), t) - \nabla_{x(t)} \log q(x(t) \mid x(0))\right\Vert ^2\right]
 $$
 
 where $\lambda(t)$ is a positive weighting function and $q(x(t) \mid x(0))$ is the transition kernel of the forward SDE (which is Gaussian for both VP and VE).
@@ -448,7 +448,7 @@ These all operate at the level of the score function within the SDE/ODE framewor
 Song et al. (2021) show that the continuous-time ELBO for the VP-SDE is:
 
 $$
-\log p_0(x) \geq \mathbb{E}\!\left[-\frac{1}{2}\int_0^T \beta(t)\left[\|s_\theta(x(t), t)\|^2 + 2\,\nabla \cdot s_\theta(x(t), t) + \|\nabla_{x(t)} \log q(x(t) \mid x(0))\|^2\right] dt\right] + C
+\log p_0(x) \geq \mathbb{E}\!\left[-\frac{1}{2}\int_0^T \beta(t)\left[\Vert s_\theta(x(t), t)\Vert ^2 + 2\,\nabla \cdot s_\theta(x(t), t) + \Vert \nabla_{x(t)} \log q(x(t) \mid x(0))\Vert ^2\right] dt\right] + C
 $$
 
 where $C$ depends on the prior and entropy terms.
@@ -456,7 +456,7 @@ where $C$ depends on the prior and entropy terms.
 This simplifies (after applying denoising score matching and dropping constants) to:
 
 $$
--\text{ELBO} \propto \int_0^T g(t)^2\, \mathbb{E}\!\left[\|s_\theta(x(t), t) - \nabla_{x(t)} \log q(x(t) \mid x(0))\|^2\right] dt
+-\text{ELBO} \propto \int_0^T g(t)^2\, \mathbb{E}\!\left[\Vert s_\theta(x(t), t) - \nabla_{x(t)} \log q(x(t) \mid x(0))\Vert ^2\right] dt
 $$
 
 This is exactly the continuous-time score matching loss with $\lambda(t) = g(t)^2$. Thus, the likelihood-weighted score matching objective *is* the continuous-time ELBO.

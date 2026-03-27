@@ -87,7 +87,7 @@ Implement the `ResBlock` as: GroupNorm -> SiLU -> Conv -> GroupNorm -> SiLU -> C
 Train the VAE on a dataset of 64x64 images (CelebA, CIFAR-10 resized, or LSUN bedrooms resized). Use the following loss:
 
 $$
-\mathcal{L} = \|x - \hat{x}\|_1 + \lambda_{\text{KL}} \cdot D_{\text{KL}}(q(z|x) \| \mathcal{N}(0, I))
+\mathcal{L} = \Vert x - \hat{x}\Vert _1 + \lambda_{\text{KL}} \cdot D_{\text{KL}}(q(z|x) \Vert  \mathcal{N}(0, I))
 $$
 
 Train with three different $\lambda\_{\text{KL}}$ values: $10^{-4}$, $10^{-6}$, $10^{-8}$.
@@ -179,7 +179,7 @@ For the self-attention in the middle block, reshape the 8x8x256 feature map to 6
 Train the U-Net as a DDPM denoiser on MNIST:
 
 $$
-\mathcal{L} = \mathbb{E}_{x_0, \epsilon, t}\left[\|\epsilon - \epsilon_\theta(x_t, t)\|^2\right]
+\mathcal{L} = \mathbb{E}_{x_0, \epsilon, t}\left[\Vert \epsilon - \epsilon_\theta(x_t, t)\Vert ^2\right]
 $$
 
 where $x\_t = \sqrt{\bar{\alpha}\_t}\, x\_0 + \sqrt{1-\bar{\alpha}\_t}\, \epsilon$.

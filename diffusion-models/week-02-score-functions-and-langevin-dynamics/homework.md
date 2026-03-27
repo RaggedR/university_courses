@@ -172,7 +172,7 @@ Implement annealed Langevin dynamics for the well-separated mixture from Part (c
 The denoising score matching objective is:
 
 $$
-J_{\text{DSM}}(\theta) = \frac{1}{2}\mathbb{E}_{x_0 \sim p_{\text{data}}} \mathbb{E}_{\epsilon \sim \mathcal{N}(0,I)}\left[\left\|s_\theta(x_0 + \sigma\epsilon) - \left(-\frac{\epsilon}{\sigma}\right)\right\|^2\right]
+J_{\text{DSM}}(\theta) = \frac{1}{2}\mathbb{E}_{x_0 \sim p_{\text{data}}} \mathbb{E}_{\epsilon \sim \mathcal{N}(0,I)}\left[\left\Vert s_\theta(x_0 + \sigma\epsilon) - \left(-\frac{\epsilon}{\sigma}\right)\right\Vert ^2\right]
 $$
 
 Prove that this is equivalent to the score matching objective (up to a constant) by showing that the optimal $s\_\theta^*$ satisfies $s\_\theta^*(x) = \nabla\_x \log q\_\sigma(x)$, where $q\_\sigma(x) = \int p\_{\text{data}}(x\_0) \mathcal{N}(x; x\_0, \sigma^2 I) dx\_0$.

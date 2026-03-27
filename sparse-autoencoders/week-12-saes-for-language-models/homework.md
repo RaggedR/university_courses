@@ -135,7 +135,7 @@ Compare the results. Does zeroing out the feature change the predictions in a wa
 Compute the KL divergence between the original and ablated output distributions:
 
 $$
-D_{\text{KL}}(p_{\text{orig}} \| p_{\text{ablated}})
+D_{\text{KL}}(p_{\text{orig}} \Vert  p_{\text{ablated}})
 $$
 
 where $p\_{\text{orig}}$ and $p\_{\text{ablated}}$ are the full next-token probability distributions.

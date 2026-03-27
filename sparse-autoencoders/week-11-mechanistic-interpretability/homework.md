@@ -53,7 +53,7 @@ Train the model with Adam (lr $= 10^{-3}$) for 10,000 steps with batch size 256.
 Train **separate models** for each of the following sparsity levels:
 
 $$
-S \in \{1.0, 0.5, 0.1, 0.05, 0.01, 0.003\}
+S \in \lbrace 1.0, 0.5, 0.1, 0.05, 0.01, 0.003\rbrace 
 $$
 
 ### 1e. Visualization: The W Matrix
@@ -75,7 +75,7 @@ Plot $\Vert \mathbf{W}\_{:,i}\Vert ^2$ vs. feature index $i$ for each sparsity l
 For each trained model from Problem 1, compute the **number of features represented**, defined as:
 
 $$
-N_{\text{rep}} = \sum_{i=1}^{n} \|\mathbf{W}_{:,i}\|^2
+N_{\text{rep}} = \sum_{i=1}^{n} \Vert \mathbf{W}_{:,i}\Vert ^2
 $$
 
 This quantity equals $m$ when each bottleneck dimension is "used up" by exactly one feature (no superposition), and exceeds $m$ when features share dimensions (superposition).

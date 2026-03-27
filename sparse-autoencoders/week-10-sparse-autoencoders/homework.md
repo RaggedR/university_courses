@@ -29,7 +29,7 @@ Your `forward` method should return both the reconstruction $\hat{\mathbf{x}}$ a
 Implement the L1-penalized loss:
 
 $$
-\mathcal{L} = \frac{1}{m} \sum_{i=1}^{m} \|\mathbf{x}_i - \hat{\mathbf{x}}_i\|_2^2 + \lambda \frac{1}{m} \sum_{i=1}^{m} \|\mathbf{z}_i\|_1
+\mathcal{L} = \frac{1}{m} \sum_{i=1}^{m} \Vert \mathbf{x}_i - \hat{\mathbf{x}}_i\Vert _2^2 + \lambda \frac{1}{m} \sum_{i=1}^{m} \Vert \mathbf{z}_i\Vert _1
 $$
 
 Use $\lambda = 0.005$ initially.
@@ -112,13 +112,13 @@ Write a paragraph summarizing the differences you observe.
 Starting from the definition of KL divergence for discrete distributions:
 
 $$
-\text{KL}(P \| Q) = \sum_x P(x) \log \frac{P(x)}{Q(x)}
+\text{KL}(P \Vert  Q) = \sum_x P(x) \log \frac{P(x)}{Q(x)}
 $$
 
 derive the formula for the KL divergence between $\text{Bernoulli}(\rho)$ and $\text{Bernoulli}(\hat{\rho})$:
 
 $$
-\text{KL}(\rho \| \hat{\rho}) = \rho \log \frac{\rho}{\hat{\rho}} + (1 - \rho) \log \frac{1 - \rho}{1 - \hat{\rho}}
+\text{KL}(\rho \Vert  \hat{\rho}) = \rho \log \frac{\rho}{\hat{\rho}} + (1 - \rho) \log \frac{1 - \rho}{1 - \hat{\rho}}
 $$
 
 Show each step explicitly.
@@ -154,7 +154,7 @@ Verify that the minimum is at $\hat{\rho} = \rho = 0.05$ and that the gradient c
 Train L1 SAEs (same architecture as Problem 1) with the following values of $\lambda$:
 
 $$
-\lambda \in \{0.0001, 0.0005, 0.001, 0.005, 0.01, 0.05, 0.1\}
+\lambda \in \lbrace 0.0001, 0.0005, 0.001, 0.005, 0.01, 0.05, 0.1\rbrace 
 $$
 
 For each, record:
@@ -253,7 +253,7 @@ Write a comparative analysis (1-2 paragraphs) addressing:
 Prove the following claim: if the SAE loss is
 
 $$
-\mathcal{L} = \|\mathbf{x} - \mathbf{W}_d \mathbf{z}\|_2^2 + \lambda \|\mathbf{z}\|_1
+\mathcal{L} = \Vert \mathbf{x} - \mathbf{W}_d \mathbf{z}\Vert _2^2 + \lambda \Vert \mathbf{z}\Vert _1
 $$
 
 and there is no constraint on $\mathbf{W}\_d$, then for any encoding $\mathbf{z}$ with $\mathbf{z} \neq \mathbf{0}$, we can find $\mathbf{W}\_d'$ and $\mathbf{z}'$ such that:

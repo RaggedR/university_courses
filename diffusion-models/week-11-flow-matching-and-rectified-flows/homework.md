@@ -93,7 +93,7 @@ Consider two interpolation schemes from noise $x\_0$ to data $x\_1$:
 
 2. Which path is straighter? Compute the **path length** for each:
 $$
-L = \int_0^1 \left\|\frac{dx_t}{dt}\right\| dt
+L = \int_0^1 \left\Vert \frac{dx_t}{dt}\right\Vert  dt
 $$
 
 3. Compute the straight-line distance $\Vert x\_1 - x\_0\Vert $ and the **straightness ratio** $\Vert x\_1 - x\_0\Vert  / L$ for each path. A ratio of 1 means perfectly straight.
@@ -124,13 +124,13 @@ This problem walks through the proof that the conditional and marginal flow matc
 Consider the marginal FM loss:
 
 $$
-\mathcal{L}_{\text{FM}} = \mathbb{E}_t \int p_t(x) \|v_\theta(x,t) - u_t(x)\|^2 dx
+\mathcal{L}_{\text{FM}} = \mathbb{E}_t \int p_t(x) \Vert v_\theta(x,t) - u_t(x)\Vert ^2 dx
 $$
 
 and the conditional FM loss:
 
 $$
-\mathcal{L}_{\text{CFM}} = \mathbb{E}_t \int \int p_t(x|x_1) q(x_1) \|v_\theta(x,t) - u_t(x|x_1)\|^2 dx \, dx_1
+\mathcal{L}_{\text{CFM}} = \mathbb{E}_t \int \int p_t(x|x_1) q(x_1) \Vert v_\theta(x,t) - u_t(x|x_1)\Vert ^2 dx \, dx_1
 $$
 
 where $q = p\_{\text{data}}$.
@@ -182,7 +182,7 @@ Train for the same number of steps as the base model.
 For each model (base and reflowed), generate 500 trajectories and compute the **straightness** of each trajectory:
 
 $$
-S = \frac{\|x_1 - x_0\|}{\int_0^1 \|v_\theta(x_t, t)\| dt}
+S = \frac{\Vert x_1 - x_0\Vert }{\int_0^1 \Vert v_\theta(x_t, t)\Vert  dt}
 $$
 
 where $S = 1$ means perfectly straight. Approximate the integral using the Euler steps.

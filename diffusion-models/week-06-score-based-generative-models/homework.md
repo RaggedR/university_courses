@@ -26,7 +26,7 @@ $$
 1. Draw 10000 samples from $p(x)$ above. Train a small MLP $s\_\theta(x)$ to estimate the score via the explicit score matching loss (Hyvarinen, 2005):
 
 $$
-\mathcal{L} = \mathbb{E}_{p(x)}\!\left[\frac{1}{2}\|s_\theta(x)\|^2 + \text{tr}(\nabla_x s_\theta(x))\right]
+\mathcal{L} = \mathbb{E}_{p(x)}\!\left[\frac{1}{2}\Vert s_\theta(x)\Vert ^2 + \text{tr}(\nabla_x s_\theta(x))\right]
 $$
 
 *For a 1D scalar network, $\text{tr}(\nabla\_x s\_\theta(x)) = s\_\theta'(x)$, the derivative with respect to the input. Use `torch.autograd` to compute it.*

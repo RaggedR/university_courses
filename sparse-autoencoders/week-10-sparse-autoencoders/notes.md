@@ -70,7 +70,7 @@ The key visual: the hidden layer is *wider* than the input, but *sparser*. Only 
 ### 1.3 The Loss Function (General Form)
 
 $$
-\mathcal{L} = \underbrace{\|\mathbf{x} - \hat{\mathbf{x}}\|_2^2}_{\text{reconstruction}} + \underbrace{\lambda \cdot \Omega(\mathbf{z})}_{\text{sparsity penalty}}
+\mathcal{L} = \underbrace{\Vert \mathbf{x} - \hat{\mathbf{x}}\Vert _2^2}_{\text{reconstruction}} + \underbrace{\lambda \cdot \Omega(\mathbf{z})}_{\text{sparsity penalty}}
 $$
 
 where $\Omega(\mathbf{z})$ is some function that penalizes non-sparse activations, and $\lambda > 0$ controls the trade-off between faithful reconstruction and sparsity.
@@ -118,7 +118,7 @@ This also connects to what we learned in Week 9 about neural coding in the brain
 The simplest way to encourage sparsity is to add an L1 penalty on the hidden activations:
 
 $$
-\mathcal{L}_{\text{L1}} = \|\mathbf{x} - \hat{\mathbf{x}}\|_2^2 + \lambda \|\mathbf{z}\|_1 = \|\mathbf{x} - \hat{\mathbf{x}}\|_2^2 + \lambda \sum_{j=1}^{d} |z_j|
+\mathcal{L}_{\text{L1}} = \Vert \mathbf{x} - \hat{\mathbf{x}}\Vert _2^2 + \lambda \Vert \mathbf{z}\Vert _1 = \Vert \mathbf{x} - \hat{\mathbf{x}}\Vert _2^2 + \lambda \sum_{j=1}^{d} |z_j|
 $$
 
 We studied L1 regularization extensively in Week 1 (LASSO) and Week 9 (sparse coding). The key property is that L1 drives values exactly to zero, unlike L2 which merely shrinks them. The non-differentiability of the absolute value at zero creates a "dead zone" where the gradient of the penalty can overpower the gradient of the reconstruction loss, forcing the activation to stay at exactly zero.
@@ -130,13 +130,13 @@ We studied L1 regularization extensively in Week 1 (LASSO) and Week 9 (sparse co
 Since $\mathbf{z} = \text{ReLU}(\mathbf{W}\_e \mathbf{x} + \mathbf{b}\_e)$, we have $z\_j \geq 0$ for all $j$. This simplifies the L1 penalty:
 
 $$
-\|\mathbf{z}\|_1 = \sum_j |z_j| = \sum_j z_j \qquad \text{(since } z_j \geq 0 \text{ after ReLU)}
+\Vert \mathbf{z}\Vert _1 = \sum_j |z_j| = \sum_j z_j \qquad \text{(since } z_j \geq 0 \text{ after ReLU)}
 $$
 
 The gradient of the sparsity penalty with respect to the pre-activation $\mathbf{a} = \mathbf{W}\_e \mathbf{x} + \mathbf{b}\_e$ is:
 
 $$
-\frac{\partial (\lambda \|\mathbf{z}\|_1)}{\partial a_j} = \lambda \cdot \frac{\partial z_j}{\partial a_j} = \lambda \cdot \mathbb{1}[a_j > 0]
+\frac{\partial (\lambda \Vert \mathbf{z}\Vert _1)}{\partial a_j} = \lambda \cdot \frac{\partial z_j}{\partial a_j} = \lambda \cdot \mathbb{1}[a_j > 0]
 $$
 
 That is, for every active neuron ($a\_j > 0$), there is a constant penalty gradient of $\lambda$ pushing the activation toward zero. For inactive neurons ($a\_j \leq 0$), the gradient is zero (they are already "sparse").
@@ -144,7 +144,7 @@ That is, for every active neuron ($a\_j > 0$), there is a constant penalty gradi
 For the full loss, the gradient with respect to $a\_j$ combines the reconstruction gradient and the sparsity gradient:
 
 $$
-\frac{\partial \mathcal{L}}{\partial a_j} = \frac{\partial \|\mathbf{x} - \hat{\mathbf{x}}\|_2^2}{\partial a_j} + \lambda \cdot \mathbb{1}[a_j > 0]
+\frac{\partial \mathcal{L}}{\partial a_j} = \frac{\partial \Vert \mathbf{x} - \hat{\mathbf{x}}\Vert _2^2}{\partial a_j} + \lambda \cdot \mathbb{1}[a_j > 0]
 $$
 
 The reconstruction gradient tries to keep neurons active (to reconstruct well); the sparsity gradient tries to turn them off. The balance between these forces, governed by $\lambda$, determines the final sparsity level.
@@ -189,7 +189,7 @@ where the sum is over $m$ training examples (or a minibatch). This measures how 
 **Penalize deviations** using KL divergence between Bernoulli distributions:
 
 $$
-\Omega_{\text{KL}} = \sum_{j=1}^{d} \text{KL}(\text{Bernoulli}(\rho) \| \text{Bernoulli}(\hat{\rho}_j))
+\Omega_{\text{KL}} = \sum_{j=1}^{d} \text{KL}(\text{Bernoulli}(\rho) \Vert  \text{Bernoulli}(\hat{\rho}_j))
 $$
 
 ### 4.2 Deriving the KL Term
@@ -197,7 +197,7 @@ $$
 The KL divergence between two Bernoulli distributions with parameters $\rho$ and $\hat{\rho}$ is:
 
 $$
-\text{KL}(\rho \| \hat{\rho}) = \rho \log \frac{\rho}{\hat{\rho}} + (1 - \rho) \log \frac{1 - \rho}{1 - \hat{\rho}}
+\text{KL}(\rho \Vert  \hat{\rho}) = \rho \log \frac{\rho}{\hat{\rho}} + (1 - \rho) \log \frac{1 - \rho}{1 - \hat{\rho}}
 $$
 
 Let us verify the key properties:
@@ -225,7 +225,7 @@ Let us verify the key properties:
 The full loss becomes:
 
 $$
-\mathcal{L}_{\text{KL}} = \|\mathbf{x} - \hat{\mathbf{x}}\|_2^2 + \beta \sum_{j=1}^{d} \text{KL}(\rho \| \hat{\rho}_j)
+\mathcal{L}_{\text{KL}} = \Vert \mathbf{x} - \hat{\mathbf{x}}\Vert _2^2 + \beta \sum_{j=1}^{d} \text{KL}(\rho \Vert  \hat{\rho}_j)
 $$
 
 where $\beta > 0$ is the sparsity weight (analogous to $\lambda$ in the L1 case).
@@ -235,13 +235,13 @@ where $\beta > 0$ is the sparsity weight (analogous to $\lambda$ in the L1 case)
 The gradient with respect to $\hat{\rho}\_j$ is:
 
 $$
-\frac{\partial \text{KL}(\rho \| \hat{\rho}_j)}{\partial \hat{\rho}_j} = -\frac{\rho}{\hat{\rho}_j} + \frac{1 - \rho}{1 - \hat{\rho}_j}
+\frac{\partial \text{KL}(\rho \Vert  \hat{\rho}_j)}{\partial \hat{\rho}_j} = -\frac{\rho}{\hat{\rho}_j} + \frac{1 - \rho}{1 - \hat{\rho}_j}
 $$
 
 And since $\hat{\rho}\_j = \frac{1}{m} \sum\_i z\_j(\mathbf{x}\_i)$, the gradient with respect to $z\_j(\mathbf{x}\_i)$ is:
 
 $$
-\frac{\partial \text{KL}(\rho \| \hat{\rho}_j)}{\partial z_j(\mathbf{x}_i)} = \frac{1}{m}\left(-\frac{\rho}{\hat{\rho}_j} + \frac{1 - \rho}{1 - \hat{\rho}_j}\right)
+\frac{\partial \text{KL}(\rho \Vert  \hat{\rho}_j)}{\partial z_j(\mathbf{x}_i)} = \frac{1}{m}\left(-\frac{\rho}{\hat{\rho}_j} + \frac{1 - \rho}{1 - \hat{\rho}_j}\right)
 $$
 
 This gradient is negative when $\hat{\rho}\_j < \rho$ (pushing the neuron to be more active) and positive when $\hat{\rho}\_j > \rho$ (pushing it to be less active). The penalty acts like a thermostat, maintaining each neuron's average activation near the target.
@@ -328,7 +328,7 @@ The key hyperparameters for an SAE are:
 
 Consider the L1-penalized loss:
 $$
-\mathcal{L} = \|\mathbf{x} - \mathbf{W}_d \mathbf{z}\|_2^2 + \lambda \|\mathbf{z}\|_1
+\mathcal{L} = \Vert \mathbf{x} - \mathbf{W}_d \mathbf{z}\Vert _2^2 + \lambda \Vert \mathbf{z}\Vert _1
 $$
 
 Suppose the network scales its decoder by a factor $\alpha > 1$ and its encoder by $1/\alpha$:
@@ -345,7 +345,7 @@ By making $\alpha$ arbitrarily large, the network can make the L1 penalty arbitr
 **The solution:** Constrain each column of the decoder to have unit norm:
 
 $$
-\|\mathbf{W}_d[:, j]\|_2 = 1 \quad \text{for all } j
+\Vert \mathbf{W}_d[:, j]\Vert _2 = 1 \quad \text{for all } j
 $$
 
 With this constraint, scaling the decoder by $\alpha$ would violate the norm constraint, so the cheating strategy does not work. The L1 penalty on activations then truly measures the "importance" of each feature.
@@ -353,7 +353,7 @@ With this constraint, scaling the decoder by $\alpha$ would violate the norm con
 **Implementation:** After each gradient step, project each decoder column to unit norm:
 
 $$
-\mathbf{W}_d[:, j] \leftarrow \frac{\mathbf{W}_d[:, j]}{\|\mathbf{W}_d[:, j]\|_2}
+\mathbf{W}_d[:, j] \leftarrow \frac{\mathbf{W}_d[:, j]}{\Vert \mathbf{W}_d[:, j]\Vert _2}
 $$
 
 This is a simple post-gradient-step projection, not a reparameterization. It is cheap and effective.
@@ -369,7 +369,7 @@ An alternative (used in some implementations) is to include the decoder norms in
 Recall from Week 9 that sparse coding solves, for each input $\mathbf{x}$:
 
 $$
-\mathbf{z}^* = \arg\min_{\mathbf{z}} \|\mathbf{x} - \mathbf{D}\mathbf{z}\|_2^2 + \lambda \|\mathbf{z}\|_1
+\mathbf{z}^* = \arg\min_{\mathbf{z}} \Vert \mathbf{x} - \mathbf{D}\mathbf{z}\Vert _2^2 + \lambda \Vert \mathbf{z}\Vert _1
 $$
 
 where $\mathbf{D} \in \mathbb{R}^{n \times d}$ is a dictionary. This is solved iteratively (e.g., by ISTA) for *each input* -- an inner optimization loop nested inside the outer loop that learns $\mathbf{D}$.
@@ -427,14 +427,14 @@ How do we know if an SAE is any good? There is no single metric -- you need to e
 
 **MSE (Mean Squared Error):**
 $$
-\text{MSE} = \frac{1}{m} \sum_{i=1}^{m} \|\mathbf{x}_i - \hat{\mathbf{x}}_i\|_2^2
+\text{MSE} = \frac{1}{m} \sum_{i=1}^{m} \Vert \mathbf{x}_i - \hat{\mathbf{x}}_i\Vert _2^2
 $$
 
 Lower is better. But MSE alone is not sufficient -- an SAE with no sparsity penalty will have the lowest MSE (possibly zero) but useless features.
 
 **Explained Variance:**
 $$
-R^2 = 1 - \frac{\sum_i \|\mathbf{x}_i - \hat{\mathbf{x}}_i\|^2}{\sum_i \|\mathbf{x}_i - \bar{\mathbf{x}}\|^2}
+R^2 = 1 - \frac{\sum_i \Vert \mathbf{x}_i - \hat{\mathbf{x}}_i\Vert ^2}{\sum_i \Vert \mathbf{x}_i - \bar{\mathbf{x}}\Vert ^2}
 $$
 
 Values close to 1 mean the SAE captures most of the variance. This normalizes for the scale of the data.
@@ -452,14 +452,14 @@ where $L\_{\text{zero}}$ is the loss when replacing activations with zeros (the 
 
 **L0 (average number of active features per input):**
 $$
-\text{L0} = \frac{1}{m} \sum_{i=1}^{m} \|\mathbf{z}_i\|_0
+\text{L0} = \frac{1}{m} \sum_{i=1}^{m} \Vert \mathbf{z}_i\Vert _0
 $$
 
 This is the most interpretable sparsity metric. For mechanistic interpretability work, typical targets are L0 in the range of 10-100.
 
 **L1 (average sum of activations):**
 $$
-\text{L1} = \frac{1}{m} \sum_{i=1}^{m} \|\mathbf{z}_i\|_1
+\text{L1} = \frac{1}{m} \sum_{i=1}^{m} \Vert \mathbf{z}_i\Vert _1
 $$
 
 This is what the L1 penalty directly optimizes. It is correlated with L0 but also accounts for activation magnitudes.

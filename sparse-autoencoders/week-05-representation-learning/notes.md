@@ -172,25 +172,25 @@ $$
 ($U\_k U\_k^\top$ is the projection matrix onto the subspace.) The reconstruction error is:
 
 $$
-\mathcal{E} = \frac{1}{N} \sum_{i=1}^N \|\mathbf{x}_i - \hat{\mathbf{x}}_i\|^2 = \frac{1}{N} \sum_i \|\mathbf{x}_i - U_k U_k^\top \mathbf{x}_i\|^2
+\mathcal{E} = \frac{1}{N} \sum_{i=1}^N \Vert \mathbf{x}_i - \hat{\mathbf{x}}_i\Vert ^2 = \frac{1}{N} \sum_i \Vert \mathbf{x}_i - U_k U_k^\top \mathbf{x}_i\Vert ^2
 $$
 
 **To minimize this**, decompose the error using the Pythagorean theorem (since projection is orthogonal):
 
 $$
-\|\mathbf{x}_i\|^2 = \|U_k U_k^\top \mathbf{x}_i\|^2 + \|\mathbf{x}_i - U_k U_k^\top \mathbf{x}_i\|^2
+\Vert \mathbf{x}_i\Vert ^2 = \Vert U_k U_k^\top \mathbf{x}_i\Vert ^2 + \Vert \mathbf{x}_i - U_k U_k^\top \mathbf{x}_i\Vert ^2
 $$
 
 Summing over data and rearranging:
 
 $$
-\mathcal{E} = \frac{1}{N}\sum_i \|\mathbf{x}_i\|^2 - \frac{1}{N}\sum_i \|U_k U_k^\top \mathbf{x}_i\|^2
+\mathcal{E} = \frac{1}{N}\sum_i \Vert \mathbf{x}_i\Vert ^2 - \frac{1}{N}\sum_i \Vert U_k U_k^\top \mathbf{x}_i\Vert ^2
 $$
 
 The first term is constant (total data variance). So minimizing reconstruction error is equivalent to **maximizing the variance captured by the projection** — which is:
 
 $$
-\frac{1}{N}\sum_i \|U_k^\top \mathbf{x}_i\|^2 = \text{tr}(U_k^\top C \, U_k) = \sum_{j=1}^k \lambda_j
+\frac{1}{N}\sum_i \Vert U_k^\top \mathbf{x}_i\Vert ^2 = \text{tr}(U_k^\top C \, U_k) = \sum_{j=1}^k \lambda_j
 $$
 
 This is maximized by choosing the top-$k$ eigenvectors, the same solution as before.
@@ -272,7 +272,7 @@ Consider a neural network with one hidden layer, **no activation functions** (pu
 The loss is mean squared reconstruction error:
 
 $$
-\mathcal{L} = \frac{1}{N}\sum_{i=1}^N \|\mathbf{x}_i - W_d W_e \mathbf{x}_i\|^2
+\mathcal{L} = \frac{1}{N}\sum_{i=1}^N \Vert \mathbf{x}_i - W_d W_e \mathbf{x}_i\Vert ^2
 $$
 
 Note that $W\_d W\_e$ is a $d \times d$ matrix of rank at most $k$ (since $W\_e$ maps to $k$ dimensions). So the autoencoder is finding the rank-$k$ linear map that best reconstructs the data.
@@ -292,13 +292,13 @@ In other words: **the optimal linear autoencoder is PCA**.
 The reconstruction error is:
 
 $$
-\mathcal{L} = \frac{1}{N}\sum_i \|\mathbf{x}_i - M\mathbf{x}_i\|^2
+\mathcal{L} = \frac{1}{N}\sum_i \Vert \mathbf{x}_i - M\mathbf{x}_i\Vert ^2
 $$
 
 where $M = W\_d W\_e$ has rank $\leq k$. This is minimized by the rank-$k$ matrix $M^*$ that best approximates the identity in the Frobenius norm on the data:
 
 $$
-M^* = \arg\min_{\text{rank}(M) \leq k} \frac{1}{N}\sum_i \|(\mathbf{I} - M)\mathbf{x}_i\|^2
+M^* = \arg\min_{\text{rank}(M) \leq k} \frac{1}{N}\sum_i \Vert (\mathbf{I} - M)\mathbf{x}_i\Vert ^2
 $$
 
 By the Eckart-Young-Mirsky theorem (which we met in Week 1 as the connection between SVD and best low-rank approximation), the optimal $M^*$ is the projection onto the top $k$ principal components of the data — i.e., $M^* = U\_k U\_k^\top$.

@@ -24,7 +24,7 @@ The full autoencoder computes: $\hat{\mathbf{x}} = g\_\phi(f\_\theta(\mathbf{x})
 The training objective is to minimize the **reconstruction error**:
 
 $$
-\mathcal{L}(\theta, \phi) = \frac{1}{N}\sum_{i=1}^N \|\mathbf{x}_i - g_\phi(f_\theta(\mathbf{x}_i))\|^2
+\mathcal{L}(\theta, \phi) = \frac{1}{N}\sum_{i=1}^N \Vert \mathbf{x}_i - g_\phi(f_\theta(\mathbf{x}_i))\Vert ^2
 $$
 
 That is it. No labels, no external supervision. The data is its own target. The only thing forcing the autoencoder to learn anything interesting is the **bottleneck** — the latent representation has fewer dimensions than the input.
@@ -102,7 +102,7 @@ The optimal bottleneck size depends on the intrinsic dimensionality of the data 
 The standard loss function is **mean squared error (MSE)**:
 
 $$
-\mathcal{L}_{\text{MSE}} = \frac{1}{N}\sum_{i=1}^N \|\mathbf{x}_i - \hat{\mathbf{x}}_i\|^2 = \frac{1}{N}\sum_{i=1}^N \sum_{j=1}^d (x_{ij} - \hat{x}_{ij})^2
+\mathcal{L}_{\text{MSE}} = \frac{1}{N}\sum_{i=1}^N \Vert \mathbf{x}_i - \hat{\mathbf{x}}_i\Vert ^2 = \frac{1}{N}\sum_{i=1}^N \sum_{j=1}^d (x_{ij} - \hat{x}_{ij})^2
 $$
 
 For binary or normalized-to-$[0,1]$ inputs (like MNIST pixel values), **binary cross-entropy (BCE)** is often a better choice:
@@ -435,7 +435,7 @@ For nonlinear overcomplete autoencoders, the identity function is not the only s
 The overcomplete case is not inherently useless — it just requires *additional constraints* beyond reconstruction error. If we want an overcomplete autoencoder to learn a meaningful representation, we must add a regularization term to the loss:
 
 $$
-\mathcal{L} = \underbrace{\|\mathbf{x} - \hat{\mathbf{x}}\|^2}_{\text{reconstruction}} + \lambda \cdot \underbrace{R(\mathbf{z})}_{\text{regularization}}
+\mathcal{L} = \underbrace{\Vert \mathbf{x} - \hat{\mathbf{x}}\Vert ^2}_{\text{reconstruction}} + \lambda \cdot \underbrace{R(\mathbf{z})}_{\text{regularization}}
 $$
 
 Different choices of $R(\mathbf{z})$ give different autoencoder variants:

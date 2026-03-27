@@ -47,7 +47,7 @@ The maximum learning rate that guarantees descent is $\eta = \frac{1}{L}$.
 Justification: For an $L$-smooth function, we have the descent lemma:
 
 $$
-f(\mathbf{w} - \eta \nabla f(\mathbf{w})) \leq f(\mathbf{w}) - \eta(1 - \frac{L\eta}{2}) \|\nabla f(\mathbf{w})\|^2
+f(\mathbf{w} - \eta \nabla f(\mathbf{w})) \leq f(\mathbf{w}) - \eta(1 - \frac{L\eta}{2}) \Vert \nabla f(\mathbf{w})\Vert ^2
 $$
 
 For this to guarantee descent, we need $1 - \frac{L\eta}{2} > 0$, i.e., $\eta < \frac{2}{L}$. The optimal fixed step size (maximizing the guaranteed decrease) is $\eta = \frac{1}{L}$, which gives a guaranteed decrease of $\frac{1}{2L}\Vert \nabla f(\mathbf{w})\Vert ^2$ per step.
@@ -67,7 +67,7 @@ Adam divides each parameter's gradient by $\sqrt{v\_t}$, effectively normalizing
 The KL divergence between continuous distributions $p$ and $q$ is:
 
 $$
-D_{\text{KL}}(p \| q) = \int p(x) \log \frac{p(x)}{q(x)} \, dx
+D_{\text{KL}}(p \Vert  q) = \int p(x) \log \frac{p(x)}{q(x)} \, dx
 $$
 
 Two properties:
@@ -83,7 +83,7 @@ The empirical distribution is $\hat{p}\_{\text{data}}(x) = \frac{1}{n}\sum\_{i=1
 The KL divergence from $\hat{p}\_{\text{data}}$ to $p\_\theta$ is:
 
 $$
-D_{\text{KL}}(\hat{p}_{\text{data}} \| p_\theta) = \int \hat{p}_{\text{data}}(x) \log \frac{\hat{p}_{\text{data}}(x)}{p_\theta(x)} \, dx
+D_{\text{KL}}(\hat{p}_{\text{data}} \Vert  p_\theta) = \int \hat{p}_{\text{data}}(x) \log \frac{\hat{p}_{\text{data}}(x)}{p_\theta(x)} \, dx
 $$
 
 $$
@@ -99,7 +99,7 @@ The first term $-H(\hat{p}\_{\text{data}})$ is the negative entropy of the empir
 Therefore:
 
 $$
-\arg\min_\theta D_{\text{KL}}(\hat{p}_{\text{data}} \| p_\theta) = \arg\max_\theta \mathbb{E}_{\hat{p}_{\text{data}}}[\log p_\theta(x)]
+\arg\min_\theta D_{\text{KL}}(\hat{p}_{\text{data}} \Vert  p_\theta) = \arg\max_\theta \mathbb{E}_{\hat{p}_{\text{data}}}[\log p_\theta(x)]
 $$
 
 $$
@@ -119,7 +119,7 @@ This is exactly the maximum likelihood objective (up to the constant $\frac{1}{n
 The reconstruction loss is:
 
 $$
-\mathcal{L} = \mathbb{E}[\|\mathbf{x} - \mathbf{W}_d \mathbf{W}_e \mathbf{x}\|^2] = \text{tr}\left((\mathbf{I} - \mathbf{W}_d \mathbf{W}_e)^\top (\mathbf{I} - \mathbf{W}_d \mathbf{W}_e) \mathbf{C}\right)
+\mathcal{L} = \mathbb{E}[\Vert \mathbf{x} - \mathbf{W}_d \mathbf{W}_e \mathbf{x}\Vert ^2] = \text{tr}\left((\mathbf{I} - \mathbf{W}_d \mathbf{W}_e)^\top (\mathbf{I} - \mathbf{W}_d \mathbf{W}_e) \mathbf{C}\right)
 $$
 
 Let $\mathbf{P} = \mathbf{W}\_d \mathbf{W}\_e$. The loss is $\mathbb{E}[\Vert (\mathbf{I} - \mathbf{P})\mathbf{x}\Vert ^2] = \text{tr}((\mathbf{I} - \mathbf{P})^\top(\mathbf{I} - \mathbf{P}) \mathbf{C})$.
@@ -185,7 +185,7 @@ $$
 $$
 
 $$
-= \mathbb{E}_{q_\phi(\mathbf{z}|\mathbf{x})}[\log p_\theta(\mathbf{x}|\mathbf{z})] - D_{\text{KL}}(q_\phi(\mathbf{z}|\mathbf{x}) \| p(\mathbf{z}))
+= \mathbb{E}_{q_\phi(\mathbf{z}|\mathbf{x})}[\log p_\theta(\mathbf{x}|\mathbf{z})] - D_{\text{KL}}(q_\phi(\mathbf{z}|\mathbf{x}) \Vert  p(\mathbf{z}))
 $$
 
 This is the ELBO. $\square$
@@ -219,7 +219,7 @@ The tradeoff: $\beta$ controls the balance between reconstruction fidelity and l
 With $\mathbf{D} = \mathbf{I}$, the LASSO objective becomes:
 
 $$
-\min_{\mathbf{z}} \frac{1}{2}\|\mathbf{x} - \mathbf{z}\|_2^2 + \lambda \|\mathbf{z}\|_1
+\min_{\mathbf{z}} \frac{1}{2}\Vert \mathbf{x} - \mathbf{z}\Vert _2^2 + \lambda \Vert \mathbf{z}\Vert _1
 $$
 
 This separates into independent scalar problems for each $i$:

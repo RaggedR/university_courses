@@ -153,7 +153,7 @@ Let's unpack the exponent. The quantity $(\mathbf{x} - \boldsymbol{\mu})^T \Sigm
 **Concrete example in $\mathbb{R}^2$:**
 
 $$
-\boldsymbol{\mu} = \begin{pmatrix} 1 \\ 2 \end{pmatrix}, \quad \Sigma = \begin{pmatrix} 4 & 1.5 \\ 1.5 & 1 \end{pmatrix}
+\boldsymbol{\mu} = \begin{pmatrix} 1 \\\\ 2 \end{pmatrix}, \quad \Sigma = \begin{pmatrix} 4 & 1.5 \\\\ 1.5 & 1 \end{pmatrix}
 $$
 
 The eigenvalues of $\Sigma$ are approximately $\lambda\_1 \approx 4.37$ and $\lambda\_2 \approx 0.63$. The corresponding eigenvectors point roughly along the directions $(0.97, 0.24)$ and $(-0.24, 0.97)$. This means the distribution is stretched along a direction close to the $x$-axis (high variance) and compressed nearly along the $y$-axis (low variance). The contours of constant probability are tilted ellipses.
@@ -412,7 +412,7 @@ Cross-entropy measures the average number of nats needed to encode samples from 
 The **Kullback-Leibler divergence** from $q$ to $p$ (or "KL divergence of $q$ from $p$") is:
 
 $$
-D_{\text{KL}}(p \| q) = \sum_x p(x) \log \frac{p(x)}{q(x)} = \mathbb{E}_{x \sim p}\left[\log \frac{p(x)}{q(x)}\right]
+D_{\text{KL}}(p \Vert  q) = \sum_x p(x) \log \frac{p(x)}{q(x)} = \mathbb{E}_{x \sim p}\left[\log \frac{p(x)}{q(x)}\right]
 $$
 
 Equivalently: $D\_{\text{KL}}(p \Vert  q) = H(p, q) - H(p)$. It's the "extra cost" of using $q$ instead of $p$.
@@ -426,7 +426,7 @@ Equivalently: $D\_{\text{KL}}(p \Vert  q) = H(p, q) - H(p)$. It's the "extra cos
 **The non-negativity proof** is elegant and worth knowing:
 
 $$
-D_{\text{KL}}(p \| q) = -\mathbb{E}_p\left[\log\frac{q(x)}{p(x)}\right] \geq -\log\mathbb{E}_p\left[\frac{q(x)}{p(x)}\right] = -\log\sum_x p(x)\frac{q(x)}{p(x)} = -\log\sum_x q(x) = -\log 1 = 0
+D_{\text{KL}}(p \Vert  q) = -\mathbb{E}_p\left[\log\frac{q(x)}{p(x)}\right] \geq -\log\mathbb{E}_p\left[\frac{q(x)}{p(x)}\right] = -\log\sum_x p(x)\frac{q(x)}{p(x)} = -\log\sum_x q(x) = -\log 1 = 0
 $$
 
 The inequality is Jensen's inequality applied to the concave function $\log$. Equality holds iff $q(x)/p(x)$ is constant, i.e., $p = q$.
@@ -446,19 +446,19 @@ Despite not being a distance, KL divergence is the workhorse of probabilistic ma
 A result we'll use repeatedly. For two univariate Gaussians $p = \mathcal{N}(\mu\_1, \sigma\_1^2)$ and $q = \mathcal{N}(\mu\_2, \sigma\_2^2)$:
 
 $$
-D_{\text{KL}}(p \| q) = \log\frac{\sigma_2}{\sigma_1} + \frac{\sigma_1^2 + (\mu_1 - \mu_2)^2}{2\sigma_2^2} - \frac{1}{2}
+D_{\text{KL}}(p \Vert  q) = \log\frac{\sigma_2}{\sigma_1} + \frac{\sigma_1^2 + (\mu_1 - \mu_2)^2}{2\sigma_2^2} - \frac{1}{2}
 $$
 
 For multivariate Gaussians $p = \mathcal{N}(\boldsymbol{\mu}\_1, \Sigma\_1)$ and $q = \mathcal{N}(\boldsymbol{\mu}\_2, \Sigma\_2)$:
 
 $$
-D_{\text{KL}}(p \| q) = \frac{1}{2}\left[\log\frac{|\Sigma_2|}{|\Sigma_1|} - d + \text{tr}(\Sigma_2^{-1}\Sigma_1) + (\boldsymbol{\mu}_2 - \boldsymbol{\mu}_1)^T\Sigma_2^{-1}(\boldsymbol{\mu}_2 - \boldsymbol{\mu}_1)\right]
+D_{\text{KL}}(p \Vert  q) = \frac{1}{2}\left[\log\frac{|\Sigma_2|}{|\Sigma_1|} - d + \text{tr}(\Sigma_2^{-1}\Sigma_1) + (\boldsymbol{\mu}_2 - \boldsymbol{\mu}_1)^T\Sigma_2^{-1}(\boldsymbol{\mu}_2 - \boldsymbol{\mu}_1)\right]
 $$
 
 When $q = \mathcal{N}(\mathbf{0}, I)$ (the standard normal), this simplifies beautifully:
 
 $$
-D_{\text{KL}}(\mathcal{N}(\boldsymbol{\mu}, \Sigma) \| \mathcal{N}(\mathbf{0}, I)) = \frac{1}{2}\left[-\log|\Sigma| - d + \text{tr}(\Sigma) + \boldsymbol{\mu}^T\boldsymbol{\mu}\right]
+D_{\text{KL}}(\mathcal{N}(\boldsymbol{\mu}, \Sigma) \Vert  \mathcal{N}(\mathbf{0}, I)) = \frac{1}{2}\left[-\log|\Sigma| - d + \text{tr}(\Sigma) + \boldsymbol{\mu}^T\boldsymbol{\mu}\right]
 $$
 
 For diagonal $\Sigma = \text{diag}(\sigma\_1^2, \ldots, \sigma\_d^2)$, this becomes:
@@ -474,7 +474,7 @@ This exact formula appears in the VAE loss function (Week 8). Memorize it — or
 The **mutual information** between $X$ and $Y$ is:
 
 $$
-I(X; Y) = D_{\text{KL}}(p(x, y) \| p(x)p(y)) = \sum_{x,y} p(x,y) \log \frac{p(x,y)}{p(x)p(y)}
+I(X; Y) = D_{\text{KL}}(p(x, y) \Vert  p(x)p(y)) = \sum_{x,y} p(x,y) \log \frac{p(x,y)}{p(x)p(y)}
 $$
 
 Equivalently: $I(X; Y) = H(X) - H(X|Y) = H(Y) - H(Y|X) = H(X) + H(Y) - H(X, Y)$. Mutual information measures how much knowing one variable tells you about the other. It's zero iff $X$ and $Y$ are independent.
@@ -488,7 +488,7 @@ Unlike correlation, mutual information captures *any* kind of dependency — not
 These three quantities are tightly linked:
 
 $$
-H(p, q) = H(p) + D_{\text{KL}}(p \| q)
+H(p, q) = H(p) + D_{\text{KL}}(p \Vert  q)
 $$
 
 Since $H(p)$ is fixed (it depends only on the true distribution, not on our model), minimizing cross-entropy $H(p, q)$ over $q$ is equivalent to minimizing $D\_{\text{KL}}(p \Vert  q)$ over $q$. This is why cross-entropy and KL divergence are nearly interchangeable as loss functions.
@@ -525,7 +525,7 @@ $I(X;Y)$ is the overlap between $H(X)$ and $H(Y)$. The joint entropy $H(X,Y) = H
 When we train a model with maximum likelihood, we're solving:
 
 $$
-\hat{\theta} = \arg\min_\theta D_{\text{KL}}(p_{\text{data}} \| p_\theta)
+\hat{\theta} = \arg\min_\theta D_{\text{KL}}(p_{\text{data}} \Vert  p_\theta)
 $$
 
 where $p\_{\text{data}}$ is the empirical distribution of the training data and $p\_\theta$ is the model distribution. This is equivalent to minimizing cross-entropy, which is equivalent to minimizing negative log-likelihood.
@@ -556,13 +556,13 @@ This is a beautiful connection: the geometry of the $L\_1$ ball from Week 1 has 
 In many models (including VAEs), the posterior $p(\theta | \mathbf{x})$ is intractable — we can't compute it exactly because the marginal likelihood $p(\mathbf{x}) = \int p(\mathbf{x}|\theta)p(\theta)d\theta$ involves an intractable integral. **Variational inference** approximates the posterior with a simpler distribution $q(\theta)$ by minimizing:
 
 $$
-D_{\text{KL}}(q(\theta) \| p(\theta | \mathbf{x}))
+D_{\text{KL}}(q(\theta) \Vert  p(\theta | \mathbf{x}))
 $$
 
 This KL divergence is also intractable (it involves the posterior we can't compute). But through algebraic manipulation, we can derive a tractable lower bound on the log-likelihood — the **ELBO (Evidence Lower Bound)**:
 
 $$
-\log p(\mathbf{x}) \geq \mathbb{E}_{q(\theta)}[\log p(\mathbf{x} | \theta)] - D_{\text{KL}}(q(\theta) \| p(\theta))
+\log p(\mathbf{x}) \geq \mathbb{E}_{q(\theta)}[\log p(\mathbf{x} | \theta)] - D_{\text{KL}}(q(\theta) \Vert  p(\theta))
 $$
 
 We'll derive this properly in Week 8 when we study VAEs. For now, just note the structure: it's a **reconstruction term** (how well the model explains the data) minus a **KL term** (how much the approximate posterior deviates from the prior). This trade-off between reconstruction and regularization is the fundamental tension in autoencoder design.
@@ -574,7 +574,7 @@ Here's a preview of Week 10. In a sparse autoencoder, we want each hidden neuron
 We can penalize non-sparse activations using the KL divergence between two Bernoulli distributions:
 
 $$
-\sum_j D_{\text{KL}}(\text{Bernoulli}(\rho) \| \text{Bernoulli}(\hat{\rho}_j))
+\sum_j D_{\text{KL}}(\text{Bernoulli}(\rho) \Vert  \text{Bernoulli}(\hat{\rho}_j))
 $$
 
 $$

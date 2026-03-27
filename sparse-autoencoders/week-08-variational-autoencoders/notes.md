@@ -1,3 +1,7 @@
+---
+title: "Week 8: Variational Autoencoders"
+---
+
 # Week 8: Variational Autoencoders
 
 > *"God does not play dice with the universe."* -- Albert Einstein

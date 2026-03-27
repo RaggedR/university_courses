@@ -1,3 +1,7 @@
+---
+title: "Week 6: Score-Based Generative Models -- Homework"
+---
+
 # Week 6: Score-Based Generative Models -- Homework
 
 **Estimated time:** 12-15 hours

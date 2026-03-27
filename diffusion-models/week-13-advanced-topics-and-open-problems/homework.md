@@ -1,3 +1,7 @@
+---
+title: "Week 13: Advanced Topics and Open Problems -- Homework"
+---
+
 # Week 13: Advanced Topics and Open Problems -- Homework
 
 **Estimated time:** 12-15 hours

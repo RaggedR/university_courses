@@ -1,3 +1,7 @@
+---
+title: "Week 12: SAEs for Language Models"
+---
+
 # Week 12: SAEs for Language Models
 
 ## From toy models to the real thing.

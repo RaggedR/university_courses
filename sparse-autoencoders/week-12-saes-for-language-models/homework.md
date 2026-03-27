@@ -1,3 +1,7 @@
+---
+title: "Week 12: SAEs for Language Models -- Homework"
+---
+
 # Week 12: SAEs for Language Models -- Homework
 
 ## Overview

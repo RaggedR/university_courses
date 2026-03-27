@@ -1,3 +1,7 @@
+---
+title: "CS 372: Diffusion Models — Final Exam"
+---
+
 # CS 372: Diffusion Models — Final Exam
 
 **Duration:** 3 hours

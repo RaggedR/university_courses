@@ -1,3 +1,7 @@
+---
+title: "Week 6: The Autoencoder"
+---
+
 # Week 6: The Autoencoder
 
 ## Overview

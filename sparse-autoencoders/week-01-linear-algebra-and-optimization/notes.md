@@ -1,3 +1,7 @@
+---
+title: "Week 1: Linear Algebra and Optimization"
+---
+
 # Week 1: Linear Algebra and Optimization
 
 > *"The introduction of numbers as coordinates is an act of violence."*

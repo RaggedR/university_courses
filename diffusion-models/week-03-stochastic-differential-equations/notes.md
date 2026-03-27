@@ -1,3 +1,7 @@
+---
+title: "Week 3: Stochastic Differential Equations"
+---
+
 # Week 3: Stochastic Differential Equations
 
 > *"God does not play dice with the universe -- He plays a continuous-time stochastic process."*

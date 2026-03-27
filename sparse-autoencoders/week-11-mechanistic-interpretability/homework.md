@@ -1,3 +1,7 @@
+---
+title: "Week 11: Mechanistic Interpretability -- Homework"
+---
+
 # Week 11: Mechanistic Interpretability -- Homework
 
 ## Overview

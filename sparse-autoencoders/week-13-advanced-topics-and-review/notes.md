@@ -1,3 +1,7 @@
+---
+title: "Week 13: Advanced SAE Architectures & Open Problems"
+---
+
 # Week 13: Advanced SAE Architectures & Open Problems
 
 ## Overview

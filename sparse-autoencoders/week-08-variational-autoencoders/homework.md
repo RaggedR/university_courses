@@ -1,3 +1,7 @@
+---
+title: "Week 8: Variational Autoencoders -- Homework"
+---
+
 # Week 8: Variational Autoencoders -- Homework
 
 **Estimated time:** 10-12 hours

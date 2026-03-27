@@ -1,3 +1,7 @@
+---
+title: "Week 12: Distillation and Fast Generation -- Homework"
+---
+
 # Week 12: Distillation and Fast Generation -- Homework
 
 **Estimated time:** 12-15 hours

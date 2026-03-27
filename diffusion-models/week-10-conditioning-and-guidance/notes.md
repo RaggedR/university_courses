@@ -1,3 +1,7 @@
+---
+title: "Week 10: Conditioning and Guidance"
+---
+
 # Week 10: Conditioning and Guidance
 
 > *"The question is not whether machines can think, but whether we can tell them what to think about."*

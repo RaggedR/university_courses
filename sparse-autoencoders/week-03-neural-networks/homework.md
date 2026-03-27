@@ -1,3 +1,7 @@
+---
+title: "Week 3: Homework — Neural Networks from First Principles"
+---
+
 # Week 3: Homework — Neural Networks from First Principles
 
 **Instructions:** This problem set has 7 problems mixing theory (pen-and-paper proofs and derivations) and implementation (Python/NumPy and PyTorch). Problems 3 and 4 are substantial implementation exercises — start early. Show your work for theoretical problems.

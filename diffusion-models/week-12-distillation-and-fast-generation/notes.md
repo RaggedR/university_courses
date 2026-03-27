@@ -1,3 +1,7 @@
+---
+title: "Week 12: Distillation and Fast Generation"
+---
+
 # Week 12: Distillation and Fast Generation
 
 > *"Perfection is achieved, not when there is nothing more to add, but when there is nothing left to take away."*

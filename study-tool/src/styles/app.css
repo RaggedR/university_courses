@@ -1,0 +1,503 @@
+:root {
+  --app-bg: #fff;
+  --app-surface: #f8f9fa;
+  --app-border: #e2e8f0;
+  --app-text: #1a202c;
+  --app-text-muted: #64748b;
+  --app-accent: #4f46e5;
+  --app-accent-hover: #4338ca;
+  --app-success: #22c55e;
+  --app-danger: #ef4444;
+  --app-danger-hover: #dc2626;
+  --app-code-bg: #f1f5f9;
+
+  /* Map Starlight vars so components.css works on app pages too */
+  --sl-color-white: #1a202c;
+  --sl-color-black: #fff;
+  --sl-color-gray-2: #374151;
+  --sl-color-gray-3: #64748b;
+  --sl-color-gray-5: #e2e8f0;
+  --sl-color-gray-6: #f8f9fa;
+  --sl-color-gray-7: #fff;
+  --sl-color-accent: #4f46e5;
+  --sl-color-accent-low: rgba(79, 70, 229, 0.1);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --app-bg: #0f172a;
+    --app-surface: #1e293b;
+    --app-border: #334155;
+    --app-text: #e2e8f0;
+    --app-text-muted: #94a3b8;
+    --app-accent: #818cf8;
+    --app-accent-hover: #6366f1;
+    --app-code-bg: #1e293b;
+
+    --sl-color-white: #e2e8f0;
+    --sl-color-black: #0f172a;
+    --sl-color-gray-2: #cbd5e1;
+    --sl-color-gray-3: #94a3b8;
+    --sl-color-gray-5: #334155;
+    --sl-color-gray-6: #1e293b;
+    --sl-color-gray-7: #0f172a;
+    --sl-color-accent: #818cf8;
+    --sl-color-accent-low: rgba(129, 140, 248, 0.1);
+  }
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+  background: var(--app-bg);
+  color: var(--app-text);
+  line-height: 1.6;
+}
+
+/* ── Nav ──────────────────────────────────── */
+
+.app-nav {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  padding: 0.75rem 2rem;
+  border-bottom: 1px solid var(--app-border);
+  background: var(--app-surface);
+}
+
+.app-nav-brand {
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: var(--app-accent);
+  text-decoration: none;
+}
+
+.app-nav a {
+  color: var(--app-text-muted);
+  text-decoration: none;
+  font-size: 0.9rem;
+}
+
+.app-nav a:hover, .app-nav a.active {
+  color: var(--app-accent);
+}
+
+.app-main {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+/* ── Upload Page ──────────────────────────── */
+
+.upload-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  min-height: 60vh;
+}
+
+@media (max-width: 768px) {
+  .upload-layout { grid-template-columns: 1fr; }
+}
+
+.upload-panel, .preview-panel {
+  display: flex;
+  flex-direction: column;
+}
+
+.upload-panel h2, .preview-panel h2 {
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+  color: var(--app-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.title-input {
+  width: 100%;
+  padding: 0.6rem 0.75rem;
+  border: 1px solid var(--app-border);
+  border-radius: 8px;
+  background: var(--app-surface);
+  color: var(--app-text);
+  font-size: 1rem;
+  margin-bottom: 0.75rem;
+}
+
+.title-input:focus, .md-editor:focus {
+  outline: none;
+  border-color: var(--app-accent);
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.15);
+}
+
+.md-editor {
+  flex: 1;
+  min-height: 400px;
+  padding: 0.75rem;
+  border: 1px solid var(--app-border);
+  border-radius: 8px;
+  background: var(--app-surface);
+  color: var(--app-text);
+  font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+  font-size: 0.9rem;
+  line-height: 1.6;
+  resize: vertical;
+  tab-size: 2;
+}
+
+.preview-box {
+  flex: 1;
+  min-height: 400px;
+  padding: 1rem;
+  border: 1px solid var(--app-border);
+  border-radius: 8px;
+  overflow-y: auto;
+}
+
+.file-upload-row {
+  display: flex;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+  align-items: center;
+}
+
+.file-input-label {
+  padding: 0.5rem 1rem;
+  background: var(--app-surface);
+  border: 1px solid var(--app-border);
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  color: var(--app-text-muted);
+  transition: border-color 0.15s;
+}
+
+.file-input-label:hover {
+  border-color: var(--app-accent);
+}
+
+.file-input-label input {
+  display: none;
+}
+
+.url-fetch-row {
+  display: flex;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+  align-items: center;
+}
+
+.upload-actions {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+/* ── Buttons ──────────────────────────────── */
+
+.btn {
+  padding: 0.55rem 1.2rem;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.15s, opacity 0.15s;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.btn:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.btn-primary {
+  background: var(--app-accent);
+  color: #fff;
+}
+
+.btn-primary:hover:not(:disabled) {
+  background: var(--app-accent-hover);
+}
+
+.btn-secondary {
+  background: var(--app-surface);
+  color: var(--app-text);
+  border: 1px solid var(--app-border);
+}
+
+.btn-secondary:hover:not(:disabled) {
+  border-color: var(--app-accent);
+}
+
+.btn-danger {
+  background: transparent;
+  color: var(--app-danger);
+  border: 1px solid var(--app-danger);
+}
+
+.btn-danger:hover:not(:disabled) {
+  background: var(--app-danger);
+  color: #fff;
+}
+
+.btn-sm {
+  padding: 0.35rem 0.75rem;
+  font-size: 0.8rem;
+}
+
+/* ── Notes List ───────────────────────────── */
+
+.notes-empty {
+  text-align: center;
+  padding: 3rem;
+  color: var(--app-text-muted);
+}
+
+.notes-grid {
+  display: grid;
+  gap: 1rem;
+}
+
+.note-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.25rem;
+  border: 1px solid var(--app-border);
+  border-radius: 10px;
+  background: var(--app-surface);
+  cursor: pointer;
+  transition: border-color 0.15s;
+}
+
+.note-card:hover {
+  border-color: var(--app-accent);
+}
+
+.note-card-info h3 {
+  font-size: 1rem;
+  margin-bottom: 0.2rem;
+}
+
+.note-card-meta {
+  font-size: 0.8rem;
+  color: var(--app-text-muted);
+  display: flex;
+  gap: 1rem;
+}
+
+.note-card-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+/* ── Note Viewer ──────────────────────────── */
+
+.note-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1.5rem;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.note-header h1 {
+  font-size: 1.5rem;
+}
+
+.note-header-actions {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.note-content {
+  margin-bottom: 2rem;
+}
+
+/* ── Card Creator ─────────────────────────── */
+
+.creator-section {
+  margin-top: 2rem;
+  padding: 1.25rem;
+  border: 1px solid var(--app-border);
+  border-radius: 10px;
+  background: var(--app-surface);
+}
+
+.creator-section h3 {
+  font-size: 1rem;
+  margin-bottom: 1rem;
+}
+
+.creator-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  margin-bottom: 1rem;
+}
+
+.creator-form textarea,
+.creator-form input[type="text"] {
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--app-border);
+  border-radius: 6px;
+  background: var(--app-bg);
+  color: var(--app-text);
+  font-size: 0.9rem;
+  font-family: inherit;
+}
+
+.creator-form textarea {
+  min-height: 60px;
+  resize: vertical;
+}
+
+.creator-form textarea:focus,
+.creator-form input:focus {
+  outline: none;
+  border-color: var(--app-accent);
+}
+
+.creator-form label {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--app-text-muted);
+}
+
+.options-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.5rem;
+}
+
+@media (max-width: 600px) {
+  .options-grid { grid-template-columns: 1fr; }
+}
+
+.option-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.option-row input[type="radio"] {
+  accent-color: var(--app-accent);
+}
+
+.existing-cards {
+  margin-top: 1rem;
+}
+
+.existing-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 0.6rem 0.75rem;
+  border: 1px solid var(--app-border);
+  border-radius: 6px;
+  margin-bottom: 0.4rem;
+  font-size: 0.85rem;
+  gap: 0.5rem;
+}
+
+.existing-card-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.existing-card-content strong {
+  color: var(--app-accent);
+}
+
+.delete-btn {
+  background: none;
+  border: none;
+  color: var(--app-danger);
+  cursor: pointer;
+  font-size: 1.1rem;
+  padding: 0;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.delete-btn:hover {
+  opacity: 0.7;
+}
+
+/* ── Toast ────────────────────────────────── */
+
+.toast {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  padding: 0.75rem 1.25rem;
+  border-radius: 8px;
+  color: #fff;
+  font-size: 0.9rem;
+  font-weight: 500;
+  z-index: 1000;
+  animation: toast-in 0.3s ease;
+}
+
+.toast-success { background: var(--app-success); }
+.toast-error { background: var(--app-danger); }
+
+@keyframes toast-in {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Markdown preview styling ─────────────── */
+
+.markdown-preview h1 { font-size: 1.4rem; margin: 1rem 0 0.5rem; }
+.markdown-preview h2 { font-size: 1.2rem; margin: 1rem 0 0.5rem; }
+.markdown-preview h3 { font-size: 1.05rem; margin: 0.75rem 0 0.4rem; }
+.markdown-preview p { margin-bottom: 0.6rem; }
+.markdown-preview ul, .markdown-preview ol { margin: 0.4rem 0 0.6rem 1.5rem; }
+.markdown-preview pre {
+  background: var(--app-code-bg);
+  padding: 0.75rem;
+  border-radius: 6px;
+  overflow-x: auto;
+  margin: 0.6rem 0;
+  font-size: 0.85rem;
+}
+.markdown-preview code {
+  font-family: 'SF Mono', 'Fira Code', monospace;
+  font-size: 0.85em;
+}
+.markdown-preview :not(pre) > code {
+  background: var(--app-code-bg);
+  padding: 0.15em 0.35em;
+  border-radius: 3px;
+}
+.markdown-preview blockquote {
+  border-left: 3px solid var(--app-accent);
+  padding-left: 1rem;
+  margin: 0.6rem 0;
+  color: var(--app-text-muted);
+}
+.markdown-preview table {
+  border-collapse: collapse;
+  margin: 0.6rem 0;
+  width: 100%;
+}
+.markdown-preview th, .markdown-preview td {
+  border: 1px solid var(--app-border);
+  padding: 0.4rem 0.6rem;
+  text-align: left;
+}
+.markdown-preview th {
+  background: var(--app-surface);
+  font-weight: 600;
+}

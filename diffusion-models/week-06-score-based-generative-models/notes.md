@@ -1,3 +1,7 @@
+---
+title: "Week 6: Score-Based Generative Models"
+---
+
 # Week 6: Score-Based Generative Models
 
 > *"We can learn to generate data by estimating the gradient of the log-density, without ever estimating the density itself."*

@@ -1,3 +1,7 @@
+---
+title: "Week 1: Homework — Linear Algebra and Optimization"
+---
+
 # Week 1: Homework — Linear Algebra and Optimization
 
 **Instructions:** This problem set has 7 problems mixing theory (pen-and-paper derivations) and implementation (Python/NumPy). For implementation problems, write your solutions in a Jupyter notebook or `.py` file. Show your work for theoretical problems — a correct answer with no justification receives no credit.

@@ -1,3 +1,7 @@
+---
+title: "Week 5: Representation Learning & Dimensionality Reduction — Homework"
+---
+
 # Week 5: Representation Learning & Dimensionality Reduction — Homework
 
 ## Problem Set Overview

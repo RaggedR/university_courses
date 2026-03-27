@@ -1,3 +1,7 @@
+---
+title: "Week 7: The SDE Unification -- Homework"
+---
+
 # Week 7: The SDE Unification -- Homework
 
 **Estimated time:** 12-15 hours

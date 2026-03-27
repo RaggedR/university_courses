@@ -1,3 +1,7 @@
+---
+title: "Week 7: Regularized Autoencoders -- Homework"
+---
+
 # Week 7: Regularized Autoencoders -- Homework
 
 **Estimated time:** 8-10 hours

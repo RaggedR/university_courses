@@ -1,3 +1,7 @@
+---
+title: "Week 9: Sparsity and Dictionary Learning -- Homework"
+---
+
 # Week 9: Sparsity and Dictionary Learning -- Homework
 
 **Estimated time:** 10-12 hours

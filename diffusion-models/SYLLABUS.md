@@ -1,3 +1,7 @@
+---
+title: "CS 372: Diffusion Models and Generative Modeling"
+---
+
 # CS 372: Diffusion Models and Generative Modeling
 
 ## Course Overview

@@ -1,3 +1,7 @@
+---
+title: "Week 5: Denoising Diffusion Probabilistic Models -- Homework"
+---
+
 # Week 5: Denoising Diffusion Probabilistic Models -- Homework
 
 **Estimated time:** 12-15 hours

@@ -1,0 +1,8 @@
+---
+import AppLayout from '../layouts/AppLayout.astro';
+import MyNotesPage from '../components/MyNotesPage';
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+---
+<AppLayout title="My Notes">
+  <MyNotesPage client:load basePath={base} />
+</AppLayout>

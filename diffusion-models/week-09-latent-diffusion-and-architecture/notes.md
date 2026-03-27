@@ -1,3 +1,7 @@
+---
+title: "Week 9: Latent Diffusion and Architecture"
+---
+
 # Week 9: Latent Diffusion and Architecture
 
 > *"The purpose of abstraction is not to be vague, but to create a new semantic level in which one can be absolutely precise."*

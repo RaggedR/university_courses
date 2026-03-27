@@ -1,3 +1,7 @@
+---
+title: "Week 4: Denoising and Score Matching -- Homework"
+---
+
 # Week 4: Denoising and Score Matching -- Homework
 
 **Estimated time:** 12-15 hours

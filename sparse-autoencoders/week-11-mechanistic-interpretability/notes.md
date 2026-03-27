@@ -1,3 +1,7 @@
+---
+title: "Week 11: Mechanistic Interpretability"
+---
+
 # Week 11: Mechanistic Interpretability
 
 ## Why should we care what neural networks think?

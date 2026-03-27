@@ -1,3 +1,7 @@
+---
+title: "Week 10: Conditioning and Guidance -- Homework"
+---
+
 # Week 10: Conditioning and Guidance -- Homework
 
 **Estimated time:** 12-16 hours

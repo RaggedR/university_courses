@@ -1,3 +1,7 @@
+---
+title: "Week 10: Sparse Autoencoders -- Homework"
+---
+
 # Week 10: Sparse Autoencoders -- Homework
 
 ## Overview

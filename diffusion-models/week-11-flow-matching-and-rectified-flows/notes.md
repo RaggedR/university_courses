@@ -1,3 +1,7 @@
+---
+title: "Week 11: Flow Matching and Rectified Flows"
+---
+
 # Week 11: Flow Matching and Rectified Flows
 
 > *"The shortest distance between two points is a straight line."*

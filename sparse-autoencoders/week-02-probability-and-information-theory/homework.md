@@ -1,3 +1,7 @@
+---
+title: "Week 2: Homework — Probability and Information Theory"
+---
+
 # Week 2: Homework — Probability and Information Theory
 
 **Instructions:** This problem set has 7 problems mixing theory (pen-and-paper derivations) and implementation (Python/NumPy). For implementation problems, write your solutions in a Jupyter notebook or `.py` file. Show your work for theoretical problems.

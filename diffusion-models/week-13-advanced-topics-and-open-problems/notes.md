@@ -1,3 +1,7 @@
+---
+title: "Week 13: Advanced Topics and Open Problems"
+---
+
 # Week 13: Advanced Topics and Open Problems
 
 > *"The only way to discover the limits of the possible is to go beyond them into the impossible."*

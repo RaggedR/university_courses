@@ -1,3 +1,7 @@
+---
+title: "Week 3: Stochastic Differential Equations -- Homework"
+---
+
 # Week 3: Stochastic Differential Equations -- Homework
 
 **Estimated time:** 12-15 hours

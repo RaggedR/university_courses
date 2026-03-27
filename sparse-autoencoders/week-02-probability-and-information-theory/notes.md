@@ -1,3 +1,7 @@
+---
+title: "Week 2: Probability and Information Theory"
+---
+
 # Week 2: Probability and Information Theory
 
 > *"Information is the resolution of uncertainty."*

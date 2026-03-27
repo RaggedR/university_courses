@@ -1,3 +1,7 @@
+---
+title: "Week 4: Training Neural Networks — Homework"
+---
+
 # Week 4: Training Neural Networks — Homework
 
 ## Problem Set Overview

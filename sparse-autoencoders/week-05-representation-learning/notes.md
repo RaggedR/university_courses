@@ -1,3 +1,7 @@
+---
+title: "Week 5: Representation Learning & Dimensionality Reduction"
+---
+
 # Week 5: Representation Learning & Dimensionality Reduction
 
 ## Overview

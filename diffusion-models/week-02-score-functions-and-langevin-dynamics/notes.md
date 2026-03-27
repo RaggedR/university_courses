@@ -1,3 +1,7 @@
+---
+title: "Week 2: Score Functions and Langevin Dynamics"
+---
+
 # Week 2: Score Functions and Langevin Dynamics
 
 > *"The score function tells you which way is uphill. Langevin dynamics tells you to go uphill while stumbling randomly. Remarkably, the stumbling is what makes it work."*

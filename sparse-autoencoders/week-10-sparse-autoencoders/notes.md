@@ -1,3 +1,7 @@
+---
+title: "Week 10: Sparse Autoencoders"
+---
+
 # Week 10: Sparse Autoencoders
 
 ## This is the week everything we have built leads to.

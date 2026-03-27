@@ -1,3 +1,7 @@
+---
+title: "Week 3: Neural Networks from First Principles"
+---
+
 # Week 3: Neural Networks from First Principles
 
 > *"A neural network is just a function from numbers to numbers, built by composing simple pieces."*

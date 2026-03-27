@@ -1,3 +1,7 @@
+---
+title: "Week 1: Probability, Stochastic Processes, and Markov Chains"
+---
+
 # Week 1: Probability, Stochastic Processes, and Markov Chains
 
 > *"Noise is not the opposite of signal. Noise is the medium through which signal travels."*

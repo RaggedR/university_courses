@@ -1,3 +1,7 @@
+---
+title: "Week 5: Denoising Diffusion Probabilistic Models"
+---
+
 # Week 5: Denoising Diffusion Probabilistic Models
 
 > *"The key insight is that a diffusion process that destroys data can be reversed, and learning the reverse process gives us a generative model."*

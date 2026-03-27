@@ -1,3 +1,7 @@
+---
+title: "Week 7: Regularized Autoencoders"
+---
+
 # Week 7: Regularized Autoencoders
 
 > *"The art of being wise is the art of knowing what to overlook."*

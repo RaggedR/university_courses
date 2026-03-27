@@ -1,3 +1,7 @@
+---
+title: "CS 371: Final Examination — Solutions"
+---
+
 # CS 371: Final Examination — Solutions
 
 ---

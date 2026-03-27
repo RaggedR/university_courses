@@ -1,3 +1,7 @@
+---
+title: "Week 8: Samplers and Acceleration"
+---
+
 # Week 8: Samplers and Acceleration
 
 > *"The purpose of computation is insight, not numbers."*

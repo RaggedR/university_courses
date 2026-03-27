@@ -1,3 +1,7 @@
+---
+title: "Week 2: Score Functions and Langevin Dynamics -- Homework"
+---
+
 # Week 2: Score Functions and Langevin Dynamics -- Homework
 
 **Estimated time:** 10-12 hours

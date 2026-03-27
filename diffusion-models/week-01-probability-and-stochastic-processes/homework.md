@@ -1,3 +1,7 @@
+---
+title: "Week 1: Probability, Stochastic Processes, and Markov Chains -- Homework"
+---
+
 # Week 1: Probability, Stochastic Processes, and Markov Chains -- Homework
 
 **Estimated time:** 10-12 hours

@@ -1,3 +1,7 @@
+---
+title: "Week 11: Flow Matching and Rectified Flows -- Homework"
+---
+
 # Week 11: Flow Matching and Rectified Flows -- Homework
 
 **Estimated time:** 12-15 hours

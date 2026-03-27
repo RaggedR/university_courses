@@ -1,3 +1,7 @@
+---
+title: "CS 372: Diffusion Models — Final Exam Solutions"
+---
+
 # CS 372: Diffusion Models — Final Exam Solutions
 
 ---

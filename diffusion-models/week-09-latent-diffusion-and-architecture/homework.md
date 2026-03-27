@@ -1,3 +1,7 @@
+---
+title: "Week 9: Latent Diffusion and Architecture -- Homework"
+---
+
 # Week 9: Latent Diffusion and Architecture -- Homework
 
 **Estimated time:** 14-18 hours

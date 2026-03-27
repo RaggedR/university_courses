@@ -1,3 +1,7 @@
+---
+title: "CS 371: Sparse Autoencoders and Neural Feature Extraction"
+---
+
 # CS 371: Sparse Autoencoders and Neural Feature Extraction
 
 # Final Examination

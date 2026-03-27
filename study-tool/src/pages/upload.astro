@@ -1,0 +1,8 @@
+---
+import AppLayout from '../layouts/AppLayout.astro';
+import UploadPage from '../components/UploadPage';
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+---
+<AppLayout title="Upload Notes">
+  <UploadPage client:load basePath={base} />
+</AppLayout>

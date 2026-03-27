@@ -1,3 +1,7 @@
+---
+title: "Week 4: Denoising and Score Matching"
+---
+
 # Week 4: Denoising and Score Matching
 
 > *"Tell me what noise you added, and I will tell you what you are."*

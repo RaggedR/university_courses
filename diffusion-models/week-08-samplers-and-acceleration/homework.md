@@ -1,3 +1,7 @@
+---
+title: "Week 8: Samplers and Acceleration -- Homework"
+---
+
 # Week 8: Samplers and Acceleration -- Homework
 
 **Estimated time:** 12-15 hours

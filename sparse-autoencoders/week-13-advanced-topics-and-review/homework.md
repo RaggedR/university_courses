@@ -1,3 +1,7 @@
+---
+title: "Week 13 Homework: Advanced SAE Architectures"
+---
+
 # Week 13 Homework: Advanced SAE Architectures
 
 **CS 371: Sparse Autoencoders and Neural Feature Extraction**

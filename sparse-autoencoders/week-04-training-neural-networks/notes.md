@@ -1,3 +1,7 @@
+---
+title: "Week 4: Training Neural Networks"
+---
+
 # Week 4: Training Neural Networks
 
 ## Overview

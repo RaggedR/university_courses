@@ -1,3 +1,7 @@
+---
+title: "Week 7: The SDE Unification"
+---
+
 # Week 7: The SDE Unification
 
 > *"We propose a unified framework based on stochastic differential equations that encompasses previous approaches and enables new sampling and likelihood computation methods."*

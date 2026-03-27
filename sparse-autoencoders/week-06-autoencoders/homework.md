@@ -1,3 +1,7 @@
+---
+title: "Week 6: The Autoencoder — Homework"
+---
+
 # Week 6: The Autoencoder — Homework
 
 ## Problem Set Overview
